@@ -1,0 +1,35 @@
+{
+  "name": "@advertima/io",
+  "version": "0.1.0",
+  "description": "IO utilities to connect to a PoI",
+  "main": "lib/io.js",
+  "types": "lib/io.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "checkstyle": "eslint src --ext ts",
+    "checkstyle:fix": "eslint src --ext ts --fix",
+    "prettier": "prettier --config ./.prettierrc.yml --write 'src/**/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/advertima/io.git"
+  },
+  "keywords": [
+    "io"
+  ],
+  "author": "Advertima",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/advertima/io/issues"
+  },
+  "homepage": "https://github.com/advertima/io#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "eslint-config-google": "^0.11.0",
+    "eslint-plugin-typescript": "^0.12.0",
+    "prettier": "^1.14.3",
+    "typescript": "^3.1.3",
+    "typescript-eslint-parser": "^20.0.0"
+  }
+}

@@ -1,0 +1,5 @@
+dist
+coverage/**/*
+.nyc_output
+testresults.xml
+node_modules

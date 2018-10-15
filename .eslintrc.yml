@@ -1,0 +1,15 @@
+extends: google
+parser: typescript-eslint-parser
+plugins:
+  - "typescript"
+rules:
+  typescript/no-unused-vars: "error"
+  arrow-parens: [2, "as-needed"]
+  prefer-const: 1
+  max-len: ["error", {"code": 100}]
+  object-curly-spacing: ["error", "always"]
+  quote-props: ["error", "as-needed"]
+parserOptions:
+  sourceType: module
+  ecmaFeatures:
+    modules: true
