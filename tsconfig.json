@@ -2,7 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "lib": ["es2017", "dom"],
-    "module": "commonjs",
+    "module": "esnext",
     "outDir": "dist",
     "sourceMap": true,
     "target": "es6"
