@@ -6,10 +6,15 @@
   "module": "lib/io.esm.js",
   "browser": "lib/io.umd.js",
   "types": "lib/io.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
   "scripts": {
     "build": "rollup -c",
     "start": "rollup -c -w",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm run build",
     "checkstyle": "eslint src --ext ts",
     "checkstyle:fix": "eslint src --ext ts --fix",
     "prettier": "prettier --config ./.prettierrc.yml --write 'src/**/*.ts'"
