@@ -1,4 +1,5 @@
 import test from 'ava';
+import { stub } from 'sinon';
 import { MessageFactory } from './MessageFactory';
 import { PersonDetectionMessage } from './person-detection/PersonDetectionMessage';
 import { PersonsAliveMessage } from './persons-alive/PersonsAliveMessage';
@@ -176,6 +177,12 @@ const contentMessage = {
   },
 };
 
+let consoleWarnSpy;
+
+test.before(() => {
+  consoleWarnSpy = stub(console, 'warn').returns(null);
+});
+
 test('should parse a person_update message', t => {
   const msg = MessageFactory.parse(personDetectionMessage);
   t.is(msg instanceof PersonDetectionMessage, true);
@@ -223,6 +230,9 @@ test('should parse an invalid person_update message', t => {
 
 test('should parse a content message', t => {
   const msg = MessageFactory.parse(contentMessage);
-  console.log(contentMessage['data']['record_type']);
   t.is(msg instanceof ContentMessage, true);
+});
+
+test.after(() => {
+  consoleWarnSpy.restore();
 });
