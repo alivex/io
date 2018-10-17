@@ -50,10 +50,10 @@ export class EventMonitor {
 
     // Attach the list of persons ids from the PoIMonitor
     const personList = Array.from(
-        this.poiMonitor
-            .getSnapshot()
-            .getPersons()
-            .values()
+      this.poiMonitor
+        .getSnapshot()
+        .getPersons()
+        .values()
     );
     event.persons = personList.map((p: PersonDetection) => p.personPutId);
 

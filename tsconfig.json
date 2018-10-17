@@ -3,13 +3,12 @@
     "declaration": true,
     "lib": ["es2017", "dom"],
     "module": "esnext",
-    "outDir": "dist",
     "sourceMap": true,
-    "target": "es6"
+    "target": "es6",
+    "types": ["node", "uuid", "sinon"]
   },
   "exclude": [
     "dist",
-    "**/*.spec.ts",
     "node_modules"
   ]
 }

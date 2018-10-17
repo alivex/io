@@ -15,5 +15,8 @@ export * from './event/ContentEvent';
 export * from './event/EventMonitor';
 export * from './constants/Constants';
 export * from './connection/WSConnection';
+export * from './connection/TecWSConnection';
 export * from './rpc/RPCService';
+export * from './rpc/TecRPCService';
 export * from './incoming-message/IncomingMessageService';
+export * from './incoming-message/TecSDKService';

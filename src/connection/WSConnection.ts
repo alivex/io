@@ -1,3 +1,7 @@
+import { Observable } from 'rxjs';
+
+export const WSConnectionType = Symbol.for('WSConnectionType');
+
 export enum WSConnectionStatus {
   Open = 'open',
   Closed = 'closed',
@@ -8,6 +12,10 @@ export enum WSConnectionStatus {
  * WebSocket connection
  */
 export interface WSConnection {
-  open(): void;
+  open(args): void;
   close(): void;
+  sendJsonStream(data: any): void;
+  sendBinaryStream(data: any): void;
+  readonly jsonStreamMessages: Observable<MessageEvent>;
+  readonly binaryStreamMessages: Observable<any>;
 }
