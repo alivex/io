@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
-import { Observer } from 'rxjs';
+import { Observer, Observable } from 'rxjs';
 import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Message } from '../messages/Message';
@@ -25,8 +25,7 @@ export class POIMonitor {
    *
    * Subscribes to the TecSDKService json stream to listen for events reported
    * by the POI.
-   * @param {TecSDKService} tecSDKService
-   * @param {MessageFactory} messageFactory
+   * @param {IncomingMessageService} msgService
    */
   constructor(private msgService: IncomingMessageService) {}
 
@@ -36,9 +35,9 @@ export class POIMonitor {
   public start(): void {
     if (!this.jsonStreamSubscription || this.jsonStreamSubscription.closed) {
       this.jsonStreamSubscription = this.msgService
-          .jsonStreamMessages()
-          .pipe(map(json => MessageFactory.parse(json)))
-          .subscribe(new MessageObserver(this));
+        .jsonStreamMessages()
+        .pipe(map(json => MessageFactory.parse(json)))
+        .subscribe(new MessageObserver(this));
     }
   }
 
@@ -95,15 +94,11 @@ export class POIMonitor {
   }
 
   /**
-   * Adds an observer to the list of observers that will be notified
-   * when the POISnapshot is updated.
-   *
-   * @param {Observer<POISnapshot>} observer the observer that will be notified.
-   * @return {Subscription} the subscription object,
-   * so consumers can unsubscribe.
+   * Returns an Observable emitting the POISnapshot updates
+   * @return {Observable<POISnapshot>}
    */
-  public subscribe(observer: Observer<POISnapshot>): Subscription {
-    return this.snapshots.subscribe(observer);
+  public getSnapshots(): Observable<POISnapshot> {
+    return this.snapshots.asObservable();
   }
 }
 

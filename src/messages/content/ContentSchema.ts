@@ -10,9 +10,7 @@ export const ContentSchema = {
     record_type: {
       type: 'string',
       description: 'Identifier the type of the record. Never changes for one specific record type.',
-      enum: [
-        'content_event',
-      ],
+      enum: ['content_event'],
     },
     poi: {
       type: 'integer',
@@ -36,12 +34,5 @@ export const ContentSchema = {
       },
     },
   },
-  required: [
-    'record_type',
-    'poi',
-    'local_timestamp',
-    'name',
-    'content_id',
-    'person_put_ids',
-  ],
+  required: ['record_type', 'poi', 'local_timestamp', 'name', 'content_id', 'person_put_ids'],
 };
