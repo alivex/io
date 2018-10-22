@@ -1,17 +1,4 @@
-let JsonStream;
-let BinaryStream;
-
-declare type JsonStream = typeof JsonStream;
-declare type BinaryStream = typeof BinaryStream;
-
-if (process.env.NODE_ENV === 'test') {
-  JsonStream = require('./StreamMock').JsonStreamMock;
-  BinaryStream = require('./StreamMock').BinaryStreamMock;
-} else {
-  JsonStream = require('@advertima/js-libs').JsonStream;
-  BinaryStream = require('@advertima/js-libs').BinaryStream;
-}
-
+import { JsonStream, BinaryStream } from '@advertima/js-libs';
 import { Observable, Subject } from 'rxjs';
 import { WSConnection, WSConnectionStatus } from './WSConnection';
 
