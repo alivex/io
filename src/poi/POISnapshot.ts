@@ -13,11 +13,10 @@ const MAX_RECENT_TIME = 2000;
  * Represents what is happening at a POI at a given point in time.
  */
 export class POISnapshot {
-  public poiId;
-  public persons: Map<string, PersonDetection> = new Map();
-  public content: Content;
   private lastPersonUpdate: Map<string, number> = new Map();
-  public lastUpdateTimestamp: number;
+  private persons: Map<string, PersonDetection> = new Map();
+  private content: Content;
+  private lastUpdateTimestamp: number;
 
   /**
    * Returns the list of persons that have their ids
@@ -27,6 +26,22 @@ export class POISnapshot {
    */
   public getPersons(): Map<string, PersonDetection> {
     return this.persons;
+  }
+
+  /**
+   * Returns the content that is currently playing on this PoI
+   * @return {Content}
+   */
+  public getContent(): Content {
+    return this.content;
+  }
+
+  /**
+   * Returns the timestamp of the last update
+   * @return {number}
+   */
+  public getLastUpdateTimestamp(): number {
+    return this.lastUpdateTimestamp;
   }
 
   /**
@@ -135,7 +150,6 @@ export class POISnapshot {
    */
   private updateContent(message: ContentMessage): void {
     this.content = Content.fromMessage(message);
-    this.poiId = this.content.poi;
 
     this.lastUpdateTimestamp = this.content.localTimestamp;
   }
