@@ -40,7 +40,7 @@ export class IO {
    */
   public connect(options: IOOptions): void {
     this.connection.open(options);
-    this.poiMonitor.start;
+    this.poiMonitor.start();
   }
 
   /**
