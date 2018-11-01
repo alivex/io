@@ -36,11 +36,17 @@ export class IO {
   }
 
   /**
-   * [start description]
+   * Opens a connection and start monitoring the messages
    * @param {IOOptions} options [description]
    */
   public connect(options: IOOptions): void {
     this.connection.open(options);
+    this.connection.sendBinaryStream({
+      canvas: { width: 100, height: 100 },
+      image: { width: 0, height: 0 },
+      thumbnail: { width: 0, height: 0 },
+    });
+
     this.poiMonitor.start();
   }
 
