@@ -7,7 +7,7 @@ import { TecRPCService } from '../rpc/TecRPCService';
 import { RPCService } from '../rpc/RPCService';
 import { POIMonitor } from '../poi/POIMonitor';
 import { POISnapshot } from '../poi/POISnapshot';
-import { BinaryMessageEvent } from '../types';
+import { BinaryMessageEvent, BinaryType } from '../types';
 
 export interface IOOptions {
   jsonPort?: number; // port for the json stream connection
@@ -65,7 +65,7 @@ export class IO {
    * @return {Observable<BinaryMessageEvent>}
    */
   public imageStreamMessages(): Observable<BinaryMessageEvent> {
-    return this.incomingMessageService.imageStreamMessages();
+    return this.incomingMessageService.binaryStreamMessages(BinaryType.IMAGE);
   }
 
   /**
@@ -73,7 +73,7 @@ export class IO {
    * @return {Observable<BinaryMessageEvent>}
    */
   public skeletonStreamMessages(): Observable<BinaryMessageEvent> {
-    return this.incomingMessageService.skeletonStreamMessages();
+    return this.incomingMessageService.binaryStreamMessages(BinaryType.SKELETON);
   }
 
   /**
@@ -81,7 +81,7 @@ export class IO {
    * @return {Observable<BinaryMessageEvent>}
    */
   public thumbnailStreamMessages(): Observable<BinaryMessageEvent> {
-    return this.incomingMessageService.thumbnailStreamMessages();
+    return this.incomingMessageService.binaryStreamMessages(BinaryType.THUMBNAIL);
   }
 
   /**
@@ -89,7 +89,7 @@ export class IO {
    * @return {Observable<BinaryMessageEvent>}
    */
   public heatmapStreamMessages(): Observable<BinaryMessageEvent> {
-    return this.incomingMessageService.heatmapStreamMessages();
+    return this.incomingMessageService.binaryStreamMessages(BinaryType.HEATMAP);
   }
 
   /**
@@ -97,7 +97,7 @@ export class IO {
    * @return {Observable<BinaryMessageEvent>}
    */
   public depthmapStreamMessages(): Observable<BinaryMessageEvent> {
-    return this.incomingMessageService.depthmapStreamMessages();
+    return this.incomingMessageService.binaryStreamMessages(BinaryType.DEPTHMAP);
   }
 
   /**

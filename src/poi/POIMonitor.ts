@@ -1,12 +1,13 @@
 import { BehaviorSubject } from 'rxjs';
 import { Observer, Observable } from 'rxjs';
-import { Subscription } from 'rxjs';
+import { Subscription, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Message } from '../messages/Message';
 import { MessageFactory } from '../messages/MessageFactory';
 import { PersonsAliveMessage } from '../messages/persons-alive/PersonsAliveMessage';
 import { IncomingMessageService } from '../incoming-message/IncomingMessageService';
 import { POISnapshot } from './POISnapshot';
+import { BinaryType } from '../types';
 
 /**
  * Monitors a POI and informs the subscribers about
@@ -18,7 +19,7 @@ export class POIMonitor {
   private poiSnapshot: POISnapshot = new POISnapshot();
   private snapshots: BehaviorSubject<POISnapshot> = new BehaviorSubject(this.poiSnapshot); // eslint-disable-line no-invalid-this, max-len
   private logger = console;
-  private jsonStreamSubscription: Subscription;
+  private streamSubscription: Subscription;
 
   /**
    * Creates a new instance of this class.
@@ -33,9 +34,11 @@ export class POIMonitor {
    * Starts subscribing the json messages and emit POI snapshots
    */
   public start(): void {
-    if (!this.jsonStreamSubscription || this.jsonStreamSubscription.closed) {
-      this.jsonStreamSubscription = this.msgService
-        .jsonStreamMessages()
+    if (!this.streamSubscription || this.streamSubscription.closed) {
+      this.streamSubscription = merge(
+        this.msgService.jsonStreamMessages(),
+        this.msgService.binaryStreamMessages(BinaryType.SKELETON)
+      )
         .pipe(map(json => MessageFactory.parse(json)))
         .subscribe(new MessageObserver(this));
     }
@@ -73,7 +76,7 @@ export class POIMonitor {
    * Marks the stream as completed.
    */
   public complete(): void {
-    this.jsonStreamSubscription.unsubscribe();
+    this.streamSubscription.unsubscribe();
     this.snapshots.complete();
   }
 
