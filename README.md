@@ -31,7 +31,11 @@ io.rpc('analytics', data);
 io.rpc('download', data).subbscribe(res => ...);
 
 io.jsonStreamMessages().subscribe(msg => ...);
-io.binaryStreamMessages().subscribe(msg => ...);
+io.skeletonStreamMessages().subscribe(msg => ...);
+io.imageStreamMessages().subscribe(msg => ...);
+io.thumbnailStreamMessages().subscribe(msg => ...);
+io.heatmapStreamMessages().subscribe(msg => ...);
+io.depthmapStreamMessages().subscribe(msg => ...);
 
 io.getSnapshots().subscribe(snapshot => ...);
 

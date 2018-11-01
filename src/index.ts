@@ -18,3 +18,4 @@ export * from './connection/WSConnection';
 export * from './incoming-message/IncomingMessageService';
 export * from './rpc/RPCService';
 export * from './io/IO';
+export * from './types';

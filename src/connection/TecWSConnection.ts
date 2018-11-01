@@ -1,6 +1,7 @@
 import { JsonStream, BinaryStream } from './stream/Stream';
 import { Observable, Subject } from 'rxjs';
 import { WSConnection, WSConnectionStatus } from './WSConnection';
+import { BinaryType, BinaryMessageEvent } from '../types';
 
 export interface TecSdkWSConnectionOptions {
   jsonPort?: number; // port for the json stream connection
@@ -19,7 +20,9 @@ export class TecWSConnection implements WSConnection {
 
   private binaryStreamStatus = WSConnectionStatus.Closed;
   private binaryStream: BinaryStream;
-  private binaryStreamMessagesSubject: Subject<any> = new Subject<any>();
+  private binaryStreamMessagesSubject: Subject<BinaryMessageEvent> = new Subject<
+    BinaryMessageEvent
+  >();
 
   /**
    * Json stream messages wrapped in an Observable
@@ -33,7 +36,7 @@ export class TecWSConnection implements WSConnection {
    * Binary stream messages wrapped in an Observable
    * @return {Observable<any>}
    */
-  get binaryStreamMessages(): Observable<any> {
+  get binaryStreamMessages(): Observable<BinaryMessageEvent> {
     return this.binaryStreamMessagesSubject.asObservable();
   }
 
@@ -104,11 +107,11 @@ export class TecWSConnection implements WSConnection {
     this.binaryStreamStatus = WSConnectionStatus.Connecting;
     this.binaryStream.onopen = this.onBinaryStreamOpen.bind(this);
     this.binaryStream.onclose = this.onBinaryStreamClose.bind(this);
-    this.binaryStream.onimage = this.onBinaryStreamMessage.bind(this);
-    this.binaryStream.onskeleton = this.onBinaryStreamMessage.bind(this);
-    this.binaryStream.onthumbnail = this.onBinaryStreamMessage.bind(this);
-    this.binaryStream.onheatmap = this.onBinaryStreamMessage.bind(this);
-    this.binaryStream.ondepthmap = this.onBinaryStreamMessage.bind(this);
+    this.binaryStream.onimage = this.onBinaryStreamMessage.bind(this, BinaryType.IMAGE);
+    this.binaryStream.onskeleton = this.onBinaryStreamMessage.bind(this, BinaryType.SKELETON);
+    this.binaryStream.onthumbnail = this.onBinaryStreamMessage.bind(this, BinaryType.THUMBNAIL);
+    this.binaryStream.onheatmap = this.onBinaryStreamMessage.bind(this, BinaryType.HEATMAP);
+    this.binaryStream.ondepthmap = this.onBinaryStreamMessage.bind(this, BinaryType.DEPTHMAP);
   }
 
   /**
@@ -149,9 +152,10 @@ export class TecWSConnection implements WSConnection {
 
   /**
    * Emits a message to the BinaryStream subject
-   * @param {any} e message
+   * @param {BinaryType} type message type
+   * @param {Uint8Array} data message data
    */
-  private onBinaryStreamMessage(e: any): void {
-    this.binaryStreamMessagesSubject.next(e);
+  private onBinaryStreamMessage(type: BinaryType, data: Uint8Array): void {
+    this.binaryStreamMessagesSubject.next({ type, data });
   }
 }
