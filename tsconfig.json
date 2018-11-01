@@ -3,9 +3,10 @@
     "declaration": true,
     "lib": ["es2017", "dom"],
     "module": "esnext",
+    "moduleResolution": "node",
     "sourceMap": true,
     "target": "es6",
-    "types": ["node", "uuid", "sinon"]
+    "types": ["node", "ws", "uuid", "sinon"]
   },
   "exclude": [
     "dist",

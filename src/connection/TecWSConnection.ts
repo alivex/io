@@ -1,4 +1,4 @@
-import { JsonStream, BinaryStream } from '@advertima/js-libs';
+import { JsonStream, BinaryStream } from './stream/Stream';
 import { Observable, Subject } from 'rxjs';
 import { WSConnection, WSConnectionStatus } from './WSConnection';
 
