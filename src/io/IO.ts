@@ -30,7 +30,7 @@ export class IO {
    */
   constructor(private connection: WSConnection = new TecWSConnection()) {
     this.incomingMessageService = new TecSDKService(this.connection);
-    this.rpcService = new TecRPCService(this.connection);
+    this.rpcService = new TecRPCService(this.connection, this.incomingMessageService);
     this.poiMonitor = new POIMonitor(this.incomingMessageService);
   }
 

@@ -5,19 +5,23 @@ import { TecRPCService } from './TecRPCService';
 
 /* eslint-disable require-jsdoc */
 class MockTecSdkWsConnection {
-  jsonStreamMessages = null;
   open() {}
   sendJsonStream() {}
+}
+
+class MockTecSdkService {
+  jsonStreamMessages() {}
 }
 /* eslint-enable require-jsdoc */
 
 test.cb('should send a rpc, subscribe and receive the response', t => {
   const connection = new MockTecSdkWsConnection();
-  const service = new TecRPCService(connection as any);
+  const msgService = new MockTecSdkService();
+  const service = new TecRPCService(connection as any, msgService as any);
 
   // Mock the message observables
   const subject = new Subject();
-  stub(connection, 'jsonStreamMessages').value(subject.asObservable());
+  stub(msgService, 'jsonStreamMessages').returns(subject.asObservable());
   stub(connection, 'sendJsonStream').callsFake(json => {
     setTimeout(() => {
       subject.next({
@@ -30,7 +34,7 @@ test.cb('should send a rpc, subscribe and receive the response', t => {
   });
 
   service.rpc('test', { title: 'hello' }).subscribe(msg => {
-    t.is(msg.data.title, 'world');
+    t.is(msg.title, 'world');
     t.end();
   });
 });
