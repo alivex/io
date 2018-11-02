@@ -88,13 +88,17 @@ export class POISnapshot {
 
   /**
    * Returns a new instance of POISnapshot
-   * containing the same persons and personIds
+   * containing the configuration
    * @return {POISnapshot} cloned instance
    */
   public clone(): POISnapshot {
     const snapshot = new POISnapshot();
     snapshot.persons = new Map(this.persons);
     snapshot.lastPersonUpdate = new Map(this.lastPersonUpdate);
+    snapshot.personsByTtid = new Map(this.personsByTtid);
+    snapshot.personsCache = new Map(this.personsCache);
+    snapshot.content = this.content ? this.content.clone() : undefined;
+    snapshot.lastUpdateTimestamp = this.lastUpdateTimestamp;
     return snapshot;
   }
 
