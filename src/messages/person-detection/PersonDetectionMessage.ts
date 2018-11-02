@@ -18,6 +18,7 @@ export class PersonDetectionMessage extends Message {
   public localTimestamp: number;
   public lookingAtScreen: number;
   public cameraId: string;
+  public poi: number;
 
   /**
    * Parses a PersonDetectionMessage
@@ -39,6 +40,7 @@ export class PersonDetectionMessage extends Message {
     this.localTimestamp = json.data.local_timestamp;
     this.lookingAtScreen = json.data.behavior.head.looking_at_screen;
     this.cameraId = json.data.camera_id;
+    this.poi = json.data.poi;
   }
 
   /**
