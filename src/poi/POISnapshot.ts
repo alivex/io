@@ -176,6 +176,8 @@ export class POISnapshot {
       this.createOrCachePerson(ttid, 'json', message);
     } else {
       person.updateFromJson(message);
+      this.lastPersonUpdate.set(person.personId, person.localTimestamp);
+      this.lastUpdateTimestamp = person.localTimestamp;
     }
   }
 

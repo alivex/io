@@ -8,7 +8,7 @@ function decodeHeadposeAngle(data: Uint8Array, offset: number): number {
   return ((data[offset] * 256 + data[offset + 1]) / (256 * 256)) * 180 - 90;
 }
 
-const indices = {
+export const indices = {
   male: 1,
   bald: 2,
   black_hair: 3,
