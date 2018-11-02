@@ -19,7 +19,8 @@
     "prepare": "npm run build",
     "checkstyle": "eslint src --ext ts",
     "checkstyle:fix": "eslint src --ext ts --fix",
-    "prettier": "prettier --config ./.prettierrc.yml --write 'src/**/*.ts'"
+    "prettier": "prettier --config ./.prettierrc.yml --write 'src/**/*.ts'",
+    "docs": "cd docs && ./generate-docs.sh"
   },
   "repository": {
     "type": "git",
@@ -64,6 +65,7 @@
     "rollup-plugin-typescript2": "^0.17.1",
     "sinon": "^7.0.0",
     "ts-node": "^7.0.1",
+    "typedoc": "^0.11.1",
     "typescript": "^2.9.2",
     "typescript-eslint-parser": "^16.0.0"
   },
