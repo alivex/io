@@ -25,6 +25,7 @@ export class PersonDetection {
   public localTimestamp: number = 0;
   public lookingAtScreen: number;
   public cameraId: string;
+  public poi: number;
 
   /**
    * Returns the name of the recognised person
@@ -64,6 +65,7 @@ export class PersonDetection {
     person.coordinates = message['coordinates'] as PersonCoordinates;
     person.metadata = message.recognition as RecognitionMetadta;
     person.lookingAtScreen = message.lookingAtScreen;
+    person.poi = message.poi;
 
     if (person.localTimestamp) {
       person.updated = person.localTimestamp;
