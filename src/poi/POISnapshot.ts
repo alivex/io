@@ -5,6 +5,8 @@ import { SkeletonMessage } from '../messages/skeleton/SkeletonMessage';
 import { ContentMessage } from '../messages/content/ContentMessage';
 import { PersonDetection } from '../model/person-detection/PersonDetection';
 import { Content } from '../model/content/Content';
+import { PersonAttributes } from '../model/person-attributes/PersonAttributes';
+import { Skeleton, SkeletonBinaryDataProvider, BinaryCachedData } from '../model/skeleton/Skeleton';
 
 // Maximum amount of time (in ms) between now and the last person event
 // to consider the person as recent
@@ -16,8 +18,14 @@ const MAX_RECENT_TIME = 2000;
 export class POISnapshot {
   private lastPersonUpdate: Map<string, number> = new Map();
   private persons: Map<string, PersonDetection> = new Map();
+  private personsByTtid: Map<number, PersonDetection> = new Map();
   private content: Content;
   private lastUpdateTimestamp: number;
+
+  private personsCache: Map<
+    number,
+    { json?: PersonDetectionMessage; binary?: BinaryCachedData }
+  > = new Map();
 
   /**
    * Returns the list of persons that have their ids
@@ -64,6 +72,11 @@ export class POISnapshot {
    */
   public update(message: Message) {
     if (message instanceof SkeletonMessage) {
+      let start = 2;
+      for (let i = 0; i < message.personsCount; ++i) {
+        this.updateSkeleton(message.data.subarray(start, start + message.personLength));
+        start += message.personLength;
+      }
     } else if (message instanceof PersonDetectionMessage) {
       this.updatePersons(message);
     } else if (message instanceof PersonsAliveMessage) {
@@ -86,20 +99,80 @@ export class POISnapshot {
   }
 
   /**
+   * In order to create a person with valid state, we need both the json and
+   * the binary data. Therefore the data has to be cached until both data
+   * elements are available
+   * @param {number} ttid [description]
+   * @param {string} key  [description]
+   * @param {BinaryCachedData | PersonDetectionMessage} data [description]
+   */
+  private createOrCachePerson(
+    ttid: number,
+    key: 'json' | 'binary',
+    data: BinaryCachedData | PersonDetectionMessage
+  ): void {
+    if (this.personsCache.get(ttid) == undefined) {
+      this.personsCache.set(ttid, {});
+    }
+    const obj = this.personsCache.get(ttid);
+    obj[key] = data;
+
+    // if both 'json' and 'binary' key are ready, create the person
+    if (obj.json !== undefined && obj.binary !== undefined) {
+      const person = PersonDetection.fromMessage(obj.json, obj.binary);
+
+      this.persons.set(obj.json.personId, person);
+      this.personsByTtid.set(obj.binary.personAttributes.ttid, person);
+
+      this.lastPersonUpdate.set(person.personId, person.localTimestamp);
+      this.removeGonePersons(obj.json.localTimestamp);
+      this.lastUpdateTimestamp = obj.json.localTimestamp;
+
+      this.personsCache.delete(ttid);
+    }
+  }
+
+  /**
+   * Updates data about a skeleton
+   * @param {Uint8Array} data the message containing the update
+   */
+  private updateSkeleton(data: Uint8Array): void {
+    const personAttributes = new PersonAttributes(data.subarray(Skeleton.bytesLength()));
+    const ttid = personAttributes.ttid;
+    const binary: BinaryCachedData = {
+      skeleton: new Skeleton(
+        new SkeletonBinaryDataProvider(data.subarray(0, Skeleton.bytesLength()))
+      ),
+      personAttributes: personAttributes,
+    };
+
+    const person = this.personsByTtid.get(ttid);
+    if (person === undefined) {
+      this.createOrCachePerson(ttid, 'binary', binary);
+    } else {
+      person.updateFromBinary(binary);
+    }
+  }
+
+  /**
    * Updates data about a detected person.
    *
    * @param {PersonDetectionMessage} message the message containing the update
    * information.
    */
   private updatePersons(message: PersonDetectionMessage): void {
-    const person = PersonDetection.fromMessage(message);
-    if (person.age && person.gender) {
-      this.persons.set(message.personId, person);
+    const ttid = message.ttid;
+    if (typeof ttid != 'number') {
+      throw new Error('TTID must be set');
     }
-
-    this.lastPersonUpdate.set(person.personId, person.localTimestamp);
-    this.removeGonePersons(message.localTimestamp);
-    this.lastUpdateTimestamp = message.localTimestamp;
+    // a person for the given ttid exists already, so just update it and
+    // propagate the changes
+    const person = this.personsByTtid.get(ttid);
+    if (person === undefined) {
+      this.createOrCachePerson(ttid, 'json', message);
+    } else {
+      person.updateFromJson(message);
+    }
   }
 
   /**
