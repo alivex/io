@@ -2,5 +2,7 @@ lib
 coverage/**/*
 .nyc_output
 testresults.xml
+docs/generated/typedoc
+docs/generated/*.png
 node_modules
 .rpt2_cache

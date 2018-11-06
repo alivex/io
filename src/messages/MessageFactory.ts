@@ -4,7 +4,7 @@ import { PersonsAliveMessage } from './persons-alive/PersonsAliveMessage';
 import { ContentMessage } from './content/ContentMessage';
 import { UnknownMessage } from './unknown/UnknownMessage';
 import { SkeletonMessage } from './skeleton/SkeletonMessage';
-import { RPCResponseSubject } from '../constants/Constants';
+import { RPCResponseSubject, RPCRecordType } from '../constants/Constants';
 import { BinaryType, BinaryMessageEvent } from '../types';
 
 /**
@@ -28,7 +28,7 @@ export class MessageFactory {
         msg = new PersonDetectionMessage(obj);
       } else if (obj['subject'] == RPCResponseSubject.PersonsAlive) {
         msg = new PersonsAliveMessage(obj);
-      } else if (obj['data'] && obj['data']['record_type'] == 'content_event') {
+      } else if (obj['data'] && obj['data']['record_type'] == RPCRecordType.ContentEvent) {
         msg = new ContentMessage(obj);
       }
       return msg;

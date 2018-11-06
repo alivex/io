@@ -14,8 +14,5 @@ export * from './io-service/IOService';
 export * from './event/ContentEvent';
 export * from './event/EventMonitor';
 export * from './constants/Constants';
-export * from './connection/WSConnection';
-export * from './incoming-message/IncomingMessageService';
-export * from './rpc/RPCService';
 export * from './io/IO';
 export * from './types';

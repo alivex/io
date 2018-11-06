@@ -16,8 +16,7 @@ import { BinaryType } from '../types';
 export class POIMonitor {
   private isActive: boolean = true;
   private isActiveTimeout;
-  private poiSnapshot: POISnapshot = new POISnapshot();
-  private snapshots: BehaviorSubject<POISnapshot> = new BehaviorSubject(this.poiSnapshot); // eslint-disable-line no-invalid-this, max-len
+  private snapshots: BehaviorSubject<POISnapshot> = new BehaviorSubject(new POISnapshot());
   private logger = console;
   private streamSubscription: Subscription;
 
@@ -60,7 +59,7 @@ export class POIMonitor {
    * @param {Message} message the message sent by the POI.
    */
   public emitSnapshot(message: Message): void {
-    this.poiSnapshot.update(message);
+    this.getSnapshot().update(message);
     if (message instanceof PersonsAliveMessage) {
       if (this.isActive) {
         this.updateHealthTimeout();
@@ -69,7 +68,7 @@ export class POIMonitor {
         this.isActive = true;
       }
     }
-    this.snapshots.next(this.poiSnapshot.clone());
+    this.snapshots.next(this.getSnapshot().clone());
   }
 
   /**
@@ -90,9 +89,9 @@ export class POIMonitor {
     this.isActiveTimeout = setTimeout(() => {
       this.isActive = false;
       this.logger.warn('PoI stopped emitting.');
-      this.poiSnapshot.setPersons(new Map());
-      this.poiSnapshot.update(new PersonsAliveMessage({ data: { person_ids: [] } }));
-      this.snapshots.next(this.poiSnapshot.clone());
+      this.getSnapshot().setPersons(new Map());
+      this.getSnapshot().update(new PersonsAliveMessage({ data: { person_ids: [] } }));
+      this.snapshots.next(this.getSnapshot().clone());
     }, 2000);
   }
 
