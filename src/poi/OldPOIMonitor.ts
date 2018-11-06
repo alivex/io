@@ -1,8 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { Observer } from 'rxjs';
 import { Subscription } from 'rxjs';
-import { interval } from 'rxjs';
-import { throttle } from 'rxjs/operators';
 import { Message } from '../messages/Message';
 import { PersonsAliveMessage } from '../messages/persons-alive/PersonsAliveMessage';
 import { IncomingStream } from '../incoming-stream/IncomingStream';
@@ -91,7 +89,7 @@ export class OldPOIMonitor {
    * so consumers can unsubscribe.
    */
   public subscribe(observer: Observer<POISnapshot>): Subscription {
-    return this.snapshots.pipe(throttle(() => interval(this.rate))).subscribe(observer);
+    return this.snapshots.subscribe(observer);
   }
 }
 
