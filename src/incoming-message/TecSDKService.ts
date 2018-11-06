@@ -1,7 +1,8 @@
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { IncomingMessageService } from './IncomingMessageService';
 import { WSConnection } from '../connection/WSConnection';
+import { BinaryType, BinaryMessageEvent } from '../types';
 
 /**
  * The TecSDK Service can be used to get the messages coming from the Tec SDK
@@ -30,10 +31,14 @@ export class TecSDKService implements IncomingMessageService {
   }
 
   /**
-   * Binary stream messages wrapped in an Observable
-   * @return {Observable<any>}
+   * Forwards the messages from the binary stream.
+   * If a type is provided, will filter the messages by type
+   * @param {BinaryType} type of the binary message
+   * @return {Observable<BinaryMessageEvent>}
    */
-  public binaryStreamMessages(): Observable<any> {
-    return this.connection.binaryStreamMessages;
+  public binaryStreamMessages(type?: BinaryType): Observable<BinaryMessageEvent> {
+    return this.connection.binaryStreamMessages.pipe(
+      filter((e: BinaryMessageEvent) => !type || type === e.type)
+    );
   }
 }

@@ -1,6 +1,7 @@
 import { Message } from '../messages/Message';
 import { PersonDetectionMessage } from '../messages/person-detection/PersonDetectionMessage';
 import { PersonsAliveMessage } from '../messages/persons-alive/PersonsAliveMessage'; // eslint-disable-line max-len
+import { SkeletonMessage } from '../messages/skeleton/SkeletonMessage';
 import { ContentMessage } from '../messages/content/ContentMessage';
 import { PersonDetection } from '../model/person-detection/PersonDetection';
 import { Content } from '../model/content/Content';
@@ -62,13 +63,12 @@ export class POISnapshot {
    * different types of Messages that can be received.
    */
   public update(message: Message) {
-    if (message instanceof PersonDetectionMessage) {
+    if (message instanceof SkeletonMessage) {
+    } else if (message instanceof PersonDetectionMessage) {
       this.updatePersons(message);
-    }
-    if (message instanceof PersonsAliveMessage) {
+    } else if (message instanceof PersonsAliveMessage) {
       this.updatePersonsAlive(message);
-    }
-    if (message instanceof ContentMessage) {
+    } else if (message instanceof ContentMessage) {
       this.updateContent(message);
     }
   }

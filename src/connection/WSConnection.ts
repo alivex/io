@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { BinaryMessageEvent } from '../types';
 
 export const WSConnectionType = Symbol.for('WSConnectionType');
 
@@ -17,5 +18,5 @@ export interface WSConnection {
   sendJsonStream(data: any): void;
   sendBinaryStream(data: any): void;
   readonly jsonStreamMessages: Observable<MessageEvent>;
-  readonly binaryStreamMessages: Observable<any>;
+  readonly binaryStreamMessages: Observable<BinaryMessageEvent>;
 }

@@ -3,29 +3,33 @@ import { PersonDetectionMessage } from './person-detection/PersonDetectionMessag
 import { PersonsAliveMessage } from './persons-alive/PersonsAliveMessage';
 import { ContentMessage } from './content/ContentMessage';
 import { UnknownMessage } from './unknown/UnknownMessage';
+import { SkeletonMessage } from './skeleton/SkeletonMessage';
 import { RPCResponseSubject } from '../constants/Constants';
+import { BinaryType, BinaryMessageEvent } from '../types';
 
 /**
  * Factory class for parsing incomming messages
  */
 export class MessageFactory {
   /**
-   * Parses a string into one of the valid Message types.
+   * Parses a message into one of the valid Message types.
    *
-   * @param {Object} json the message received, parsed.
+   * @param {Object|BinaryMessageEvent} obj the message received, parsed.
    * @return {Message} a subclass of Message. Check the Message class
    * and its subclasses for more information about the valid message types.
    */
-  public static parse(json: Object): Message {
+  public static parse(obj: Object | BinaryMessageEvent): Message {
     try {
-      let msg: Message = new UnknownMessage(json);
+      let msg: Message = new UnknownMessage(obj);
 
-      if (json['subject'] == RPCResponseSubject.PersonUpdate) {
-        msg = new PersonDetectionMessage(json);
-      } else if (json['subject'] == RPCResponseSubject.PersonsAlive) {
-        msg = new PersonsAliveMessage(json);
-      } else if (json['data'] && json['data']['record_type'] == 'content_event') {
-        msg = new ContentMessage(json);
+      if (obj.hasOwnProperty('type') && obj['type'] === BinaryType.SKELETON) {
+        msg = new SkeletonMessage(obj);
+      } else if (obj['subject'] == RPCResponseSubject.PersonUpdate) {
+        msg = new PersonDetectionMessage(obj);
+      } else if (obj['subject'] == RPCResponseSubject.PersonsAlive) {
+        msg = new PersonsAliveMessage(obj);
+      } else if (obj['data'] && obj['data']['record_type'] == 'content_event') {
+        msg = new ContentMessage(obj);
       }
       return msg;
     } catch (e) {
