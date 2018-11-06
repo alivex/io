@@ -1,8 +1,6 @@
 import { Observable } from 'rxjs';
 import { BinaryMessageEvent } from '../types';
 
-export const WSConnectionType = Symbol.for('WSConnectionType');
-
 export enum WSConnectionStatus {
   Open = 'open',
   Closed = 'closed',
