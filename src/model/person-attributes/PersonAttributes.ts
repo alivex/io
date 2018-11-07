@@ -1,8 +1,8 @@
 /**
  * Decodes the headpose angle
- * @param {Uint8Array} data   [description]
- * @param {number} offset [description]
- * @return {number}       [description]
+ * @param {Uint8Array} data
+ * @param {number} offset
+ * @return {number}
  */
 function decodeHeadposeAngle(data: Uint8Array, offset: number): number {
   return ((data[offset] * 256 + data[offset + 1]) / (256 * 256)) * 180 - 90;
@@ -68,7 +68,7 @@ export class PersonAttributes {
 
   /**
    * Parses the binary data and create the person attributes
-   * @param {Uint8Array} data [description]
+   * @param {Uint8Array} data
    */
   constructor(data: Uint8Array) {
     if (!data || !data.length || data.length < PersonAttributes.bytesLength()) {

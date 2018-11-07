@@ -1,22 +1,23 @@
 import test from 'ava';
 import { POISnapshot } from './POISnapshot';
 import {
-  generatePersonDetectionMessage,
-  generateSkeletonMessage,
-  generatePersonsAliveMessage,
-  generateContentMessage,
+  PersonDetectionMessageGenerator,
+  SkeletonMessageGenerator,
+  PersonsAliveMessageGenerator,
+  ContentMessageGenerator,
 } from './test-utils';
 
 test('should not add the person to the snapshot when the input only contains json data', t => {
   const snapshot = new POISnapshot();
-  const message = generatePersonDetectionMessage();
+  const message = PersonDetectionMessageGenerator.generate({ ttid: 1 });
   snapshot.update(message);
   t.is(snapshot.getPersons().size, 0);
 });
 
 test('should not add the person to the snapshot when the input only contains binary data', t => {
   const snapshot = new POISnapshot();
-  const message = generateSkeletonMessage([{}]); // will generate 1 person with default options
+  // will generate 1 person with default options
+  const message = SkeletonMessageGenerator.generate([{ ttid: 1 }]);
   snapshot.update(message);
   t.is(snapshot.getPersons().size, 0);
 });
@@ -24,7 +25,7 @@ test('should not add the person to the snapshot when the input only contains bin
 test('should throw an error when the ttid of the person is not a number', t => {
   const snapshot = new POISnapshot();
   const ttid = 'not a number' as any;
-  const json = generatePersonDetectionMessage({ ttid });
+  const json = PersonDetectionMessageGenerator.generate({ ttid });
   const error = t.throws(() => snapshot.update(json));
   t.is(error.message, 'TTID must be set');
 });
@@ -34,12 +35,12 @@ test('should add the person to the snapshot when both json and binary data are r
   const personId = '1234';
   const ttid = 23;
   const age = 51;
-  const json = generatePersonDetectionMessage({
+  const json = PersonDetectionMessageGenerator.generate({
     ttid,
     age,
     personId,
   });
-  const binary = generateSkeletonMessage([{ ttid, age }]);
+  const binary = SkeletonMessageGenerator.generate([{ ttid, age }]);
   snapshot.update(json);
   snapshot.update(binary);
   t.is(snapshot.getPersons().size, 1);
@@ -61,10 +62,16 @@ Expected: should have person 2 only in the snapshot
   const personId1 = '1';
   const ttid2 = 87;
   const personId2 = '2';
-  const json1 = generatePersonDetectionMessage({ ttid: ttid1, personId: personId1 });
-  const binary1 = generateSkeletonMessage([{ ttid: ttid1 }]);
-  const json2 = generatePersonDetectionMessage({ ttid: ttid2, personId: personId2 });
-  const binary2 = generateSkeletonMessage([{ ttid: ttid2 }]);
+  const json1 = PersonDetectionMessageGenerator.generate({
+    ttid: ttid1,
+    personId: personId1,
+  });
+  const binary1 = SkeletonMessageGenerator.generate([{ ttid: ttid1 }]);
+  const json2 = PersonDetectionMessageGenerator.generate({
+    ttid: ttid2,
+    personId: personId2,
+  });
+  const binary2 = SkeletonMessageGenerator.generate([{ ttid: ttid2 }]);
 
   // simulate multiple messages
   snapshot.update(json1);
@@ -80,15 +87,21 @@ Expected: should have person 2 only in the snapshot
   const timestamp = Date.now() + 20000;
 
   // person 2 gets an update
-  const json2Update = generatePersonDetectionMessage({ ttid: ttid2, personId: personId2 });
+  const json2Update = PersonDetectionMessageGenerator.generate({
+    ttid: ttid2,
+    personId: personId2,
+  });
   json2Update.localTimestamp = timestamp;
-  const binary2Update = generateSkeletonMessage([{ ttid: ttid2 }]);
+  const binary2Update = SkeletonMessageGenerator.generate([{ ttid: ttid2 }]);
   snapshot.update(json2Update);
   snapshot.update(binary2Update);
 
   // person 1 does not
 
-  const personsAlive = generatePersonsAliveMessage([personId2], timestamp);
+  const personsAlive = PersonsAliveMessageGenerator.generate(
+    [personId2],
+    timestamp
+  );
   snapshot.update(personsAlive);
 
   t.is(snapshot.getPersons().size, 1);
@@ -110,10 +123,16 @@ Expected: should still have person 1 and person 2 in the snapshot
   const personId1 = '1';
   const ttid2 = 87;
   const personId2 = '2';
-  const json1 = generatePersonDetectionMessage({ ttid: ttid1, personId: personId1 });
-  const binary1 = generateSkeletonMessage([{ ttid: ttid1 }]);
-  const json2 = generatePersonDetectionMessage({ ttid: ttid2, personId: personId2 });
-  const binary2 = generateSkeletonMessage([{ ttid: ttid2 }]);
+  const json1 = PersonDetectionMessageGenerator.generate({
+    ttid: ttid1,
+    personId: personId1,
+  });
+  const binary1 = SkeletonMessageGenerator.generate([{ ttid: ttid1 }]);
+  const json2 = PersonDetectionMessageGenerator.generate({
+    ttid: ttid2,
+    personId: personId2,
+  });
+  const binary2 = SkeletonMessageGenerator.generate([{ ttid: ttid2 }]);
 
   // simulate multiple messages
   snapshot.update(json1);
@@ -129,20 +148,29 @@ Expected: should still have person 1 and person 2 in the snapshot
   const timestamp = Date.now() + 20000;
 
   // person 2 gets an update
-  const json2Update = generatePersonDetectionMessage({ ttid: ttid2, personId: personId2 });
+  const json2Update = PersonDetectionMessageGenerator.generate({
+    ttid: ttid2,
+    personId: personId2,
+  });
   json2Update.localTimestamp = timestamp;
-  const binary2Update = generateSkeletonMessage([{ ttid: ttid2 }]);
+  const binary2Update = SkeletonMessageGenerator.generate([{ ttid: ttid2 }]);
   snapshot.update(json2Update);
   snapshot.update(binary2Update);
 
   // person 2 gets an update
-  const json1Update = generatePersonDetectionMessage({ ttid: ttid1, personId: personId1 });
+  const json1Update = PersonDetectionMessageGenerator.generate({
+    ttid: ttid1,
+    personId: personId1,
+  });
   json1Update.localTimestamp = timestamp;
-  const binary1Update = generateSkeletonMessage([{ ttid: ttid1 }]);
+  const binary1Update = SkeletonMessageGenerator.generate([{ ttid: ttid1 }]);
   snapshot.update(binary1Update);
   snapshot.update(json1Update);
 
-  const personsAlive = generatePersonsAliveMessage([personId2], timestamp);
+  const personsAlive = PersonsAliveMessageGenerator.generate(
+    [personId2],
+    timestamp
+  );
   snapshot.update(personsAlive);
 
   t.is(snapshot.getPersons().size, 2);
@@ -152,14 +180,14 @@ Expected: should still have person 1 and person 2 in the snapshot
 
 test('should have the content', t => {
   const snapshot = new POISnapshot();
-  snapshot.update(generateContentMessage('1234', 38));
+  snapshot.update(ContentMessageGenerator.generate('1234', 38));
   t.is(snapshot.getContent().contentId, '1234');
   t.is(snapshot.getContent().poi, 38);
 });
 
 test('should clone the snapshot', t => {
   const snapshot = new POISnapshot();
-  snapshot.update(generateContentMessage('1234', 38));
+  snapshot.update(ContentMessageGenerator.generate('1234', 38));
 
   const clone = snapshot.clone();
   t.is(clone.getContent().contentId, '1234');

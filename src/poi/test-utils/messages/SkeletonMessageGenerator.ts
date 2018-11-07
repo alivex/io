@@ -1,22 +1,38 @@
 import { SkeletonMessage } from '../../../messages/skeleton/SkeletonMessage';
 import { MessageFactory } from '../../../messages/MessageFactory';
-import { getRandomInt } from '../common';
+import { getRandomInt, PersonOptions } from '../common';
 import { Skeleton } from '../../../model/skeleton/Skeleton';
 import { indices } from '../../../model/person-attributes/PersonAttributes';
 import { BinaryType } from '../../../types';
 
-export interface BinaryOptions {
-  age?: number;
-  gender?: string;
-  ttid?: number;
+/**
+ * Utils to generate a SkeletonMessage model
+ */
+export class SkeletonMessageGenerator {
+  /**
+   * Generates a SkeletonMessage instance containing multiple persons
+   * @param {PersonOptions[]} options to create the persons
+   * @return {SkeletonMessage} message
+   */
+  static generate(options: PersonOptions[] = []): SkeletonMessage {
+    const data = options.reduce(
+      (acc: number[], curr: PersonOptions) => {
+        return acc.concat(generateSinglePersonBinaryData(curr));
+      },
+      [0, options.length]
+    );
+
+    const binaryMessageEvent = { type: BinaryType.SKELETON, data: new Uint8Array(data) };
+    return MessageFactory.parse(binaryMessageEvent) as SkeletonMessage;
+  }
 }
 
 /**
  * Generates the data set of one single person
- * @param {BinaryOptions} options
+ * @param {PersonOptions} options
  * @return {number[]}
  */
-function generateSinglePersonBinaryData(options: BinaryOptions = {}): number[] {
+function generateSinglePersonBinaryData(options: PersonOptions = { ttid: 1 }): number[] {
   const data = new Array(209);
   for (let i = 0; i < 211; i++) {
     if (i === Skeleton.bytesLength() && options.age) {
@@ -28,7 +44,7 @@ function generateSinglePersonBinaryData(options: BinaryOptions = {}): number[] {
       continue;
     }
     if (i === Skeleton.bytesLength() + indices.male && options.gender) {
-      data[i] = options.gender === 'male' ? 0.9 : 0.1;
+      data[i] = options.gender === 'male' ? 90 : 10;
       continue;
     }
     const indicesValues = Object.values(indices);
@@ -40,21 +56,4 @@ function generateSinglePersonBinaryData(options: BinaryOptions = {}): number[] {
     data[i] = getRandomInt(0, 256);
   }
   return data;
-}
-
-/**
- * Generates a SkeletonMessage instance containing multiple persons
- * @param {BinaryOptions[]} options to create the persons
- * @return {SkeletonMessage} message
- */
-export function generateSkeletonMessage(options: BinaryOptions[] = []): SkeletonMessage {
-  const data = options.reduce(
-    (acc: number[], curr: BinaryOptions) => {
-      return acc.concat(generateSinglePersonBinaryData(curr));
-    },
-    [0, options.length]
-  );
-
-  const binaryMessageEvent = { type: BinaryType.SKELETON, data: new Uint8Array(data) };
-  return MessageFactory.parse(binaryMessageEvent) as SkeletonMessage;
 }

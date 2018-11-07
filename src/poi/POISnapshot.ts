@@ -106,9 +106,9 @@ export class POISnapshot {
    * In order to create a person with valid state, we need both the json and
    * the binary data. Therefore the data has to be cached until both data
    * elements are available
-   * @param {number} ttid [description]
-   * @param {string} key  [description]
-   * @param {BinaryCachedData | PersonDetectionMessage} data [description]
+   * @param {number} ttid
+   * @param {string} key
+   * @param {BinaryCachedData | PersonDetectionMessage} data
    */
   private createOrCachePerson(
     ttid: number,
