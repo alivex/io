@@ -10,3 +10,14 @@ export function getRandomInt(min: number, max: number): number {
   // The maximum is exclusive and the minimum is inclusive
   return Math.floor(Math.random() * (max - min)) + min;
 }
+
+export interface PersonOptions {
+  ttid: number;
+  age?: number;
+  gender?: string;
+  name?: string;
+  z?: number;
+  u?: number;
+  v?: number;
+  personId?: string;
+}

@@ -18,7 +18,7 @@ export class PersonDetection {
 
   /**
    * Last timestamp of the person detection
-   * @return {number} [description]
+   * @return {number}
    */
   get localTimestamp(): number {
     if (this.json.localTimestamp) {
@@ -185,7 +185,7 @@ export class PersonDetection {
 
   /**
    * Ttid encapsulated in an object
-   * @return {{ttid: number}} [description]
+   * @return {{ttid: number}}
    */
   get onlyTtid(): { ttid: number } {
     return {

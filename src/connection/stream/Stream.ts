@@ -159,7 +159,7 @@ abstract class Stream {
   /**
    * Sends the message if the connetion is opened.
    * If not, buffers the message
-   * @param {string} msg [description]
+   * @param {string} msg message to send
    */
   private _sendBuffered(msg: string): void {
     if (this.ws.readyState !== wsState.OPEN) {

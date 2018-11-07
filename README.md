@@ -28,7 +28,7 @@ io.connect({
 });
 
 io.rpc('analytics', data);
-io.rpc('download', data).subbscribe(res => ...);
+io.rpc('download', data).subscribe(res => ...);
 
 io.jsonStreamMessages().subscribe(msg => ...);
 io.skeletonStreamMessages().subscribe(msg => ...);

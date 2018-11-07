@@ -27,7 +27,7 @@ export class IO {
 
   /**
    * Creates an instance of IO
-   * @param {any} Connection [description]
+   * @param {any} Connection
    */
   constructor(private connection: WSConnection = new TecWSConnection()) {
     this.incomingMessageService = new TecSDKService(this.connection);
@@ -37,7 +37,7 @@ export class IO {
 
   /**
    * Opens a connection and start monitoring the messages
-   * @param {IOOptions} options [description]
+   * @param {IOOptions} options
    */
   public connect(options: IOOptions): void {
     this.connection.open(options);
@@ -51,7 +51,7 @@ export class IO {
   }
 
   /**
-   * [disconnect description]
+   * Stops the POI Monitor and close the Tec connection
    */
   public disconnect(): void {
     this.poiMonitor.complete();
