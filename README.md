@@ -39,4 +39,6 @@ io.depthmapStreamMessages().subscribe(msg => ...);
 
 io.getSnapshots().subscribe(snapshot => ...);
 
+io.reportStartPlayout(33);
+io.reportEndPlayout(33);
 ```
