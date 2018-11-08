@@ -16,6 +16,11 @@ export interface IOOptions {
   binaryHost?: string; // host for the json stream connection
 }
 
+interface BinaryOptions {
+  width: number;
+  height: number;
+}
+
 /**
  * Exposes a method to send rpc messages
  * and POI Snapshot updates
@@ -24,6 +29,10 @@ export class IO {
   private incomingMessageService: IncomingMessageService;
   private rpcService: RPCService;
   private poiMonitor: POIMonitor;
+
+  private canvasOptions: BinaryOptions = { width: 1920, height: 1080 };
+  private imageOptions: BinaryOptions = { width: 100, height: 100 };
+  private thumbnailOptions: BinaryOptions = { width: 100, height: 100 };
 
   /**
    * Creates an instance of IO
@@ -41,12 +50,7 @@ export class IO {
    */
   public connect(options: IOOptions): void {
     this.connection.open(options);
-    this.connection.sendBinaryStream({
-      canvas: { width: 100, height: 100 },
-      image: { width: 0, height: 0 },
-      thumbnail: { width: 0, height: 0 },
-    });
-
+    this.updateBinaryOptions();
     this.poiMonitor.start();
   }
 
@@ -68,25 +72,38 @@ export class IO {
 
   /**
    * Image binary stream messages
+   * @param {number} width of the camera canvas
+   * @param {number} height of the camera canvas
    * @return {Observable<BinaryMessageEvent>}
    */
-  public imageStreamMessages(): Observable<BinaryMessageEvent> {
+  public imageStreamMessages(width: number, height: number): Observable<BinaryMessageEvent> {
+    this.imageOptions = isNaN(width) || isNaN(height) ? this.imageOptions : { width, height };
+    this.updateBinaryOptions();
     return this.incomingMessageService.binaryStreamMessages(BinaryType.IMAGE);
   }
 
   /**
    * Skeleton binary stream messages
+   * @param {number} width of the skeleton canvas
+   * @param {number} height of the skeleton canvas
    * @return {Observable<BinaryMessageEvent>}
    */
-  public skeletonStreamMessages(): Observable<BinaryMessageEvent> {
+  public skeletonStreamMessages(width: number, height: number): Observable<BinaryMessageEvent> {
+    this.canvasOptions = isNaN(width) || isNaN(height) ? this.canvasOptions : { width, height };
+    this.updateBinaryOptions();
     return this.incomingMessageService.binaryStreamMessages(BinaryType.SKELETON);
   }
 
   /**
    * Thumbnail binary stream messages
+   * @param {number} width of the thumbnail canvas
+   * @param {number} height of the thumbnail canvas
    * @return {Observable<BinaryMessageEvent>}
    */
-  public thumbnailStreamMessages(): Observable<BinaryMessageEvent> {
+  public thumbnailStreamMessages(width: number, height: number): Observable<BinaryMessageEvent> {
+    this.thumbnailOptions =
+      isNaN(width) || isNaN(height) ? this.thumbnailOptions : { width, height };
+    this.updateBinaryOptions();
     return this.incomingMessageService.binaryStreamMessages(BinaryType.THUMBNAIL);
   }
 
@@ -122,5 +139,17 @@ export class IO {
    */
   public getSnapshots(): Observable<POISnapshot> {
     return this.poiMonitor.getSnapshots();
+  }
+
+  /**
+   * Send the camera, skeleton and thumbnail options
+   * via RPC
+   */
+  private updateBinaryOptions(): void {
+    this.connection.sendBinaryStream({
+      canvas: this.canvasOptions,
+      image: this.imageOptions,
+      thumbnail: this.thumbnailOptions,
+    });
   }
 }
