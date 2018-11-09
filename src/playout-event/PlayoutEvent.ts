@@ -1,7 +1,7 @@
 /**
  * Represents a content event
  */
-export class ContentEvent {
+export class PlayoutEvent {
   /**
    * @param {string} name of the content event
    * @param {string} contentId if of the rule
@@ -18,7 +18,7 @@ export class ContentEvent {
 /**
  * Represents a start event
  */
-export class StartEvent extends ContentEvent {
+export class StartEvent extends PlayoutEvent {
   /**
    * @param {string} contentId
    */
@@ -30,7 +30,7 @@ export class StartEvent extends ContentEvent {
 /**
  * Represents an end event
  */
-export class EndEvent extends ContentEvent {
+export class EndEvent extends PlayoutEvent {
   /**
    * @param {string} contentId
    */

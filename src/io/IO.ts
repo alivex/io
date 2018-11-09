@@ -7,6 +7,8 @@ import { TecRPCService } from '../rpc/TecRPCService';
 import { RPCService } from '../rpc/RPCService';
 import { POIMonitor } from '../poi/POIMonitor';
 import { POISnapshot } from '../poi/POISnapshot';
+import { PlayoutEventService } from '../playout-event/PlayoutEventService';
+import { StartEvent, EndEvent } from '../playout-event/PlayoutEvent';
 import { BinaryMessageEvent, BinaryType } from '../types';
 
 export interface IOOptions {
@@ -29,6 +31,7 @@ export class IO {
   private incomingMessageService: IncomingMessageService;
   private rpcService: RPCService;
   private poiMonitor: POIMonitor;
+  private playoutEventService: PlayoutEventService;
 
   private canvasOptions: BinaryOptions = { width: 1920, height: 1080 };
   private imageOptions: BinaryOptions = { width: 100, height: 100 };
@@ -42,6 +45,33 @@ export class IO {
     this.incomingMessageService = new TecSDKService(this.connection);
     this.rpcService = new TecRPCService(this.connection, this.incomingMessageService);
     this.poiMonitor = new POIMonitor(this.incomingMessageService);
+    this.playoutEventService = new PlayoutEventService(this.poiMonitor);
+  }
+
+  /**
+   * Reports that a content started playing
+   * This will affect the POISnapshot
+   * @param {string} id of the content
+   */
+  public reportStartPlayout(id: string): void {
+    if (!id || typeof id !== 'string') {
+      return;
+    }
+    const startEvent = new StartEvent(id);
+    this.playoutEventService.forwardPlayoutEvent(startEvent);
+  }
+
+  /**
+   * Reports that a content started playing
+   * This will affect the POISnapshot
+   * @param {string} id of the content
+   */
+  public reportEndPlayout(id: string): void {
+    if (!id || typeof id !== 'string') {
+      return;
+    }
+    const endEvent = new EndEvent(id);
+    this.playoutEventService.forwardPlayoutEvent(endEvent);
   }
 
   /**

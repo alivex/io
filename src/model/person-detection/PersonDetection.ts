@@ -239,7 +239,7 @@ export class PersonDetection {
    * @param {PersonDetectionMessage} json data
    */
   public updateFromJson(json: PersonDetectionMessage): void {
-    if (this.personId !== undefined && this.personId != json.personId) {
+    if (this.personId && this.personId !== json.personId) {
       throw new Error('Precondition failed, changing person_id.');
     }
     this.json = json;

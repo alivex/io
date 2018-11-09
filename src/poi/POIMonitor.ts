@@ -58,7 +58,7 @@ export class POIMonitor {
    *
    * @param {Message} message the message sent by the POI.
    */
-  public emitSnapshot(message: Message): void {
+  public emitMessage(message: Message): void {
     this.getSnapshot().update(message);
     if (message instanceof PersonsAliveMessage) {
       if (this.isActive) {
@@ -123,7 +123,7 @@ class MessageObserver implements Observer<Message> {
    * @param {Message} m the received message.
    */
   public next(m: Message): void {
-    this.poiMonitor.emitSnapshot(m);
+    this.poiMonitor.emitMessage(m);
   }
 
   /**
