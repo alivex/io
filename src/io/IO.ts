@@ -16,6 +16,7 @@ export interface IOOptions {
   jsonHost?: string; // host for the json stream connection
   binaryPort?: number; // port for the binary stream connection
   binaryHost?: string; // host for the json stream connection
+  noSnapshot?: boolean; // set true if you don't want the POISnapshot to be built
 }
 
 interface BinaryOptions {
@@ -81,7 +82,9 @@ export class IO {
   public connect(options: IOOptions): void {
     this.connection.open(options);
     this.updateBinaryOptions();
-    this.poiMonitor.start();
+    if (!options.noSnapshot) {
+      this.poiMonitor.start();
+    }
   }
 
   /**
