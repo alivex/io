@@ -81,6 +81,8 @@ abstract class Stream {
    * Closes the websocket connection
    */
   public close(): void {
+    // onclose is the user callback. But we don't want to call _onclose
+    this.ws.onclose = this.onclose;
     this.ws.close();
     clearTimeout(this.retryId);
   }
