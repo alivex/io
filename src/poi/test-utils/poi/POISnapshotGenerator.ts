@@ -42,6 +42,7 @@ export class POISnapshotGenerator {
         subject: 'persons_alive',
         data: {
           person_ids: personMessages.map(msg => msg.personId),
+          local_timestamp: getMostRecentTimestamp(options),
         },
       })
     );
@@ -61,4 +62,19 @@ export class POISnapshotGenerator {
 
     return snapshot;
   }
+}
+
+/**
+ * Returns the highest timestamp from a list of events
+ * @param {PersonOptions|ContentOptions[]} options
+ * @return {number}
+ */
+function getMostRecentTimestamp(options: (PersonOptions | ContentOptions)[]): number {
+  let timestamp = null;
+  options.forEach(option => {
+    if (option.localTimestamp > timestamp) {
+      timestamp = option.localTimestamp;
+    }
+  });
+  return timestamp;
 }
