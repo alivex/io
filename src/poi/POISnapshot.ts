@@ -93,7 +93,10 @@ export class POISnapshot {
    */
   public clone(): POISnapshot {
     const snapshot = new POISnapshot();
-    snapshot.persons = new Map(this.persons);
+    snapshot.persons = new Map();
+    this.persons.forEach((person, personId) => {
+      snapshot.persons.set(personId, person.clone());
+    });
     snapshot.lastPersonUpdate = new Map(this.lastPersonUpdate);
     snapshot.personsByTtid = new Map(this.personsByTtid);
     snapshot.personsCache = new Map(this.personsCache);
@@ -208,7 +211,7 @@ export class POISnapshot {
 
     // Update the persons' last update time
     for (const p of this.persons.values()) {
-      if (alivePersonIds.indexOf(p.personId) != -1) {
+      if (alivePersonIds.includes(p.personId)) {
         this.lastPersonUpdate.set(p.personId, message.localTimestamp);
       }
     }

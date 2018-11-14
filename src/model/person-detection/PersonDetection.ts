@@ -271,6 +271,17 @@ export class PersonDetection {
   }
 
   /**
+   * Create a PersonDetection instance with the same properties
+   * @return {PersonDetection}
+   */
+  public clone(): PersonDetection {
+    return PersonDetection.fromMessage(this.json, {
+      skeleton: this.skeleton,
+      personAttributes: this.personAttributes,
+    });
+  }
+
+  /**
    * Creates a static object from the instance properties and dynamic getters
    * @return {Object} static object that has the same properties as the instance
    */
