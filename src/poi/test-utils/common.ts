@@ -16,8 +16,21 @@ export interface PersonOptions {
   age?: number;
   gender?: string;
   name?: string;
+  localTimestamp?: number;
+  personId?: string;
+  personPutId?: string;
+  cameraId?: string;
+  lookingAtScreen?: boolean;
   z?: number;
   u?: number;
   v?: number;
-  personId?: string;
+  poi?: number;
+}
+
+export interface ContentOptions {
+  contentId: string;
+  poi: number;
+  localTimestamp?: number;
+  name?: string;
+  personPutIds?: string[];
 }

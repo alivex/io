@@ -86,7 +86,7 @@ export class PersonDetection {
    * false otherwise.
    */
   get isLookingAtScreen(): boolean {
-    return this.json.lookingAtScreen == 0;
+    return this.json.lookingAtScreen === 0;
   }
 
   /**

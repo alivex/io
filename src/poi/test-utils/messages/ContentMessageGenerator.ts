@@ -1,6 +1,7 @@
 import { ContentMessage } from '../../../messages/content/ContentMessage';
 import { MessageFactory } from '../../../messages/MessageFactory';
 import { RPCRecordType } from '../../../constants/Constants';
+import { ContentOptions } from '../common';
 
 /**
  * Utils to generate a ContentMessage model
@@ -8,19 +9,18 @@ import { RPCRecordType } from '../../../constants/Constants';
 export class ContentMessageGenerator {
   /**
    * Generates a ContentMessage instance
-   * @param {string} contentId id of the content
-   * @param {number} poi id of the poi
+   * @param {ContentOptions} options
    * @return {ContentMessage} message
    */
-  static generate(contentId: string, poi: number): ContentMessage {
+  static generate(options: ContentOptions): ContentMessage {
     return MessageFactory.parse({
       data: {
-        poi,
+        poi: options.poi,
         record_type: RPCRecordType.ContentEvent,
-        local_timestamp: Date.now(),
-        name: '',
-        content_id: contentId,
-        person_put_ids: [],
+        local_timestamp: options.localTimestamp || Date.now(),
+        name: options.name || '',
+        content_id: options.contentId,
+        person_put_ids: options.personPutIds || [],
       },
     }) as ContentMessage;
   }

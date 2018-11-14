@@ -14,7 +14,7 @@ export class PersonsAliveMessage extends Message {
    */
   protected fromObject(json: any): void {
     this.personIds = json['data']['person_ids'];
-    this.localTimestamp = json['data']['local_timestamp'] || new Date().getTime();
+    this.localTimestamp = json['data']['local_timestamp'] || Date.now();
   }
 
   /**

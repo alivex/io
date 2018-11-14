@@ -18,9 +18,11 @@ export class PersonDetectionMessageGenerator {
         `_${Math.random()
           .toString(36)
           .substr(2, 9)}`,
-      person_put_id: `_${Math.random()
-        .toString(36)
-        .substr(2, 9)}`,
+      person_put_id:
+        options.personPutId ||
+        `_${Math.random()
+          .toString(36)
+          .substr(2, 9)}`,
       behavior: {
         body: {
           left_arm: 0,
@@ -29,9 +31,10 @@ export class PersonDetectionMessageGenerator {
           raising_right_hand: 0,
         },
         head: {
-          looking_at_screen: 5,
+          looking_at_screen: options.lookingAtScreen === true ? 0 : 0.1,
         },
       },
+      camera_id: options.cameraId,
       coordinates: {
         x: options.u || 0,
         y: options.v || 0,
@@ -153,12 +156,12 @@ export class PersonDetectionMessageGenerator {
         age: options.age,
         gender: options.gender,
       },
-      local_timestamp: Date.now(),
-      poi: 2,
+      local_timestamp: options.localTimestamp || Date.now(),
+      poi: options.poi,
       record_type: 'person',
       rolling_expected_values: {
-        age: options.age,
-        gender: options.gender,
+        age: options.age || 0,
+        gender: options.gender || 'male',
       },
       recognition: options.name ? { name: options.name } : undefined,
     };

@@ -1,8 +1,9 @@
 import { POISnapshot } from '../../../poi/POISnapshot';
 import { MessageFactory } from '../../../messages/MessageFactory';
 import { PersonDetectionMessageGenerator } from '../messages/PersonDetectionMessageGenerator';
+import { ContentMessageGenerator } from '../messages/ContentMessageGenerator';
 import { SkeletonMessageGenerator } from '../messages/SkeletonMessageGenerator';
-import { PersonOptions } from '../common';
+import { PersonOptions, ContentOptions } from '../common';
 
 /**
  * Utils to generate a POISnapshot model
@@ -11,13 +12,25 @@ export class POISnapshotGenerator {
   /**
    * Creates a POISnapshot
    * @param {PersonOptions[]} options list of detected persons
+   * @param {POISnapshot} from
    * @return {POISnapshot}
    */
-  static generate(options: PersonOptions[] = []): POISnapshot {
-    const snapshot = new POISnapshot();
-    const personMessages = options.map(option => PersonDetectionMessageGenerator.generate(option));
+  static generate(options: any[] = [], from: POISnapshot = new POISnapshot()): POISnapshot {
+    const snapshot = from;
 
-    const skeleton = SkeletonMessageGenerator.generate(options);
+    const personOptions: PersonOptions[] = options.filter(option => option.hasOwnProperty('ttid'));
+
+    const contentOptions: ContentOptions[] = options.filter(option =>
+      option.hasOwnProperty('contentId')
+    );
+
+    const personMessages = personOptions.map(option =>
+      PersonDetectionMessageGenerator.generate(option)
+    );
+
+    contentOptions.forEach(option => snapshot.update(ContentMessageGenerator.generate(option)));
+
+    const skeleton = SkeletonMessageGenerator.generate(personOptions);
     snapshot.update(skeleton);
 
     personMessages.forEach(personMessage => {
