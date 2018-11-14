@@ -75,7 +75,9 @@ export class POIMonitor {
    * Marks the stream as completed.
    */
   public complete(): void {
-    this.streamSubscription.unsubscribe();
+    if (this.streamSubscription) {
+      this.streamSubscription.unsubscribe();
+    }
     this.snapshots.complete();
   }
 
