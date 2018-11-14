@@ -30,9 +30,15 @@ io.connect({
 io.rpc('analytics', data);
 io.rpc('download', data).subscribe(res => ...);
 
+io.updateResolutions({
+  canvas: {width: 320, width: 480},
+  image: {width: 100, width: 100},
+  thumbnail: {width: 1920, width: 1080},
+})
+
 io.jsonStreamMessages().subscribe(msg => ...);
 io.skeletonStreamMessages(1920, 1080).subscribe(msg => ...);
-io.imageStreamMessages(320, 480).subscribe(msg => ...);
+io.imageStreamMessages().subscribe(msg => ...);
 io.thumbnailStreamMessages(100, 100).subscribe(msg => ...);
 io.heatmapStreamMessages().subscribe(msg => ...);
 io.depthmapStreamMessages().subscribe(msg => ...);

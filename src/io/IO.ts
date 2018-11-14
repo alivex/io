@@ -81,7 +81,7 @@ export class IO {
    */
   public connect(options: IOOptions): void {
     this.connection.open(options);
-    this.updateBinaryOptions();
+    this.updateResolutions();
     if (!options.noSnapshot) {
       this.poiMonitor.start();
     }
@@ -109,9 +109,9 @@ export class IO {
    * @param {number} height of the camera canvas
    * @return {Observable<BinaryMessageEvent>}
    */
-  public imageStreamMessages(width: number, height: number): Observable<BinaryMessageEvent> {
+  public imageStreamMessages(width?: number, height?: number): Observable<BinaryMessageEvent> {
     this.imageOptions = isNaN(width) || isNaN(height) ? this.imageOptions : { width, height };
-    this.updateBinaryOptions();
+    this.updateResolutions();
     return this.incomingMessageService.binaryStreamMessages(BinaryType.IMAGE);
   }
 
@@ -121,9 +121,9 @@ export class IO {
    * @param {number} height of the skeleton canvas
    * @return {Observable<BinaryMessageEvent>}
    */
-  public skeletonStreamMessages(width: number, height: number): Observable<BinaryMessageEvent> {
+  public skeletonStreamMessages(width?: number, height?: number): Observable<BinaryMessageEvent> {
     this.canvasOptions = isNaN(width) || isNaN(height) ? this.canvasOptions : { width, height };
-    this.updateBinaryOptions();
+    this.updateResolutions();
     return this.incomingMessageService.binaryStreamMessages(BinaryType.SKELETON);
   }
 
@@ -133,10 +133,10 @@ export class IO {
    * @param {number} height of the thumbnail canvas
    * @return {Observable<BinaryMessageEvent>}
    */
-  public thumbnailStreamMessages(width: number, height: number): Observable<BinaryMessageEvent> {
+  public thumbnailStreamMessages(width?: number, height?: number): Observable<BinaryMessageEvent> {
     this.thumbnailOptions =
       isNaN(width) || isNaN(height) ? this.thumbnailOptions : { width, height };
-    this.updateBinaryOptions();
+    this.updateResolutions();
     return this.incomingMessageService.binaryStreamMessages(BinaryType.THUMBNAIL);
   }
 
@@ -177,12 +177,15 @@ export class IO {
   /**
    * Send the camera, skeleton and thumbnail options
    * via RPC
+   * @param {Object} options width and height of the camera, image and thumbnail canvas
    */
-  private updateBinaryOptions(): void {
+  public updateResolutions(
+    options: { canvas?: BinaryOptions; image?: BinaryOptions; thumbnail?: BinaryOptions } = {}
+  ): void {
     this.connection.sendBinaryStream({
-      canvas: this.canvasOptions,
-      image: this.imageOptions,
-      thumbnail: this.thumbnailOptions,
+      canvas: options.canvas || this.canvasOptions,
+      image: options.image || this.imageOptions,
+      thumbnail: options.thumbnail || this.thumbnailOptions,
     });
   }
 }

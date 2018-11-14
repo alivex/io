@@ -269,4 +269,35 @@ export class PersonDetection {
 
     return person;
   }
+
+  /**
+   * Creates a static object from the instance properties and dynamic getters
+   * @return {Object} static object that has the same properties as the instance
+   */
+  public toJSON(): Object {
+    return {
+      localTimestamp: this.localTimestamp,
+      poi: this.poi,
+      name: this.name,
+      gender: this.gender,
+      personId: this.personId,
+      personPutId: this.personPutId,
+      recognition: this.recognition,
+      isLookingAtScreen: this.isLookingAtScreen,
+      cameraId: this.cameraId,
+      u: this.u,
+      v: this.v,
+      z: this.z,
+      isMale: this.isMale,
+      isFemale: this.isFemale,
+      age: this.age,
+      likelihoodMale: this.likelihoodMale,
+      isRecognized: this.isRecognized,
+      ttid: this.ttid,
+      headpose: this.headpose,
+      onlyTtid: this.onlyTtid,
+      robustFaceAttributes: this.robustFaceAttributes,
+      allFaceAttributes: this.allFaceAttributes,
+    };
+  }
 }

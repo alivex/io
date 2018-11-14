@@ -1,4 +1,5 @@
 import { Utils } from '../../utils/Utils';
+import { BinaryDataType } from '../../constants/Constants';
 import { decode } from 'msgpack-lite';
 import './Socket';
 
@@ -175,14 +176,6 @@ abstract class Stream {
       this.ws.send(msg);
     }
   }
-}
-
-export enum BinaryDataType {
-  TYPE_IMAGE = 1,
-  TYPE_SKELETON = 2,
-  TYPE_THUMBNAIL = 3,
-  TYPE_HEATMAP = 4,
-  TYPE_DEPTHMAP = 5,
 }
 
 /**

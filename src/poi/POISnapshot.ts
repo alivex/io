@@ -103,6 +103,22 @@ export class POISnapshot {
   }
 
   /**
+   * Creates an object from the properties
+   * of the POISnapshot instance
+   * @return {Object}
+   */
+  public toJSON(): Object {
+    const persons = {};
+    this.persons.forEach((person, id) => (persons[id] = person.toJSON()));
+    const result = {
+      content: this.content,
+      lastUpdateTimestamp: this.lastUpdateTimestamp,
+      persons,
+    };
+    return result;
+  }
+
+  /**
    * In order to create a person with valid state, we need both the json and
    * the binary data. Therefore the data has to be cached until both data
    * elements are available
