@@ -12,7 +12,7 @@ export class PersonsAliveMessageGenerator {
    * @param {number} timestamp optional timestamp
    * @return {PersonsAliveMessage} message
    */
-  static generate(ids: string[] = [], timestamp: number = Date.now()): PersonsAliveMessage {
+  static generate(ids: string[] = [], timestamp: number): PersonsAliveMessage {
     return MessageFactory.parse({
       subject: RPCResponseSubject.PersonsAlive,
       data: {

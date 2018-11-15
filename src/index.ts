@@ -17,4 +17,9 @@ export * from './event/EventMonitor';
 export * from './constants/Constants';
 export * from './io/IO';
 export * from './types';
-export { PersonOptions, PersonDetectionGenerator, POISnapshotGenerator } from './poi/test-utils';
+export {
+  PersonOptions,
+  PersonDetectionGenerator,
+  POISnapshotGenerator,
+  ContentOptions,
+} from './poi/test-utils';

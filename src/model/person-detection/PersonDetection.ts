@@ -86,7 +86,7 @@ export class PersonDetection {
    * false otherwise.
    */
   get isLookingAtScreen(): boolean {
-    return this.json.lookingAtScreen == 0;
+    return this.json.lookingAtScreen === 0;
   }
 
   /**
@@ -268,6 +268,17 @@ export class PersonDetection {
     person.personAttributes = cache.personAttributes;
 
     return person;
+  }
+
+  /**
+   * Create a PersonDetection instance with the same properties
+   * @return {PersonDetection}
+   */
+  public clone(): PersonDetection {
+    return PersonDetection.fromMessage(this.json, {
+      skeleton: this.skeleton,
+      personAttributes: this.personAttributes,
+    });
   }
 
   /**
