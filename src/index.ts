@@ -22,4 +22,5 @@ export {
   PersonDetectionGenerator,
   POISnapshotGenerator,
   ContentOptions,
+  ContentMessageGenerator,
 } from './poi/test-utils';

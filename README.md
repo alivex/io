@@ -48,3 +48,20 @@ io.getSnapshots().subscribe(snapshot => ...);
 io.reportStartPlayout(33);
 io.reportEndPlayout(33);
 ```
+
+## Test Utils
+
+We provide you an easy way to create a POISnapshot instance of a PersonDetection instance for your tests.
+
+```js
+import {PersonDetectionGenerator, POISnapshotGenerator, ContentMessageGenerator} from '@advertima/io';
+
+const person = PersonDetectionGenerator.generate({ ttid: 1, age: 27, gender: 'male', z: 1.4 });
+
+const params1 = { ttid: 1, age: 27, gender: 'female', name: 'toto' };
+const params2 = { ttid: 2, age: 28, gender: 'male', name: 'titi' };
+const snapshot = POISnapshotGenerator.generate([params1, params2]);
+
+const contentMessage = ContentMessageGenerator.generate({ localTimestamp: 1537362300000, contentId: '1', name: 'start', personPutIds: [], poi: 1 });
+
+```
