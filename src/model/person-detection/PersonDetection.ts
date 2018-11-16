@@ -194,6 +194,16 @@ export class PersonDetection {
   }
 
   /**
+   * eyeglasses encapsulated in an object
+   * @return {Object}
+   */
+  get onlyEyeglasses(): Object {
+    return {
+      eyeglasses: this.personAttributes.eyeglasses,
+    };
+  }
+
+  /**
    * Robust face attributes merged with ttid
    * @return {Object}
    */
@@ -307,6 +317,7 @@ export class PersonDetection {
       ttid: this.ttid,
       headpose: this.headpose,
       onlyTtid: this.onlyTtid,
+      onlyEyeglasses: this.onlyEyeglasses,
       robustFaceAttributes: this.robustFaceAttributes,
       allFaceAttributes: this.allFaceAttributes,
     };
