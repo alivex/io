@@ -3,7 +3,7 @@ import { stub } from 'sinon';
 import * as browserEnv from 'browser-env';
 import { Utils } from './Utils';
 
-browserEnv(['window']);
+browserEnv(['window', 'URLSearchParams']);
 
 test('should return the value of the search param "test"', t => {
   stub(window, 'location').value({ search: '?test=foo' });
