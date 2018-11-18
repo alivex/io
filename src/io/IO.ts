@@ -7,9 +7,10 @@ import { TecRPCService } from '../rpc/TecRPCService';
 import { RPCService } from '../rpc/RPCService';
 import { POIMonitor } from '../poi/POIMonitor';
 import { POISnapshot } from '../poi/POISnapshot';
-import { PlayoutEventService } from '../playout-event/PlayoutEventService';
-import { StartEvent, EndEvent } from '../playout-event/PlayoutEvent';
+import { PlayoutEvent } from '../model/playout-event/PlayoutEvent';
 import { BinaryMessageEvent, BinaryType } from '../types';
+import { RPCRecordType } from '../constants/Constants';
+import { MessageFactory } from '../messages/MessageFactory';
 
 export interface IOOptions {
   jsonPort?: number; // port for the json stream connection
@@ -32,7 +33,6 @@ export class IO {
   private incomingMessageService: IncomingMessageService;
   private rpcService: RPCService;
   private poiMonitor: POIMonitor;
-  private playoutEventService: PlayoutEventService;
 
   private canvasOptions: BinaryOptions = { width: 1920, height: 1080 };
   private imageOptions: BinaryOptions = { width: 100, height: 100 };
@@ -46,33 +46,35 @@ export class IO {
     this.incomingMessageService = new TecSDKService(this.connection);
     this.rpcService = new TecRPCService(this.connection, this.incomingMessageService);
     this.poiMonitor = new POIMonitor(this.incomingMessageService);
-    this.playoutEventService = new PlayoutEventService(this.poiMonitor);
   }
 
   /**
-   * Reports that a content started playing
+   * Reports a content playout event
    * This will affect the POISnapshot
-   * @param {string} id of the content
+   * @param {PlayoutEvent} event
    */
-  public reportStartPlayout(id: string): void {
-    if (!id || typeof id !== 'string') {
-      return;
-    }
-    const startEvent = new StartEvent(id);
-    this.playoutEventService.forwardPlayoutEvent(startEvent);
-  }
+  public reportPlayoutEvent(event: PlayoutEvent): void {
+    const personList = Array.from(
+      this.poiMonitor
+        .getSnapshot()
+        .getPersons()
+        .values()
+    );
+    event.persons = personList.map(p => p.personPutId);
 
-  /**
-   * Reports that a content started playing
-   * This will affect the POISnapshot
-   * @param {string} id of the content
-   */
-  public reportEndPlayout(id: string): void {
-    if (!id || typeof id !== 'string') {
-      return;
-    }
-    const endEvent = new EndEvent(id);
-    this.playoutEventService.forwardPlayoutEvent(endEvent);
+    this.poiMonitor.emitMessage(
+      MessageFactory.parse({
+        data: {
+          name: event.name,
+          record_type: RPCRecordType.ContentEvent,
+          content_id: String(event.contentId),
+          poi: event.poi,
+          local_timestamp: event.localTimestamp,
+          content_play_id: event.contentPlayId,
+          person_put_ids: event.persons,
+        },
+      })
+    );
   }
 
   /**

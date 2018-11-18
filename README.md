@@ -16,7 +16,7 @@ The @advertima/io type definitions are included in the npm package.
 ## Basics
 
 ```js
-import {IO} from '@advertima/io';
+import {IO, StartEvent, EndEvent} from '@advertima/io';
 
 const io = new IO(); // optionally you can pass a WSConnection instance. By default it will use an instance of TecWSConnection
 
@@ -45,8 +45,8 @@ io.depthmapStreamMessages().subscribe(msg => ...);
 
 io.getSnapshots().subscribe(snapshot => ...);
 
-io.reportStartPlayout(33);
-io.reportEndPlayout(33);
+io.reportPlayoutEvent(new StartEvent(33, 8, '33e17c5c-214f', 1542360299788));
+io.reportPlayoutEvent(new EndEvent(33, 8, '33e17c5c-214f', 1542360500504));
 ```
 
 ## Test Utils

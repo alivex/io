@@ -52,7 +52,7 @@ export class PersonDetectionMessage extends Message {
     const valid = Validator.validate(PersonDetectionSchema, json['data']);
 
     if (!valid) {
-      throw new Error('Invalid PersonDetectionMessage');
+      throw new Error(`Invalid PersonDetectionMessage: ${Validator.errorsText(Validator.errors)}`);
     }
   }
 }

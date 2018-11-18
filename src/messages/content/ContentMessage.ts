@@ -13,6 +13,7 @@ export class ContentMessage extends Message {
   public localTimestamp: number;
   public name: string;
   public contentId: string;
+  public contentPlayId: string;
   public personPutIds: Array<string>;
 
   /**
@@ -26,6 +27,7 @@ export class ContentMessage extends Message {
     this.localTimestamp = json['data']['local_timestamp'];
     this.name = json['data']['name'];
     this.contentId = json['data']['content_id'];
+    this.contentPlayId = json['data']['content_play_id'];
     this.personPutIds = json['data']['person_put_ids'];
   }
 
@@ -38,7 +40,7 @@ export class ContentMessage extends Message {
     const valid = Validator.validate(ContentSchema, json['data']);
 
     if (!valid) {
-      throw new Error('Invalid ContentMessage');
+      throw new Error(`Invalid ContentMessage: ${Validator.errorsText(Validator.errors)}`);
     }
   }
 }

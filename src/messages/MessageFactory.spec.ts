@@ -170,6 +170,7 @@ const personsAliveMessage = {
 const contentMessage = {
   data: {
     content_id: '3351',
+    content_play_id: '5775dcaa-986e-4951-bb41-7259f9d2178a',
     local_timestamp: 1535483341071,
     name: 'start',
     person_put_ids: ['None'],

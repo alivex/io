@@ -29,6 +29,7 @@ export interface PersonOptions {
 
 export interface ContentOptions {
   contentId: string;
+  contentPlayId: string;
   poi: number;
   localTimestamp?: number;
   name?: string;

@@ -174,14 +174,18 @@ Expected: should still have person 1 and person 2 in the snapshot
 
 test('should have the content', t => {
   const snapshot = new POISnapshot();
-  snapshot.update(ContentMessageGenerator.generate({ contentId: '1234', poi: 38 }));
+  snapshot.update(
+    ContentMessageGenerator.generate({ contentId: '1234', contentPlayId: '33e17c5c-214f', poi: 38 })
+  );
   t.is(snapshot.getContent().contentId, '1234');
   t.is(snapshot.getContent().poi, 38);
 });
 
 test('should clone the snapshot', t => {
   const snapshot = new POISnapshot();
-  snapshot.update(ContentMessageGenerator.generate({ contentId: '1234', poi: 38 }));
+  snapshot.update(
+    ContentMessageGenerator.generate({ contentId: '1234', contentPlayId: '33e17c5c-214f', poi: 38 })
+  );
 
   const clone = snapshot.clone();
   t.is(clone.getContent().contentId, '1234');
