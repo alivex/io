@@ -184,11 +184,13 @@ test('should have the content', t => {
 test('should have the content event', t => {
   const snapshot = new POISnapshot();
   snapshot.update(
-    ContentMessageGenerator.generate({ contentId: '1234', poi: 38, name: 'my_custom_event' })
+    ContentMessageGenerator.generate(
+      { contentId: '1234', poi: 38, name: 'my_custom_event', contentPlayId: 'x' })
   );
 
   snapshot.update(
-    ContentMessageGenerator.generate({ contentId: '1234', poi: 38, name: 'another_custom_event' })
+    ContentMessageGenerator.generate(
+      { contentId: '1234', poi: 38, name: 'another_custom_event', contentPlayId: 'x' })
   );
 
   t.is(snapshot.getContent().contentId, '1234');
@@ -199,7 +201,8 @@ test('should have the content event', t => {
 test('content event should be cleared', t => {
   const snapshot = new POISnapshot();
   snapshot.update(
-    ContentMessageGenerator.generate({ contentId: '1234', poi: 38, name: 'my_custom_event' })
+    ContentMessageGenerator.generate(
+      { contentId: '1234', poi: 38, name: 'my_custom_event', contentPlayId: 'x' })
   );
 
   snapshot.update(PersonDetectionMessageGenerator.generate({ ttid: 1 }));
@@ -213,7 +216,8 @@ test.only('cloned snapshot should have the content event', t => {
   const snapshot = new POISnapshot();
 
   snapshot.update(
-    ContentMessageGenerator.generate({ contentId: '1234', poi: 38, name: 'my_custom_event' })
+    ContentMessageGenerator.generate(
+      { contentId: '1234', poi: 38, name: 'my_custom_event', contentPlayId: 'x' })
   );
 
   const clonedSnapshot = snapshot.clone();
