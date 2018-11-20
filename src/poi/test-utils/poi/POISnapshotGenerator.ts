@@ -28,8 +28,6 @@ export class POISnapshotGenerator {
       PersonDetectionMessageGenerator.generate(option)
     );
 
-    contentOptions.forEach(option => snapshot.update(ContentMessageGenerator.generate(option)));
-
     const skeleton = SkeletonMessageGenerator.generate(personOptions);
     snapshot.update(skeleton);
 
@@ -46,6 +44,8 @@ export class POISnapshotGenerator {
         },
       })
     );
+
+    contentOptions.forEach(option => snapshot.update(ContentMessageGenerator.generate(option)));
 
     personMessages.forEach((personMessage, index) => {
       const p = snapshot.getPersons().get(personMessage.personId);

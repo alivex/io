@@ -83,15 +83,8 @@ export class POISnapshot {
    * different types of Messages that can be received.
    */
   public update(message: Message) {
-    //
-    // --------------------------------------------
-    // TODO: Clarify with micaël why this is needed
-    // --------------------------------------------
-    //
-    if (!(message instanceof PersonsAliveMessage) && !(message instanceof SkeletonMessage)) {
-      // Handle non-message specific updates
-      this.contentEvent = undefined;
-    }
+    // Handle non-message specific updates
+    this.contentEvent = undefined;
 
     if (message instanceof SkeletonMessage) {
       let start = 2;
