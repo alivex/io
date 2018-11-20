@@ -20,6 +20,7 @@ export class POISnapshot {
   private persons: Map<string, PersonDetection> = new Map();
   private personsByTtid: Map<number, PersonDetection> = new Map();
   private content: Content;
+  private contentEvent: string;
   private lastUpdateTimestamp: number;
 
   private personsCache: Map<
@@ -43,6 +44,17 @@ export class POISnapshot {
    */
   public getContent(): Content {
     return this.content;
+  }
+
+  /**
+   * Retrieves the name of the latest content event triggered, if any.
+   *
+   * @return {string} the name of the latest content event that has
+   * been triggered, or `undefined` if no event was triggered with the
+   * most recent update.
+   */
+  public getContentEvent(): string {
+    return this.contentEvent;
   }
 
   /**
@@ -71,6 +83,9 @@ export class POISnapshot {
    * different types of Messages that can be received.
    */
   public update(message: Message) {
+    // Handle non-message specific updates
+    this.contentEvent = undefined;
+
     if (message instanceof SkeletonMessage) {
       let start = 2;
       for (let i = 0; i < message.personsCount; ++i) {
@@ -101,6 +116,7 @@ export class POISnapshot {
     snapshot.personsByTtid = new Map(this.personsByTtid);
     snapshot.personsCache = new Map(this.personsCache);
     snapshot.content = this.content ? this.content.clone() : undefined;
+    snapshot.contentEvent = this.contentEvent;
     snapshot.lastUpdateTimestamp = this.lastUpdateTimestamp;
     return snapshot;
   }
@@ -117,6 +133,7 @@ export class POISnapshot {
       content: this.content,
       lastUpdateTimestamp: this.lastUpdateTimestamp,
       persons,
+      contentEvent: this.contentEvent,
     };
     return result;
   }
@@ -248,7 +265,7 @@ export class POISnapshot {
    */
   private updateContent(message: ContentMessage): void {
     this.content = Content.fromMessage(message);
-
+    this.contentEvent = this.content.event;
     this.lastUpdateTimestamp = this.content.localTimestamp;
   }
 }

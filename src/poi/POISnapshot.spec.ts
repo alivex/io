@@ -181,6 +181,53 @@ test('should have the content', t => {
   t.is(snapshot.getContent().poi, 38);
 });
 
+test('should have the content event', t => {
+  const snapshot = new POISnapshot();
+  snapshot.update(
+    ContentMessageGenerator.generate(
+      { contentId: '1234', poi: 38, name: 'my_custom_event', contentPlayId: 'x' })
+  );
+
+  snapshot.update(
+    ContentMessageGenerator.generate(
+      { contentId: '1234', poi: 38, name: 'another_custom_event', contentPlayId: 'x' })
+  );
+
+  t.is(snapshot.getContent().contentId, '1234');
+  t.is(snapshot.getContent().poi, 38);
+  t.is(snapshot.getContentEvent(), 'another_custom_event');
+});
+
+test('content event should be cleared', t => {
+  const snapshot = new POISnapshot();
+  snapshot.update(
+    ContentMessageGenerator.generate(
+      { contentId: '1234', poi: 38, name: 'my_custom_event', contentPlayId: 'x' })
+  );
+
+  snapshot.update(PersonDetectionMessageGenerator.generate({ ttid: 1 }));
+
+  t.is(snapshot.getContent().contentId, '1234');
+  t.is(snapshot.getContent().poi, 38);
+  t.is(snapshot.getContentEvent(), undefined);
+});
+
+test.only('cloned snapshot should have the content event', t => {
+  const snapshot = new POISnapshot();
+
+  snapshot.update(
+    ContentMessageGenerator.generate(
+      { contentId: '1234', poi: 38, name: 'my_custom_event', contentPlayId: 'x' })
+  );
+
+  const clonedSnapshot = snapshot.clone();
+
+  t.is(clonedSnapshot.getContent().contentId, '1234');
+  t.is(clonedSnapshot.getContent().poi, 38);
+  t.is(clonedSnapshot.getContentEvent(), 'my_custom_event');
+});
+
+
 test('should clone the snapshot', t => {
   const snapshot = new POISnapshot();
   snapshot.update(
