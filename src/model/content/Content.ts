@@ -8,6 +8,7 @@ export class Content {
   public localTimestamp: number;
   public event: string;
   public contentId: string;
+  public contentPlayId: string;
   public personPutIds: Array<string>;
 
   /**
@@ -22,6 +23,7 @@ export class Content {
     content.localTimestamp = message.localTimestamp;
     content.event = message.name;
     content.contentId = message.contentId;
+    content.contentPlayId = message.contentPlayId;
     content.personPutIds = message.personPutIds;
 
     return content;
@@ -38,6 +40,7 @@ export class Content {
     content.localTimestamp = this.localTimestamp;
     content.event = this.event;
     content.contentId = this.contentId;
+    content.contentPlayId = this.contentPlayId;
     content.personPutIds = this.personPutIds;
     return content;
   }

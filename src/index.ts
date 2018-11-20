@@ -12,7 +12,7 @@ export * from './incoming-stream/IncomingStream';
 export * from './model/person-detection/PersonDetection';
 export * from './model/content/Content';
 export * from './io-service/IOService';
-export * from './event/ContentEvent';
+export * from './model/playout-event/PlayoutEvent';
 export * from './event/EventMonitor';
 export * from './constants/Constants';
 export * from './io/IO';
