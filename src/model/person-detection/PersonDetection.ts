@@ -36,6 +36,17 @@ export class PersonDetection {
   }
 
   /**
+   * Distance between the person and the camera
+   * @return {number}
+   */
+  get distance(): number {
+    const u = this.u;
+    const v = this.v;
+    const z = this.z;
+    return Math.sqrt(u * u + v * v + z * z);
+  }
+
+  /**
    * Returns the name of the recognised person
    * or null if the person is not recognised
    * @return {string} the name of the recognised person
