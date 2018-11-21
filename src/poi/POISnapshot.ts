@@ -1,3 +1,4 @@
+import { decode } from 'msgpack-lite';
 import { Message } from '../messages/Message';
 import { PersonDetectionMessage } from '../messages/person-detection/PersonDetectionMessage';
 import { PersonsAliveMessage } from '../messages/persons-alive/PersonsAliveMessage'; // eslint-disable-line max-len
@@ -44,6 +45,49 @@ export class POISnapshot {
    */
   public getContent(): Content {
     return this.content;
+  }
+
+  /**
+   * Creates a POISnapshot from encoded data
+   * @param {Uint8Array} data encoded binary data
+   * @return {POISnapshot} decoded POI snapshot
+   */
+  static decode(data: Uint8Array): POISnapshot {
+    const snapshot = new POISnapshot();
+    try {
+      const jsonSnapshot = decode(data);
+      snapshot.lastUpdateTimestamp = jsonSnapshot.lastUpdateTimestamp;
+      snapshot.contentEvent = jsonSnapshot.contentEvent;
+
+      // Re create the Content
+      if (jsonSnapshot.content) {
+        const content = new Content();
+        for (const key in jsonSnapshot.content) {
+          if (jsonSnapshot.content.hasOwnProperty(key)) {
+            content[key] = jsonSnapshot.content[key];
+          }
+        }
+        snapshot.content = content;
+      }
+
+      // Recreate the PersonDetections
+      const entries = Object.entries(jsonSnapshot.persons).map(([id, p]) => {
+        // Since json and personAttributes are PersonDetection private arguments
+        // we don't recreate the instances
+        const json = p['json'];
+        const personAttributes = p['personAttributes'];
+        const binary = {
+          skeleton: new Skeleton(new SkeletonBinaryDataProvider(p['dataProvider'])),
+          personAttributes,
+        };
+        const person = PersonDetection.fromMessage(json, binary);
+        return [id, person];
+      }) as Array<[string, PersonDetection]>;
+      snapshot.persons = new Map(entries);
+    } catch (e) {
+      console.warn(e);
+    }
+    return snapshot;
   }
 
   /**

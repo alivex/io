@@ -285,6 +285,14 @@ export class Skeleton {
     // 18 joints with x_2d, y_2d, x_3d, y_3d, z_3d encoded with 2 bytes each
     return 18 * 5 * 2;
   }
+
+  /**
+   * Returns the internal data provider
+   * @return {SkeletonBinaryDataProvider}
+   */
+  public getDataProvider(): SkeletonBinaryDataProvider {
+    return this.dataProvider;
+  }
 }
 
 /**
@@ -306,6 +314,14 @@ export class SkeletonBinaryDataProvider {
       );
     }
     this.data = data;
+  }
+
+  /**
+   * Returns the internal binary data
+   * @return {Uint8Array}
+   */
+  public getData(): Uint8Array {
+    return this.data;
   }
 
   /* eslint-disable require-jsdoc */

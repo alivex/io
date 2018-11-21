@@ -1,5 +1,8 @@
 import test from 'ava';
+import { encode } from 'msgpack-lite';
+import { PersonDetection } from '../model/person-detection/PersonDetection';
 import { POISnapshot } from './POISnapshot';
+import { POISnapshotGenerator } from './test-utils';
 import {
   PersonDetectionMessageGenerator,
   SkeletonMessageGenerator,
@@ -184,13 +187,21 @@ test('should have the content', t => {
 test('should have the content event', t => {
   const snapshot = new POISnapshot();
   snapshot.update(
-    ContentMessageGenerator.generate(
-      { contentId: '1234', poi: 38, name: 'my_custom_event', contentPlayId: 'x' })
+    ContentMessageGenerator.generate({
+      contentId: '1234',
+      poi: 38,
+      name: 'my_custom_event',
+      contentPlayId: 'x',
+    })
   );
 
   snapshot.update(
-    ContentMessageGenerator.generate(
-      { contentId: '1234', poi: 38, name: 'another_custom_event', contentPlayId: 'x' })
+    ContentMessageGenerator.generate({
+      contentId: '1234',
+      poi: 38,
+      name: 'another_custom_event',
+      contentPlayId: 'x',
+    })
   );
 
   t.is(snapshot.getContent().contentId, '1234');
@@ -201,8 +212,12 @@ test('should have the content event', t => {
 test('content event should be cleared', t => {
   const snapshot = new POISnapshot();
   snapshot.update(
-    ContentMessageGenerator.generate(
-      { contentId: '1234', poi: 38, name: 'my_custom_event', contentPlayId: 'x' })
+    ContentMessageGenerator.generate({
+      contentId: '1234',
+      poi: 38,
+      name: 'my_custom_event',
+      contentPlayId: 'x',
+    })
   );
 
   snapshot.update(PersonDetectionMessageGenerator.generate({ ttid: 1 }));
@@ -212,12 +227,16 @@ test('content event should be cleared', t => {
   t.is(snapshot.getContentEvent(), undefined);
 });
 
-test.only('cloned snapshot should have the content event', t => {
+test('cloned snapshot should have the content event', t => {
   const snapshot = new POISnapshot();
 
   snapshot.update(
-    ContentMessageGenerator.generate(
-      { contentId: '1234', poi: 38, name: 'my_custom_event', contentPlayId: 'x' })
+    ContentMessageGenerator.generate({
+      contentId: '1234',
+      poi: 38,
+      name: 'my_custom_event',
+      contentPlayId: 'x',
+    })
   );
 
   const clonedSnapshot = snapshot.clone();
@@ -226,7 +245,6 @@ test.only('cloned snapshot should have the content event', t => {
   t.is(clonedSnapshot.getContent().poi, 38);
   t.is(clonedSnapshot.getContentEvent(), 'my_custom_event');
 });
-
 
 test('should clone the snapshot', t => {
   const snapshot = new POISnapshot();
@@ -237,4 +255,61 @@ test('should clone the snapshot', t => {
   const clone = snapshot.clone();
   t.is(clone.getContent().contentId, '1234');
   t.is(clone.getContent().poi, 38);
+});
+
+test('should encode and decode the snapshot properly', t => {
+  const expected = POISnapshotGenerator.generate([
+    {
+      localTimestamp: 1537362300000,
+      contentId: '1',
+      contentPlayId: '33e17c5c-214f',
+      name: 'start',
+      personPutIds: [],
+      poi: 1,
+    },
+    {
+      localTimestamp: 1537362300000,
+      ttid: 1,
+      personId: 'sywx4b4d-9sii-f6h8-xxxxxxxxxxx',
+      personPutId: 'rcyb48vg-4eha-sup3-xxxxxxxxxxx',
+      age: 21,
+      gender: 'male',
+      cameraId: 'Camera: ZED',
+    },
+    {
+      localTimestamp: 1537362330000,
+      ttid: 1,
+      personId: 'sywx4b4d-9sii-f6h8-xxxxxxxxxxx',
+      personPutId: 'rcyb48vg-4eha-sup3-xxxxxxxxxxx',
+      age: 21,
+      gender: 'male',
+      cameraId: 'Camera: ZED',
+    },
+    {
+      localTimestamp: 1537362330000,
+      contentId: '1',
+      contentPlayId: '33e17c5c-214f',
+      name: 'end',
+      personPutIds: [],
+      poi: 1,
+    },
+  ]);
+  const result = POISnapshot.decode(encode(expected.toJSON()));
+
+  const expectedPersons = expected.getPersons();
+  result.getPersons().forEach((person: PersonDetection) => {
+    // These 2 private arguments of the PersonDetection model are not parsed when
+    // decoding the data. For testing purpose, we copy the value
+    // so that the "deepEqual" comparison does not fail because of them
+    expectedPersons.get(person.personId)['json'] = person['json'];
+    expectedPersons.get(person.personId)['personAttributes'] = person['personAttributes'];
+  });
+
+  // These 2 internal properties are lost during the encoding
+  // We only add them here for testing purpose,
+  // so that the "deepEqual" comparison does not fail because of them
+  expected['lastPersonUpdate'] = result['lastPersonUpdate'];
+  expected['personsByTtid'] = result['personsByTtid'];
+
+  t.deepEqual(expected, result);
 });

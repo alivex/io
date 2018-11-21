@@ -277,6 +277,10 @@ export class PersonDetection {
     person.skeleton = cache.skeleton;
     person.personAttributes = cache.personAttributes;
 
+    if (person.json.localTimestamp) {
+      person.updated = person.json.localTimestamp;
+    }
+
     return person;
   }
 
@@ -320,6 +324,9 @@ export class PersonDetection {
       onlyEyeglasses: this.onlyEyeglasses,
       robustFaceAttributes: this.robustFaceAttributes,
       allFaceAttributes: this.allFaceAttributes,
+      json: this.json,
+      personAttributes: this.personAttributes,
+      dataProvider: this.skeleton.getDataProvider().getData(),
     };
   }
 }
