@@ -16,6 +16,12 @@ export class POISnapshotGenerator {
    * @return {POISnapshot}
    */
   static generate(options: any[] = [], from: POISnapshot = new POISnapshot()): POISnapshot {
+    if (!Array.isArray(options)) {
+      throw new Error(
+        'POISnapshotGenerator first parameter should be a list of PersonOptions|ContentOptions'
+      );
+    }
+
     const snapshot = from;
 
     const personOptions: PersonOptions[] = options.filter(option => option.hasOwnProperty('ttid'));
