@@ -12,6 +12,7 @@ export interface RecognitionMetadta {
 export class PersonDetection {
   private skeleton: Skeleton;
   private personAttributes: PersonAttributes;
+  private faceEmbeddings: Array<number> = [];
   private json: PersonDetectionMessage;
 
   public updated = new Date().getTime();
@@ -229,6 +230,16 @@ export class PersonDetection {
   }
 
   /**
+   * Face embeddings
+   *
+   * @return {Array<number>} an array containing 256 values
+   * representing the face embeddings.
+   */
+  get embeddings(): Array<number> {
+    return this.faceEmbeddings;
+  }
+
+  /**
    * Face attributes merged with the robust face attributes and the ttid
    * @return {Object}
    */
@@ -287,6 +298,7 @@ export class PersonDetection {
     person.json = json;
     person.skeleton = cache.skeleton;
     person.personAttributes = cache.personAttributes;
+    person.faceEmbeddings = json.faceEmbeddings || [];
 
     if (person.json.localTimestamp) {
       person.updated = person.json.localTimestamp;

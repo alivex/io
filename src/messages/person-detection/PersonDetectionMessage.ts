@@ -19,6 +19,7 @@ export class PersonDetectionMessage extends Message {
   public lookingAtScreen: number;
   public cameraId: string;
   public poi: number;
+  public faceEmbeddings: any;
 
   /**
    * Parses a PersonDetectionMessage
@@ -41,6 +42,7 @@ export class PersonDetectionMessage extends Message {
     this.lookingAtScreen = json.data.behavior.head.looking_at_screen;
     this.cameraId = json.data.camera_id;
     this.poi = json.data.poi;
+    this.faceEmbeddings = json.data.best_face_embedding;
   }
 
   /**
