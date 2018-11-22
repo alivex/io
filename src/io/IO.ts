@@ -56,7 +56,7 @@ export class IO {
   public reportPlayoutEvent(event: PlayoutEvent): void {
     const personList = Array.from(
       this.poiMonitor
-        .getSnapshot()
+        .getPOISnapshot()
         .getPersons()
         .values()
     );
@@ -172,8 +172,8 @@ export class IO {
    * Returns an Observable emitting the POISnapshot updates
    * @return {Observable<POISnapshot>}
    */
-  public getSnapshots(): Observable<POISnapshot> {
-    return this.poiMonitor.getSnapshots();
+  public getPOISnapshotObservable(): Observable<POISnapshot> {
+    return this.poiMonitor.getPOISnapshotObservable();
   }
 
   /**
