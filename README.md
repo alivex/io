@@ -43,7 +43,7 @@ io.thumbnailStreamMessages(100, 100).subscribe(msg => ...);
 io.heatmapStreamMessages().subscribe(msg => ...);
 io.depthmapStreamMessages().subscribe(msg => ...);
 
-io.getSnapshots().subscribe(snapshot => ...);
+io.getPOISnapshotObservable().subscribe(snapshot => ...);
 
 io.reportPlayoutEvent(new StartEvent(33, 8, '33e17c5c-214f', 1542360299788));
 io.reportPlayoutEvent(new EndEvent(33, 8, '33e17c5c-214f', 1542360500504));

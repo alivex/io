@@ -47,7 +47,7 @@ export class POIMonitor {
    * Retrieves the last value of the POISnapshot
    * @return {POISnapshot}
    */
-  public getSnapshot(): POISnapshot {
+  public getPOISnapshot(): POISnapshot {
     return this.snapshots.getValue();
   }
 
@@ -59,7 +59,7 @@ export class POIMonitor {
    * @param {Message} message the message sent by the POI.
    */
   public emitMessage(message: Message): void {
-    this.getSnapshot().update(message);
+    this.getPOISnapshot().update(message);
     if (message instanceof PersonsAliveMessage) {
       if (this.isActive) {
         this.updateHealthTimeout();
@@ -68,7 +68,7 @@ export class POIMonitor {
         this.isActive = true;
       }
     }
-    this.snapshots.next(this.getSnapshot().clone());
+    this.snapshots.next(this.getPOISnapshot().clone());
   }
 
   /**
@@ -91,9 +91,9 @@ export class POIMonitor {
     this.isActiveTimeout = setTimeout(() => {
       this.isActive = false;
       this.logger.warn('PoI stopped emitting.');
-      this.getSnapshot().setPersons(new Map());
-      this.getSnapshot().update(new PersonsAliveMessage({ data: { person_ids: [] } }));
-      this.snapshots.next(this.getSnapshot().clone());
+      this.getPOISnapshot().setPersons(new Map());
+      this.getPOISnapshot().update(new PersonsAliveMessage({ data: { person_ids: [] } }));
+      this.snapshots.next(this.getPOISnapshot().clone());
     }, 2000);
   }
 
@@ -101,7 +101,7 @@ export class POIMonitor {
    * Returns an Observable emitting the POISnapshot updates
    * @return {Observable<POISnapshot>}
    */
-  public getSnapshots(): Observable<POISnapshot> {
+  public getPOISnapshotObservable(): Observable<POISnapshot> {
     return this.snapshots.asObservable();
   }
 }
