@@ -25,6 +25,7 @@ export interface PersonOptions {
   u?: number;
   v?: number;
   poi?: number;
+  generateEmbeddings?: boolean;
 }
 
 export interface ContentOptions {

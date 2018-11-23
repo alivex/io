@@ -112,6 +112,12 @@ export const PersonDetectionSchema = {
         },
       },
     },
+    best_face_embedding: {
+      type: 'array',
+      items: {
+        type: 'number',
+      },
+    },
   },
   required: ['record_type', 'local_timestamp', 'person_id', 'person_put_id', 'coordinates'],
 };

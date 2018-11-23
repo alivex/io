@@ -164,7 +164,20 @@ export class PersonDetectionMessageGenerator {
         gender: options.gender || 'male',
       },
       recognition: options.name ? { name: options.name } : undefined,
+      best_face_embedding: undefined,
     };
+
+    if (options.generateEmbeddings) {
+      const embeddings: Array<number> = [];
+      const embeddingsSize = 256;
+      const maxEmbeddingValue = 255;
+
+      for (let i = 0; i < embeddingsSize; i++) {
+        embeddings.push(Math.floor((Math.random() * maxEmbeddingValue) + 1));
+      }
+
+      data.best_face_embedding = embeddings;
+    }
 
     return MessageFactory.parse({
       subject: 'person_update',
