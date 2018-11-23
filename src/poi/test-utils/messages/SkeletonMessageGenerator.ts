@@ -32,7 +32,7 @@ export class SkeletonMessageGenerator {
  * @param {PersonOptions} options
  * @return {number[]}
  */
-function generateSinglePersonBinaryData(options: PersonOptions = { ttid: 1 }): number[] {
+export function generateSinglePersonBinaryData(options: PersonOptions = { ttid: 1 }): number[] {
   const data = new Array(209);
   for (let i = 0; i < 211; i++) {
     if (i === Skeleton.bytesLength() && options.age) {
