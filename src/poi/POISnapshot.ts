@@ -11,7 +11,7 @@ import { Skeleton, SkeletonBinaryDataProvider, BinaryCachedData } from '../model
 
 // Maximum amount of time (in ms) between now and the last person event
 // to consider the person as recent
-const MAX_RECENT_TIME = 2000;
+export const MAX_RECENT_TIME = 2000;
 
 /**
  * Represents what is happening at a POI at a given point in time.
