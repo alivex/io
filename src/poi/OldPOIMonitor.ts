@@ -2,11 +2,11 @@ import { BehaviorSubject } from 'rxjs';
 import { Observer } from 'rxjs';
 import { Subscription } from 'rxjs';
 import { Message } from '../messages/Message';
+import { UnknownMessage } from '../messages/unknown/UnknownMessage';
 import { PersonsAliveMessage } from '../messages/persons-alive/PersonsAliveMessage';
+import { PersonDetectionMessage } from '../messages/person-detection/PersonDetectionMessage';
 import { IncomingStream } from '../incoming-stream/IncomingStream';
 import { POISnapshot } from './POISnapshot';
-
-const DEFAULT_POI_MONITOR_RATE = 1000;
 
 /**
  * Monitors a POI and informs the subscribers about
@@ -15,6 +15,7 @@ const DEFAULT_POI_MONITOR_RATE = 1000;
 export class OldPOIMonitor {
   private isActive: boolean = true;
   private isActiveTimeout;
+  private mockMessagesInterval;
   private poiSnapshot: POISnapshot = new POISnapshot();
   private snapshots: BehaviorSubject<POISnapshot> = new BehaviorSubject(this.poiSnapshot); // eslint-disable-line no-invalid-this, max-len
   private logger = console;
@@ -27,7 +28,8 @@ export class OldPOIMonitor {
    * @param {IncomingStream} stream
    * @param {number} rate    frequency of update (in ms)
    */
-  constructor(stream: IncomingStream, private rate: number = DEFAULT_POI_MONITOR_RATE) {
+  constructor(stream: IncomingStream) {
+    this.updateHealthTimeout();
     stream.subscribe(new MessageObserver(this));
   }
 
@@ -48,13 +50,17 @@ export class OldPOIMonitor {
    */
   public updateSnapshot(message: Message): void {
     this.poiSnapshot.update(message);
-    this.snapshots.next(this.poiSnapshot);
-    if (message instanceof PersonsAliveMessage) {
+    if (!(message instanceof UnknownMessage)) {
+      this.snapshots.next(this.poiSnapshot);
+    }
+    if (message instanceof PersonsAliveMessage || message instanceof PersonDetectionMessage) {
       if (this.isActive) {
         this.updateHealthTimeout();
       } else {
         this.logger.warn('PoI is back.');
         this.isActive = true;
+        clearTimeout(this.isActiveTimeout);
+        clearInterval(this.mockMessagesInterval);
       }
     }
   }
@@ -74,9 +80,13 @@ export class OldPOIMonitor {
   private updateHealthTimeout(): void {
     clearTimeout(this.isActiveTimeout);
     this.isActiveTimeout = setTimeout(() => {
+      clearInterval(this.mockMessagesInterval);
       this.isActive = false;
       this.logger.warn('PoI stopped emitting.');
-      this.poiSnapshot.update(new PersonsAliveMessage({ data: { person_ids: [] } }));
+      this.mockMessagesInterval = setInterval(() => {
+        this.poiSnapshot.update(new PersonsAliveMessage({ data: { person_ids: [] } }));
+        this.snapshots.next(this.poiSnapshot);
+      }, 200);
     }, 2000);
   }
 
