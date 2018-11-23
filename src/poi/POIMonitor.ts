@@ -67,8 +67,8 @@ export class POIMonitor {
         this.logger.warn('PoI is back.');
         this.isActive = true;
       }
+      this.snapshots.next(this.getPOISnapshot().clone());
     }
-    this.snapshots.next(this.getPOISnapshot().clone());
   }
 
   /**
