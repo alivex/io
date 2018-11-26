@@ -113,9 +113,17 @@ export const PersonDetectionSchema = {
       },
     },
     best_face_embedding: {
-      type: 'array',
-      items: {
-        type: 'number',
+      type: 'object',
+      properties: {
+        face_embeddings: {
+          type: 'array',
+          items: {
+            type: 'number',
+          },
+        },
+        image_quality_score: {
+          type: 'number',
+        },
       },
     },
   },

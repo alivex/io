@@ -177,7 +177,10 @@ export function generateSinglePersonUpdateData(options: PersonOptions): Object {
       gender: options.gender || 'male',
     },
     recognition: options.name ? { name: options.name } : undefined,
-    best_face_embedding: undefined,
+    best_face_embedding: {
+      face_embeddings: [],
+      image_quality_score: 0,
+    },
   };
 
   if (options.generateEmbeddings) {
@@ -189,7 +192,8 @@ export function generateSinglePersonUpdateData(options: PersonOptions): Object {
       embeddings.push(Math.floor(Math.random() * maxEmbeddingValue + 1));
     }
 
-    data.best_face_embedding = embeddings;
+    data.best_face_embedding.face_embeddings = embeddings;
+    data.best_face_embedding.image_quality_score = 0.999;
   }
   return data;
 }
