@@ -13,7 +13,7 @@ export class IOService {
    * Default constructor
    */
   constructor(private incomingStream: IncomingStream, private rate?: number) {
-    this.poiMonitor = new OldPOIMonitor(this.incomingStream, this.rate);
+    this.poiMonitor = new OldPOIMonitor(this.incomingStream);
     this.eventMonitor = new EventMonitor(this.incomingStream, this.poiMonitor);
   }
 
