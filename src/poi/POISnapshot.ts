@@ -246,8 +246,9 @@ export class POISnapshot {
    */
   private updatePersons(message: PersonDetectionMessage): void {
     const ttid = message.ttid;
-    if (typeof ttid != 'number') {
-      throw new Error('TTID must be set');
+    if (typeof ttid !== 'number') {
+      console.warn('TTID must be set');
+      return;
     }
     // a person for the given ttid exists already, so just update it and
     // propagate the changes
