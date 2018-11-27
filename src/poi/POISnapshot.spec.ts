@@ -1,4 +1,5 @@
 import test from 'ava';
+import { spy } from 'sinon';
 import { encode } from 'msgpack-lite';
 import { PersonDetection } from '../model/person-detection/PersonDetection';
 import { POISnapshot } from './POISnapshot';
@@ -25,12 +26,15 @@ test('should not add the person to the snapshot when the input only contains bin
   t.is(snapshot.getPersons().size, 0);
 });
 
-test('should throw an error when the ttid of the person is not a number', t => {
+test('should log an error when the ttid of the person is not a number', t => {
   const snapshot = new POISnapshot();
   const ttid = 'not a number' as any;
+  const consoleSpy = spy(console, 'warn');
   const json = PersonDetectionMessageGenerator.generate({ ttid });
-  const error = t.throws(() => snapshot.update(json));
-  t.is(error.message, 'TTID must be set');
+  snapshot.update(json);
+  t.is(consoleSpy.calledWith('TTID must be set'), true);
+
+  consoleSpy.restore();
 });
 
 test('should add the person to the snapshot when both json and binary data are received', t => {
