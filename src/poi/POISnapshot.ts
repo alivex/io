@@ -223,18 +223,22 @@ export class POISnapshot {
   private updateSkeleton(data: Uint8Array): void {
     const personAttributes = new PersonAttributes(data.subarray(Skeleton.bytesLength()));
     const ttid = personAttributes.ttid;
-    const binary: BinaryCachedData = {
-      skeleton: new Skeleton(
-        new SkeletonBinaryDataProvider(data.subarray(0, Skeleton.bytesLength()))
-      ),
-      personAttributes: personAttributes,
-    };
+    try {
+      const binary: BinaryCachedData = {
+        skeleton: new Skeleton(
+          new SkeletonBinaryDataProvider(data.subarray(0, Skeleton.bytesLength()))
+        ),
+        personAttributes: personAttributes,
+      };
 
-    const person = this.personsByTtid.get(ttid);
-    if (person === undefined) {
-      this.createOrCachePerson(ttid, 'binary', binary);
-    } else {
-      person.updateFromBinary(binary);
+      const person = this.personsByTtid.get(ttid);
+      if (person === undefined) {
+        this.createOrCachePerson(ttid, 'binary', binary);
+      } else {
+        person.updateFromBinary(binary);
+      }
+    } catch (e) {
+      console.warn(e.message);
     }
   }
 
@@ -246,8 +250,9 @@ export class POISnapshot {
    */
   private updatePersons(message: PersonDetectionMessage): void {
     const ttid = message.ttid;
-    if (typeof ttid != 'number') {
-      throw new Error('TTID must be set');
+    if (typeof ttid !== 'number') {
+      console.warn('TTID must be set');
+      return;
     }
     // a person for the given ttid exists already, so just update it and
     // propagate the changes
@@ -255,9 +260,13 @@ export class POISnapshot {
     if (person === undefined) {
       this.createOrCachePerson(ttid, 'json', message);
     } else {
-      person.updateFromJson(message);
-      this.lastPersonUpdate.set(person.personId, person.localTimestamp);
-      this.lastUpdateTimestamp = person.localTimestamp;
+      try {
+        person.updateFromJson(message);
+        this.lastPersonUpdate.set(person.personId, person.localTimestamp);
+        this.lastUpdateTimestamp = person.localTimestamp;
+      } catch (e) {
+        console.warn(e.message);
+      }
     }
   }
 
