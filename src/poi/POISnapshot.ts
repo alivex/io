@@ -205,8 +205,13 @@ export class POISnapshot {
     if (obj.json !== undefined && obj.binary !== undefined) {
       const person = PersonDetection.fromMessage(obj.json, obj.binary);
 
-      this.persons.set(obj.json.personId, person);
-      this.personsByTtid.set(obj.binary.personAttributes.ttid, person);
+      if (
+        obj.binary.personAttributes.age !== undefined &&
+        obj.binary.personAttributes.male !== undefined
+      ) {
+        this.persons.set(obj.json.personId, person);
+        this.personsByTtid.set(obj.binary.personAttributes.ttid, person);
+      }
 
       this.lastPersonUpdate.set(person.personId, person.localTimestamp);
       this.removeGonePersons(obj.json.localTimestamp);
@@ -231,14 +236,13 @@ export class POISnapshot {
         personAttributes: personAttributes,
       };
 
-      if (binary.personAttributes.age === undefined || binary.personAttributes.male === undefined) {
-        return;
-      }
-
       const person = this.personsByTtid.get(ttid);
       if (person === undefined) {
         this.createOrCachePerson(ttid, 'binary', binary);
-      } else {
+      } else if (
+        binary.personAttributes.age !== undefined &&
+        binary.personAttributes.male !== undefined
+      ) {
         person.updateFromBinary(binary);
       }
     } catch (e) {
