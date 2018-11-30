@@ -231,6 +231,10 @@ export class POISnapshot {
         personAttributes: personAttributes,
       };
 
+      if (binary.personAttributes.age === undefined || binary.personAttributes.male === undefined) {
+        return;
+      }
+
       const person = this.personsByTtid.get(ttid);
       if (person === undefined) {
         this.createOrCachePerson(ttid, 'binary', binary);
