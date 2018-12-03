@@ -153,11 +153,13 @@ export class POISnapshot {
   public clone(): POISnapshot {
     const snapshot = new POISnapshot();
     snapshot.persons = new Map();
+    snapshot.personsByTtid = new Map();
     this.persons.forEach((person, personId) => {
-      snapshot.persons.set(personId, person.clone());
+      const clonedPerson = person.clone();
+      snapshot.persons.set(personId, clonedPerson);
+      snapshot.personsByTtid.set(person.ttid, clonedPerson);
     });
     snapshot.lastPersonUpdate = new Map(this.lastPersonUpdate);
-    snapshot.personsByTtid = new Map(this.personsByTtid);
     snapshot.personsCache = new Map(this.personsCache);
     snapshot.content = this.content ? this.content.clone() : undefined;
     snapshot.contentEvent = this.contentEvent;
@@ -210,7 +212,7 @@ export class POISnapshot {
         obj.binary.personAttributes.male !== undefined
       ) {
         this.persons.set(obj.json.personId, person);
-        this.personsByTtid.set(obj.binary.personAttributes.ttid, person);
+        this.personsByTtid.set(ttid, person);
       }
 
       this.lastPersonUpdate.set(person.personId, person.localTimestamp);
