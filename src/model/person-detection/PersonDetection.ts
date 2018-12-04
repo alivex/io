@@ -19,13 +19,23 @@ export class PersonDetection {
 
   /**
    * Last timestamp of the person detection
+   * Use the maximum between the json message timestamp and the binary message timestamp
    * @return {number}
    */
   get localTimestamp(): number {
-    if (this.json.localTimestamp) {
-      this.updated = this.json.localTimestamp;
+    if (!this.json.localTimestamp && !this.skeleton.localTimestamp) {
+      return undefined;
     }
-    return this.json.localTimestamp;
+
+    const localTimestamp = Math.max(
+      this.json.localTimestamp || 0,
+      this.skeleton.localTimestamp || 0
+    );
+
+    if (localTimestamp) {
+      this.updated = localTimestamp;
+    }
+    return localTimestamp;
   }
 
   /**
@@ -272,7 +282,9 @@ export class PersonDetection {
    */
   public updateFromJson(json: PersonDetectionMessage): void {
     if (this.personId && this.personId !== json.personId) {
-      throw new Error('Precondition failed, changing person_id.');
+      throw new Error(
+        `Precondition failed, changing person_id. ${this.personId} !== ${json.personId}`
+      );
     }
     this.json = json;
   }
@@ -300,8 +312,8 @@ export class PersonDetection {
     person.personAttributes = cache.personAttributes;
     person.faceEmbeddings = json.faceEmbeddings || [];
 
-    if (person.json.localTimestamp) {
-      person.updated = person.json.localTimestamp;
+    if (person.localTimestamp) {
+      person.updated = person.localTimestamp;
     }
 
     return person;
@@ -312,8 +324,8 @@ export class PersonDetection {
    * @return {PersonDetection}
    */
   public clone(): PersonDetection {
-    return PersonDetection.fromMessage(this.json, {
-      skeleton: this.skeleton,
+    return PersonDetection.fromMessage(this.json.clone(), {
+      skeleton: this.skeleton.clone(),
       personAttributes: this.personAttributes,
     });
   }

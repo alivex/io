@@ -21,6 +21,8 @@ export class PersonDetectionMessage extends Message {
   public poi: number;
   public faceEmbeddings: any;
 
+  private json: Object;
+
   /**
    * Parses a PersonDetectionMessage
    *
@@ -45,6 +47,17 @@ export class PersonDetectionMessage extends Message {
     if (json.data.best_face_embedding) {
       this.faceEmbeddings = json.data.best_face_embedding.face_embeddings;
     }
+
+    this.json = json;
+  }
+
+  /**
+   * Creates a PersonDetectionMessage with the same properties
+   * @return {PersonDetectionMessage}
+   */
+  public clone(): PersonDetectionMessage {
+    const message = new PersonDetectionMessage({ ...this.json });
+    return message;
   }
 
   /**

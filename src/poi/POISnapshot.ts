@@ -77,7 +77,10 @@ export class POISnapshot {
         const json = p['json'];
         const personAttributes = p['personAttributes'];
         const binary = {
-          skeleton: new Skeleton(new SkeletonBinaryDataProvider(p['dataProvider'])),
+          skeleton: new Skeleton(
+            new SkeletonBinaryDataProvider(p['dataProvider']),
+            json['localTimestamp']
+          ),
           personAttributes,
         };
         const person = PersonDetection.fromMessage(json, binary);
@@ -133,7 +136,10 @@ export class POISnapshot {
     if (message instanceof SkeletonMessage) {
       let start = 2;
       for (let i = 0; i < message.personsCount; ++i) {
-        this.updateSkeleton(message.data.subarray(start, start + message.personLength));
+        this.updateSkeleton(
+          message.data.subarray(start, start + message.personLength),
+          message.localTimestamp
+        );
         start += message.personLength;
       }
     } else if (message instanceof PersonDetectionMessage) {
@@ -226,14 +232,16 @@ export class POISnapshot {
   /**
    * Updates data about a skeleton
    * @param {Uint8Array} data the message containing the update
+   * @param {number} localTimestamp of the message
    */
-  private updateSkeleton(data: Uint8Array): void {
+  private updateSkeleton(data: Uint8Array, localTimestamp: number): void {
     const personAttributes = new PersonAttributes(data.subarray(Skeleton.bytesLength()));
     const ttid = personAttributes.ttid;
     try {
       const binary: BinaryCachedData = {
         skeleton: new Skeleton(
-          new SkeletonBinaryDataProvider(data.subarray(0, Skeleton.bytesLength()))
+          new SkeletonBinaryDataProvider(data.subarray(0, Skeleton.bytesLength())),
+          localTimestamp
         ),
         personAttributes: personAttributes,
       };
@@ -246,6 +254,8 @@ export class POISnapshot {
         binary.personAttributes.male !== undefined
       ) {
         person.updateFromBinary(binary);
+        this.lastPersonUpdate.set(person.personId, person.localTimestamp);
+        this.lastUpdateTimestamp = person.localTimestamp;
       }
     } catch (e) {
       console.warn(e.message);
@@ -312,7 +322,6 @@ export class POISnapshot {
   private removeGonePersons(timestamp: number) {
     for (const pid of this.lastPersonUpdate.keys()) {
       const lastUpdate = this.lastPersonUpdate.get(pid);
-
       if (timestamp - lastUpdate > MAX_RECENT_TIME) {
         this.persons.delete(pid);
         this.lastPersonUpdate.delete(pid);
