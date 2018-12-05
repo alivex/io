@@ -9,10 +9,6 @@ export const PersonDetectionSchema = {
       description: 'Identifier the type of the record. Never changes for one specific record type.',
       enum: ['person'],
     },
-    poi: {
-      type: 'integer',
-      description: 'PoI ID',
-    },
     local_timestamp: {
       type: 'number',
       description: 'Timestamp in unix epoch format',

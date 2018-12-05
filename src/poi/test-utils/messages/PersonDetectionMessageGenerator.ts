@@ -170,7 +170,6 @@ export function generateSinglePersonUpdateData(options: PersonOptions): Object {
       gender: options.gender,
     },
     local_timestamp: options.localTimestamp || Date.now(),
-    poi: options.poi,
     record_type: 'person',
     rolling_expected_values: {
       age: options.age || 0,

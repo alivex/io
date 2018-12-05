@@ -43,7 +43,6 @@ export class PersonDetectionMessage extends Message {
     this.localTimestamp = json.data.local_timestamp;
     this.lookingAtScreen = json.data.behavior.head.looking_at_screen;
     this.cameraId = json.data.camera_id;
-    this.poi = json.data.poi;
     if (json.data.best_face_embedding) {
       this.faceEmbeddings = json.data.best_face_embedding.face_embeddings;
     }

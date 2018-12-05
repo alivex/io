@@ -24,7 +24,6 @@ export interface PersonOptions {
   z?: number;
   u?: number;
   v?: number;
-  poi?: number;
   generateEmbeddings?: boolean;
 }
 
