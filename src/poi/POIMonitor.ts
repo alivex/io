@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Observer, Observable } from 'rxjs';
 import { Subscription, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -23,7 +23,8 @@ export class POIMonitor {
   private isActive: boolean = true;
   private isActiveTimeout;
   private mockMessagesInterval;
-  private snapshots: BehaviorSubject<POISnapshot> = new BehaviorSubject(new POISnapshot());
+  private lastPOISnapshot: POISnapshot = new POISnapshot();
+  private snapshots: Subject<POISnapshot> = new Subject();
   private logger = console;
   private streamSubscription: Subscription;
 
@@ -56,7 +57,7 @@ export class POIMonitor {
    * @return {POISnapshot}
    */
   public getPOISnapshot(): POISnapshot {
-    return this.snapshots.getValue();
+    return this.lastPOISnapshot;
   }
 
   /**
@@ -67,9 +68,11 @@ export class POIMonitor {
    * @param {Message} message the message sent by the POI.
    */
   public emitMessage(message: Message): void {
-    this.getPOISnapshot().update(message);
+    const clonedPOISnapshot = this.getPOISnapshot().clone();
+    clonedPOISnapshot.update(message);
     if (!(message instanceof UnknownMessage)) {
-      this.snapshots.next(this.getPOISnapshot().clone());
+      this.lastPOISnapshot = clonedPOISnapshot;
+      this.snapshots.next(clonedPOISnapshot);
     }
     if (
       message instanceof PersonsAliveMessage ||
@@ -111,9 +114,11 @@ export class POIMonitor {
       this.isActive = false;
       this.logger.warn('PoI stopped emitting.');
       this.mockMessagesInterval = setInterval(() => {
-        this.getPOISnapshot().setPersons(new Map());
-        this.getPOISnapshot().update(new PersonsAliveMessage({ data: { person_ids: [] } }));
-        this.snapshots.next(this.getPOISnapshot().clone());
+        const clonedPOISnapshot = this.getPOISnapshot().clone();
+        clonedPOISnapshot.setPersons(new Map());
+        clonedPOISnapshot.update(new PersonsAliveMessage({ data: { person_ids: [] } }));
+        this.lastPOISnapshot = clonedPOISnapshot;
+        this.snapshots.next(clonedPOISnapshot);
       }, INACTIVE_STREAM_MESSAGE_INTERVAL);
     }, INACTIVE_STREAM_THRESHOLD);
   }

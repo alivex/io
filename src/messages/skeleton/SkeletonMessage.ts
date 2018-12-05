@@ -7,6 +7,7 @@ import { Skeleton } from '../../model/skeleton/Skeleton';
  * Encapsulates a Binary message
  */
 export class SkeletonMessage extends Message {
+  public localTimestamp: number = Date.now();
   public data: Uint8Array;
   public personsCount: number;
   public personLength: number;

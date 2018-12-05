@@ -57,7 +57,7 @@ test('should add the person to the snapshot when both json and binary data are r
 test(`
 Scenario:
   - Add person 1,
-  - Adds person 2
+  - Add person 2
   - 20 secs later receive an update from person 2 only
   - Receive a persons_alive message containing only [2]
 
@@ -103,8 +103,7 @@ Expected: should have person 2 only in the snapshot
   snapshot.update(json2Update);
   snapshot.update(binary2Update);
 
-  // person 1 does not
-
+  // person 1 does not get updated
   const personsAlive = PersonsAliveMessageGenerator.generate([personId2], timestamp);
   snapshot.update(personsAlive);
 
@@ -116,7 +115,7 @@ Expected: should have person 2 only in the snapshot
 test(`
 Scenario:
   - Add person 1,
-  - Adds person 2
+  - Add person 2
   - 20 secs later receive an update from person 1 and person 2
   - Receive a persons_alive message containing only [2]
 

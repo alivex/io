@@ -21,7 +21,8 @@ export class PersonDetectionGenerator {
     const personAttributes = new PersonAttributes(data.subarray(Skeleton.bytesLength()));
     const binary = {
       skeleton: new Skeleton(
-        new SkeletonBinaryDataProvider(data.subarray(0, Skeleton.bytesLength()))
+        new SkeletonBinaryDataProvider(data.subarray(0, Skeleton.bytesLength())),
+        options.localTimestamp
       ),
       personAttributes: personAttributes,
     };

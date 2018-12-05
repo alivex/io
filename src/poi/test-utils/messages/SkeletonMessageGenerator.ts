@@ -23,7 +23,9 @@ export class SkeletonMessageGenerator {
     );
 
     const binaryMessageEvent = { type: BinaryType.SKELETON, data: new Uint8Array(data) };
-    return MessageFactory.parse(binaryMessageEvent) as SkeletonMessage;
+    const message = MessageFactory.parse(binaryMessageEvent) as SkeletonMessage;
+    message.localTimestamp = Math.max(...options.map(option => option.localTimestamp));
+    return message;
   }
 }
 

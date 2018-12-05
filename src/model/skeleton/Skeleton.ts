@@ -52,8 +52,9 @@ export class Skeleton {
   /**
    * Instantiate a Skeleton from a data provider
    * @param {SkeletonBinaryDataProvider} dataProvider
+   * @param {number} localTimestamp
    */
-  constructor(private dataProvider: SkeletonBinaryDataProvider) {}
+  constructor(private dataProvider: SkeletonBinaryDataProvider, public localTimestamp: number) {}
 
   /**
    * Position of the right hand
@@ -292,6 +293,14 @@ export class Skeleton {
    */
   public getDataProvider(): SkeletonBinaryDataProvider {
     return this.dataProvider;
+  }
+
+  /**
+   * Create a Skeleton instance with the same properties
+   * @return {Skeleton} [description]
+   */
+  public clone(): Skeleton {
+    return new Skeleton(this.dataProvider, this.localTimestamp);
   }
 }
 

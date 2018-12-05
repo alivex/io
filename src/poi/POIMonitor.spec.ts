@@ -69,7 +69,8 @@ test.cb(
       t.is(lastSnapshot.getPersons().get(personId).ttid, ttid);
       t.is(poiMonitor['isActive'], true);
       t.end();
-    }, INACTIVE_STREAM_THRESHOLD + n * INACTIVE_STREAM_MESSAGE_INTERVAL);
+    }, INACTIVE_STREAM_THRESHOLD + (n + 1) * INACTIVE_STREAM_MESSAGE_INTERVAL);
+    // n + 1 because the first emission starts after 200ms (setInterval)
   }
 );
 
@@ -99,7 +100,7 @@ test.cb(
       emittedSnapshots.push(snapshot);
     });
 
-    // Emit a person detection every 10ms
+    // Emit a person detection every 100ms
     const personId = 'rcyb48vg-4eha';
     const ttid = 89;
     const detectionsInterval = setInterval(() => {
@@ -111,7 +112,7 @@ test.cb(
         data: new Uint8Array([0, 1, ...generateSinglePersonBinaryData({ ttid })]),
         type: BinaryType.SKELETON,
       });
-    }, 10);
+    }, 100);
 
     poiMonitor.start();
 
