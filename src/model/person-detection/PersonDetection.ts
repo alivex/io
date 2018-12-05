@@ -39,14 +39,6 @@ export class PersonDetection {
   }
 
   /**
-   * Id of the PoI
-   * @return {number}
-   */
-  get poi(): number {
-    return this.json.poi;
-  }
-
-  /**
    * Distance between the person and the camera
    * @return {number}
    */
@@ -337,7 +329,6 @@ export class PersonDetection {
   public toJSON(): Object {
     return {
       localTimestamp: this.localTimestamp,
-      poi: this.poi,
       name: this.name,
       gender: this.gender,
       personId: this.personId,
