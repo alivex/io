@@ -301,16 +301,50 @@ test('should encode and decode the snapshot properly', t => {
 
   const expectedPersons = expected.getPersons();
   result.getPersons().forEach((person: PersonDetection) => {
-    // These 2 private arguments of the PersonDetection model are not parsed when
+    // This private argument 'personAttributes' of the PersonDetection model os not parsed when
     // decoding the data. For testing purpose, we copy the value
-    // so that the "deepEqual" comparison does not fail because of them
-    expectedPersons.get(person.personId)['json'] = person['json'];
+    // so that the "deepEqual" comparison does not fail because of it
     expectedPersons.get(person.personId)['personAttributes'] = person['personAttributes'];
   });
 
   // These 2 internal properties are lost during the encoding
   // We only add them here for testing purpose,
   // so that the "deepEqual" comparison does not fail because of them
+  expected['lastPersonUpdate'] = result['lastPersonUpdate'];
+  expected['personsByTtid'] = result['personsByTtid'];
+
+  t.deepEqual(expected, result);
+});
+
+test('should decode and clone a snapshot', t => {
+  const expected = POISnapshotGenerator.generate([
+    {
+      localTimestamp: 1537362300000,
+      contentId: '1',
+      contentPlayId: '33e17c5c-214f',
+      name: 'start',
+      personPutIds: [],
+      poi: 1,
+    },
+    {
+      localTimestamp: 1537362330000,
+      ttid: 1,
+      personId: 'sywx4b4d-9sii-f6h8-xxxxxxxxxxx',
+      personPutId: 'rcyb48vg-4eha-sup3-xxxxxxxxxxx',
+      age: 21,
+      gender: 'male',
+      cameraId: 'Camera: ZED',
+      poi: 1,
+    },
+  ]);
+  let result = POISnapshot.decode(encode(expected.toJSON()));
+  result = result.clone();
+
+  const expectedPersons = expected.getPersons();
+  result.getPersons().forEach((person: PersonDetection) => {
+    expectedPersons.get(person.personId)['personAttributes'] = person['personAttributes'];
+  });
+
   expected['lastPersonUpdate'] = result['lastPersonUpdate'];
   expected['personsByTtid'] = result['personsByTtid'];
 
