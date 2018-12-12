@@ -175,12 +175,15 @@ export function generateSinglePersonUpdateData(options: PersonOptions): Object {
       age: options.age || 0,
       gender: options.gender || 'male',
     },
-    recognition: options.name ? { name: options.name } : undefined,
     best_face_embedding: {
       face_embeddings: [],
       image_quality_score: 0,
     },
   };
+
+  if (options.name) {
+    data['recognition'] = { name: options.name };
+  }
 
   if (options.generateEmbeddings) {
     const embeddings: Array<number> = [];

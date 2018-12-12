@@ -72,9 +72,9 @@ export class POISnapshot {
 
       // Recreate the PersonDetections
       const entries = Object.entries(jsonSnapshot.persons).map(([id, p]) => {
-        // Since json and personAttributes are PersonDetection private arguments
-        // we don't recreate the instances
-        const json = p['json'];
+        const json = new PersonDetectionMessage(p['json'].json);
+        // Since personAttributes is a PersonDetection private arguments
+        // we don't recreate the instance
         const personAttributes = p['personAttributes'];
         const binary = {
           skeleton: new Skeleton(

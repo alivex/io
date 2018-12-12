@@ -301,10 +301,9 @@ test('should encode and decode the snapshot properly', t => {
 
   const expectedPersons = expected.getPersons();
   result.getPersons().forEach((person: PersonDetection) => {
-    // These 2 private arguments of the PersonDetection model are not parsed when
+    // This private argument 'personAttributes' of the PersonDetection model os not parsed when
     // decoding the data. For testing purpose, we copy the value
-    // so that the "deepEqual" comparison does not fail because of them
-    expectedPersons.get(person.personId)['json'] = person['json'];
+    // so that the "deepEqual" comparison does not fail because of it
     expectedPersons.get(person.personId)['personAttributes'] = person['personAttributes'];
   });
 
