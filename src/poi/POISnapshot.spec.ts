@@ -316,3 +316,38 @@ test('should encode and decode the snapshot properly', t => {
 
   t.deepEqual(expected, result);
 });
+
+test('should decode and clone a snapshot', t => {
+  const expected = POISnapshotGenerator.generate([
+    {
+      localTimestamp: 1537362300000,
+      contentId: '1',
+      contentPlayId: '33e17c5c-214f',
+      name: 'start',
+      personPutIds: [],
+      poi: 1,
+    },
+    {
+      localTimestamp: 1537362330000,
+      ttid: 1,
+      personId: 'sywx4b4d-9sii-f6h8-xxxxxxxxxxx',
+      personPutId: 'rcyb48vg-4eha-sup3-xxxxxxxxxxx',
+      age: 21,
+      gender: 'male',
+      cameraId: 'Camera: ZED',
+      poi: 1,
+    },
+  ]);
+  let result = POISnapshot.decode(encode(expected.toJSON()));
+  result = result.clone();
+
+  const expectedPersons = expected.getPersons();
+  result.getPersons().forEach((person: PersonDetection) => {
+    expectedPersons.get(person.personId)['personAttributes'] = person['personAttributes'];
+  });
+
+  expected['lastPersonUpdate'] = result['lastPersonUpdate'];
+  expected['personsByTtid'] = result['personsByTtid'];
+
+  t.deepEqual(expected, result);
+});
