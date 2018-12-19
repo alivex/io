@@ -16,6 +16,7 @@ export interface PersonOptions {
   age?: number;
   gender?: string;
   name?: string;
+  metadata?: Object;
   localTimestamp?: number;
   personId?: string;
   personPutId?: string;
