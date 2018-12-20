@@ -15,7 +15,10 @@ export class POISnapshotGenerator {
    * @param {POISnapshot} from
    * @return {POISnapshot}
    */
-  static generate(options: any[] = [], from: POISnapshot = new POISnapshot()): POISnapshot {
+  static generate(
+    options: (PersonOptions | ContentOptions)[] = [],
+    from: POISnapshot = new POISnapshot()
+  ): POISnapshot {
     if (!Array.isArray(options)) {
       throw new Error(
         'POISnapshotGenerator first parameter should be a list of PersonOptions|ContentOptions'
@@ -24,11 +27,13 @@ export class POISnapshotGenerator {
 
     const snapshot = from;
 
-    const personOptions: PersonOptions[] = options.filter(option => option.hasOwnProperty('ttid'));
+    const personOptions: PersonOptions[] = options.filter(option =>
+      option.hasOwnProperty('ttid')
+    ) as PersonOptions[];
 
     const contentOptions: ContentOptions[] = options.filter(option =>
       option.hasOwnProperty('contentId')
-    );
+    ) as ContentOptions[];
 
     const personMessages = personOptions.map(option =>
       PersonDetectionMessageGenerator.generate(option)

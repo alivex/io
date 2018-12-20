@@ -3,7 +3,8 @@ import { BinaryCachedData, Skeleton } from '../../model/skeleton/Skeleton';
 import { PersonAttributes } from '../../model/person-attributes/PersonAttributes';
 
 export interface RecognitionMetadta {
-  name: string;
+  name?: string;
+  [key: string]: any;
 }
 
 /**
