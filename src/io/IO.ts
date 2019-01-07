@@ -177,6 +177,14 @@ export class IO {
   }
 
   /**
+   * Returns the last emitted POISnapshot
+   * @return {POISnapshot}
+   */
+  public getLastPOISnapshot(): POISnapshot {
+    return this.poiMonitor.getPOISnapshot();
+  }
+
+  /**
    * Send the camera, skeleton and thumbnail options
    * via RPC
    * @param {Object} options width and height of the camera, image and thumbnail canvas

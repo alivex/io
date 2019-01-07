@@ -6,6 +6,12 @@ export enum RPCFunction {
   Analytics = 'analytics',
   Download = 'download',
   Plugin = 'plugin',
+  OptIn = 'optin',
+}
+
+export enum RPCCommands {
+  ImageToEmbedding = 'image_to_embedding',
+  Add = 'add',
 }
 
 export enum RPCResponseSubject {

@@ -1,6 +1,6 @@
 {
   "name": "@advertima/io",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "IO utilities to connect to a PoI",
   "main": "lib/io.cjs.js",
   "module": "lib/io.esm.js",

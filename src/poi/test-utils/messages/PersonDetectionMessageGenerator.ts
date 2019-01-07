@@ -181,8 +181,12 @@ export function generateSinglePersonUpdateData(options: PersonOptions): Object {
     },
   };
 
+  if (options.metadata) {
+    data['recognition'] = options.metadata;
+  }
+
   if (options.name) {
-    data['recognition'] = { name: options.name };
+    data['recognition'] = { ...data['recognition'], name: options.name };
   }
 
   if (options.generateEmbeddings) {
