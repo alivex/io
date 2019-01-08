@@ -327,6 +327,14 @@ export class POISnapshot {
         this.lastPersonUpdate.delete(pid);
       }
     }
+    for (const [ttid, cache] of this.personsCache.entries()) {
+      const lastUpdate = cache.json
+        ? cache.json.localTimestamp
+        : cache.binary.skeleton.localTimestamp;
+      if (timestamp - lastUpdate > MAX_RECENT_TIME) {
+        this.personsCache.delete(ttid);
+      }
+    }
   }
 
   /**
