@@ -38,7 +38,7 @@ export class TecSDKService implements IncomingMessageService {
    */
   public binaryStreamMessages(type?: BinaryType): Observable<BinaryMessageEvent> {
     return this.connection.binaryStreamMessages.pipe(
-      filter((e: BinaryMessageEvent) => !type || type === e.type)
+      filter((e: BinaryMessageEvent) => type === undefined || type === e.type)
     );
   }
 }
