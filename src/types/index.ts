@@ -1,9 +1,9 @@
 export enum BinaryType {
-  IMAGE,
-  SKELETON,
-  THUMBNAIL,
-  HEATMAP,
-  DEPTHMAP,
+  IMAGE = 1,
+  SKELETON = 2,
+  THUMBNAIL = 3,
+  HEATMAP = 4,
+  DEPTHMAP = 5,
 }
 
 export interface BinaryMessageEvent {
