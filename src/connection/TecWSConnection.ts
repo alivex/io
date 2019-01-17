@@ -16,7 +16,7 @@ export interface TecSdkWSConnectionOptions {
 export class TecWSConnection implements WSConnection {
   private jsonStreamStatus = WSConnectionStatus.Closed;
   private jsonStream: JsonStream;
-  private jsonStreamMessagesSubject: Subject<MessageEvent> = new Subject<MessageEvent>();
+  private jsonStreamMessagesSubject: Subject<Object> = new Subject<Object>();
 
   private binaryStreamStatus = WSConnectionStatus.Closed;
   private binaryStream: BinaryStream;
@@ -26,9 +26,9 @@ export class TecWSConnection implements WSConnection {
 
   /**
    * Json stream messages wrapped in an Observable
-   * @return {Observable<any>}
+   * @return {Observable<Object>}
    */
-  get jsonStreamMessages(): Observable<MessageEvent> {
+  get jsonStreamMessages(): Observable<Object> {
     return this.jsonStreamMessagesSubject.asObservable();
   }
 
@@ -94,7 +94,7 @@ export class TecWSConnection implements WSConnection {
     this.jsonStreamStatus = WSConnectionStatus.Connecting;
     this.jsonStream.onopen = this.onJsonStreamOpen.bind(this);
     this.jsonStream.onclose = this.onJsonStreamClose.bind(this);
-    this.jsonStream.onmessage = this.onJsonStreamMessage.bind(this);
+    this.jsonStream.addCallback(this.onJsonStreamMessage.bind(this));
   }
 
   /**
@@ -132,7 +132,7 @@ export class TecWSConnection implements WSConnection {
    * Emits a message to the JsonStream subject
    * @param {MessageEvent} e message
    */
-  private onJsonStreamMessage(e: MessageEvent): void {
+  private onJsonStreamMessage(e: Object): void {
     this.jsonStreamMessagesSubject.next(e);
   }
 

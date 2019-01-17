@@ -260,12 +260,14 @@ export class JsonStream extends Stream {
 
   /**
    * Parses the message and execute the callbacks
-   * @param {any} e
+   * @param {MessageEvent} e
    */
-  public onmessage(e: any): void {
-    let json;
+  public onmessage(e: MessageEvent): void {
+    let json = e;
     if (typeof e.data == 'string') {
-      json = JSON.parse(e.data);
+      try {
+        json = JSON.parse(e.data);
+      } catch (e) {}
     } else {
       json = decode(new Uint8Array(e.data));
     }

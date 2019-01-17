@@ -15,6 +15,6 @@ export interface WSConnection {
   close(): void;
   sendJsonStream(data: any): void;
   sendBinaryStream(data: any): void;
-  readonly jsonStreamMessages: Observable<MessageEvent>;
+  readonly jsonStreamMessages: Observable<Object>;
   readonly binaryStreamMessages: Observable<BinaryMessageEvent>;
 }
