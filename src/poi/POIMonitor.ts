@@ -27,6 +27,7 @@ export class POIMonitor {
   private snapshots: Subject<POISnapshot> = new Subject();
   private logger = console;
   private streamSubscription: Subscription;
+  private poiSnapshotObservable: Observable<POISnapshot>;
 
   /**
    * Creates a new instance of this class.
@@ -35,7 +36,9 @@ export class POIMonitor {
    * by the POI.
    * @param {IncomingMessageService} msgService
    */
-  constructor(private msgService: IncomingMessageService) {}
+  constructor(private msgService: IncomingMessageService) {
+    this.poiSnapshotObservable = this.snapshots.asObservable();
+  }
 
   /**
    * Starts subscribing the json messages and emit POI snapshots
@@ -126,7 +129,7 @@ export class POIMonitor {
    * @return {Observable<POISnapshot>}
    */
   public getPOISnapshotObservable(): Observable<POISnapshot> {
-    return this.snapshots.asObservable();
+    return this.poiSnapshotObservable;
   }
 }
 

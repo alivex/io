@@ -17,19 +17,28 @@ export class TecWSConnection implements WSConnection {
   private jsonStreamStatus = WSConnectionStatus.Closed;
   private jsonStream: JsonStream;
   private jsonStreamMessagesSubject: Subject<Object> = new Subject<Object>();
+  private jsonStreamMessagesObservable: Observable<Object>;
 
   private binaryStreamStatus = WSConnectionStatus.Closed;
   private binaryStream: BinaryStream;
   private binaryStreamMessagesSubject: Subject<BinaryMessageEvent> = new Subject<
     BinaryMessageEvent
   >();
+  private binaryStreamMessagesObservable: Observable<BinaryMessageEvent>;
+  /**
+   * [constructor description]
+   */
+  constructor() {
+    this.jsonStreamMessagesObservable = this.jsonStreamMessagesSubject.asObservable();
+    this.binaryStreamMessagesObservable = this.binaryStreamMessagesSubject.asObservable();
+  }
 
   /**
    * Json stream messages wrapped in an Observable
    * @return {Observable<Object>}
    */
   get jsonStreamMessages(): Observable<Object> {
-    return this.jsonStreamMessagesSubject.asObservable();
+    return this.jsonStreamMessagesObservable;
   }
 
   /**
@@ -37,7 +46,7 @@ export class TecWSConnection implements WSConnection {
    * @return {Observable<any>}
    */
   get binaryStreamMessages(): Observable<BinaryMessageEvent> {
-    return this.binaryStreamMessagesSubject.asObservable();
+    return this.binaryStreamMessagesObservable;
   }
 
   /**
