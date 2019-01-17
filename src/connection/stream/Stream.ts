@@ -182,6 +182,8 @@ abstract class Stream {
  * Binary Stream
  */
 export class BinaryStream extends Stream {
+  private cbs = null;
+
   public onimage: Function = function() {};
   public onskeleton: Function = function() {};
   public onthumbnail: Function = function() {};
@@ -208,17 +210,18 @@ export class BinaryStream extends Stream {
    * @param {any} e event
    */
   public onmessage(e: any): void {
-    const cbs = {
-      [BinaryDataType.TYPE_IMAGE]: this.onimage.bind(this),
-      [BinaryDataType.TYPE_SKELETON]: this.onskeleton.bind(this),
-      [BinaryDataType.TYPE_THUMBNAIL]: this.onthumbnail.bind(this),
-      [BinaryDataType.TYPE_HEATMAP]: this.onheatmap.bind(this),
-      [BinaryDataType.TYPE_DEPTHMAP]: this.ondepthmap.bind(this),
-    };
-
+    if (!this.cbs) {
+      this.cbs = {
+        [BinaryDataType.TYPE_IMAGE]: this.onimage.bind(this),
+        [BinaryDataType.TYPE_SKELETON]: this.onskeleton.bind(this),
+        [BinaryDataType.TYPE_THUMBNAIL]: this.onthumbnail.bind(this),
+        [BinaryDataType.TYPE_HEATMAP]: this.onheatmap.bind(this),
+        [BinaryDataType.TYPE_DEPTHMAP]: this.ondepthmap.bind(this),
+      };
+    }
     const data = new Uint8Array(e.data);
     const type = data[0];
-    const cb = cbs[type];
+    const cb = this.cbs[type];
     if (cb !== undefined) {
       cb(data.subarray(1));
     } else {
