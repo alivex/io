@@ -319,7 +319,7 @@ export class PersonDetection {
   public clone(): PersonDetection {
     return PersonDetection.fromMessage(this.json.clone(), {
       skeleton: this.skeleton.clone(),
-      personAttributes: this.personAttributes,
+      personAttributes: this.personAttributes.clone(),
     });
   }
 

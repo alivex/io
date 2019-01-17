@@ -68,10 +68,9 @@ export class POIMonitor {
    * @param {Message} message the message sent by the POI.
    */
   public emitMessage(message: Message): void {
-    const clonedPOISnapshot = this.getPOISnapshot().clone();
-    clonedPOISnapshot.update(message);
+    this.lastPOISnapshot.update(message);
+    const clonedPOISnapshot = this.lastPOISnapshot.clone();
     if (!(message instanceof UnknownMessage)) {
-      this.lastPOISnapshot = clonedPOISnapshot;
       this.snapshots.next(clonedPOISnapshot);
     }
     if (
@@ -114,10 +113,9 @@ export class POIMonitor {
       this.isActive = false;
       this.logger.warn('PoI stopped emitting.');
       this.mockMessagesInterval = setInterval(() => {
-        const clonedPOISnapshot = this.getPOISnapshot().clone();
-        clonedPOISnapshot.setPersons(new Map());
-        clonedPOISnapshot.update(new PersonsAliveMessage({ data: { person_ids: [] } }));
-        this.lastPOISnapshot = clonedPOISnapshot;
+        this.lastPOISnapshot.setPersons(new Map());
+        this.lastPOISnapshot.update(new PersonsAliveMessage({ data: { person_ids: [] } }));
+        const clonedPOISnapshot = this.lastPOISnapshot.clone();
         this.snapshots.next(clonedPOISnapshot);
       }, INACTIVE_STREAM_MESSAGE_INTERVAL);
     }, INACTIVE_STREAM_THRESHOLD);

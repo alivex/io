@@ -1,4 +1,5 @@
 import * as Ajv from 'ajv';
+import { cloneDeep } from 'lodash';
 import { Message } from '../Message';
 import { PersonDetectionSchema } from './PersonDetectionSchema';
 
@@ -29,6 +30,7 @@ export class PersonDetectionMessage extends Message {
    * @param {any} json the message to parse
    */
   protected fromObject(json: any): void {
+    json = cloneDeep(json);
     if (json.data.rolling_expected_values && json.data.rolling_expected_values.age) {
       this.age = Number(json.data.rolling_expected_values.age);
     }
@@ -55,7 +57,7 @@ export class PersonDetectionMessage extends Message {
    * @return {PersonDetectionMessage}
    */
   public clone(): PersonDetectionMessage {
-    const message = new PersonDetectionMessage({ ...this.json });
+    const message = new PersonDetectionMessage(cloneDeep(this.json));
     return message;
   }
 
