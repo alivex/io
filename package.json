@@ -36,8 +36,8 @@
   },
   "homepage": "https://github.com/advertima/io#readme",
   "dependencies": {
-    "ajv": "^6.5.4",
     "isomorphic-ws": "^4.0.1",
+    "jsonschema": "^1.2.4",
     "lodash": "^4.17.11",
     "msgpack-lite": "^0.1.26",
     "rxjs": "^6.3.3",

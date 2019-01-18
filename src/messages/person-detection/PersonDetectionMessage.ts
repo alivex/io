@@ -1,9 +1,7 @@
-import * as Ajv from 'ajv';
+import { validate } from 'jsonschema';
 import { cloneDeep } from 'lodash';
 import { Message } from '../Message';
 import { PersonDetectionSchema } from './PersonDetectionSchema';
-
-const Validator = new Ajv();
 
 /**
  * Encapsulates a Person Update message
@@ -67,10 +65,12 @@ export class PersonDetectionMessage extends Message {
    * @param {any} json the message to validate
    */
   protected validate(json: any): void {
-    const valid = Validator.validate(PersonDetectionSchema, json['data']);
+    const validatorResult = validate(json['data'], PersonDetectionSchema);
 
+    const { valid, errors } = validatorResult;
     if (!valid) {
-      throw new Error(`Invalid PersonDetectionMessage: ${Validator.errorsText(Validator.errors)}`);
+      const readableErrors = errors.map(error => error.toString()).join(', ');
+      throw new Error(`Invalid PersonDetectionMessage: ${readableErrors}`);
     }
   }
 }
