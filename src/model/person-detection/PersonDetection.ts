@@ -2,7 +2,7 @@ import { PersonDetectionMessage } from '../../messages/person-detection/PersonDe
 import { BinaryCachedData, Skeleton } from '../../model/skeleton/Skeleton';
 import { PersonAttributes } from '../../model/person-attributes/PersonAttributes';
 
-export interface RecognitionMetadta {
+export interface RecognitionMetadata {
   name?: string;
   [key: string]: any;
 }
@@ -88,10 +88,10 @@ export class PersonDetection {
 
   /**
    * Recognition metadata
-   * @return {RecognitionMetadta}
+   * @return {RecognitionMetadata}
    */
-  get recognition(): RecognitionMetadta {
-    return this.json.recognition as RecognitionMetadta;
+  get recognition(): RecognitionMetadata {
+    return this.json.recognition as RecognitionMetadata;
   }
 
   /**
