@@ -1,8 +1,7 @@
-import * as Ajv from 'ajv';
+import { validate } from 'jsonschema';
+import { cloneDeep } from 'lodash';
 import { Message } from '../Message';
 import { PersonDetectionSchema } from './PersonDetectionSchema';
-
-const Validator = new Ajv();
 
 /**
  * Encapsulates a Person Update message
@@ -29,6 +28,7 @@ export class PersonDetectionMessage extends Message {
    * @param {any} json the message to parse
    */
   protected fromObject(json: any): void {
+    json = cloneDeep(json);
     if (json.data.rolling_expected_values && json.data.rolling_expected_values.age) {
       this.age = Number(json.data.rolling_expected_values.age);
     }
@@ -55,7 +55,7 @@ export class PersonDetectionMessage extends Message {
    * @return {PersonDetectionMessage}
    */
   public clone(): PersonDetectionMessage {
-    const message = new PersonDetectionMessage({ ...this.json });
+    const message = new PersonDetectionMessage(cloneDeep(this.json));
     return message;
   }
 
@@ -65,10 +65,12 @@ export class PersonDetectionMessage extends Message {
    * @param {any} json the message to validate
    */
   protected validate(json: any): void {
-    const valid = Validator.validate(PersonDetectionSchema, json['data']);
+    const validatorResult = validate(json['data'], PersonDetectionSchema);
 
+    const { valid, errors } = validatorResult;
     if (!valid) {
-      throw new Error(`Invalid PersonDetectionMessage: ${Validator.errorsText(Validator.errors)}`);
+      const readableErrors = errors.map(error => error.toString()).join(', ');
+      throw new Error(`Invalid PersonDetectionMessage: ${readableErrors}`);
     }
   }
 }

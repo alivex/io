@@ -182,6 +182,8 @@ abstract class Stream {
  * Binary Stream
  */
 export class BinaryStream extends Stream {
+  private cbs = null;
+
   public onimage: Function = function() {};
   public onskeleton: Function = function() {};
   public onthumbnail: Function = function() {};
@@ -208,17 +210,18 @@ export class BinaryStream extends Stream {
    * @param {any} e event
    */
   public onmessage(e: any): void {
-    const cbs = {
-      [BinaryDataType.TYPE_IMAGE]: this.onimage.bind(this),
-      [BinaryDataType.TYPE_SKELETON]: this.onskeleton.bind(this),
-      [BinaryDataType.TYPE_THUMBNAIL]: this.onthumbnail.bind(this),
-      [BinaryDataType.TYPE_HEATMAP]: this.onheatmap.bind(this),
-      [BinaryDataType.TYPE_DEPTHMAP]: this.ondepthmap.bind(this),
-    };
-
+    if (!this.cbs) {
+      this.cbs = {
+        [BinaryDataType.TYPE_IMAGE]: this.onimage.bind(this),
+        [BinaryDataType.TYPE_SKELETON]: this.onskeleton.bind(this),
+        [BinaryDataType.TYPE_THUMBNAIL]: this.onthumbnail.bind(this),
+        [BinaryDataType.TYPE_HEATMAP]: this.onheatmap.bind(this),
+        [BinaryDataType.TYPE_DEPTHMAP]: this.ondepthmap.bind(this),
+      };
+    }
     const data = new Uint8Array(e.data);
     const type = data[0];
-    const cb = cbs[type];
+    const cb = this.cbs[type];
     if (cb !== undefined) {
       cb(data.subarray(1));
     } else {
@@ -257,12 +260,14 @@ export class JsonStream extends Stream {
 
   /**
    * Parses the message and execute the callbacks
-   * @param {any} e
+   * @param {MessageEvent} e
    */
-  public onmessage(e: any): void {
-    let json;
+  public onmessage(e: MessageEvent): void {
+    let json = e;
     if (typeof e.data == 'string') {
-      json = JSON.parse(e.data);
+      try {
+        json = JSON.parse(e.data);
+      } catch (e) {}
     } else {
       json = decode(new Uint8Array(e.data));
     }

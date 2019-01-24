@@ -73,15 +73,12 @@ export class POISnapshot {
       // Recreate the PersonDetections
       const entries = Object.entries(jsonSnapshot.persons).map(([id, p]) => {
         const json = new PersonDetectionMessage(p['json'].json);
-        // Since personAttributes is a PersonDetection private arguments
-        // we don't recreate the instance
-        const personAttributes = p['personAttributes'];
         const binary = {
           skeleton: new Skeleton(
             new SkeletonBinaryDataProvider(p['dataProvider']),
             json['localTimestamp']
           ),
-          personAttributes,
+          personAttributes: new PersonAttributes(p['personAttributes']['data']),
         };
         const person = PersonDetection.fromMessage(json, binary);
         return [id, person];
@@ -166,7 +163,7 @@ export class POISnapshot {
       snapshot.personsByTtid.set(person.ttid, clonedPerson);
     });
     snapshot.lastPersonUpdate = new Map(this.lastPersonUpdate);
-    snapshot.personsCache = new Map(this.personsCache);
+    // snapshot.personsCache = new Map(this.personsCache);
     snapshot.content = this.content ? this.content.clone() : undefined;
     snapshot.contentEvent = this.contentEvent;
     snapshot.lastUpdateTimestamp = this.lastUpdateTimestamp;

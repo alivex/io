@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { IncomingMessageService } from './IncomingMessageService';
 import { WSConnection } from '../connection/WSConnection';
 import { BinaryType, BinaryMessageEvent } from '../types';
@@ -18,16 +18,7 @@ export class TecSDKService implements IncomingMessageService {
    * @return {Observable<any>}
    */
   public jsonStreamMessages(): Observable<any> {
-    return this.connection.jsonStreamMessages.pipe(
-      map((event: MessageEvent) => {
-        const data = event.data;
-        let json = data;
-        try {
-          json = JSON.parse(data);
-        } catch (e) {}
-        return json;
-      })
-    );
+    return this.connection.jsonStreamMessages;
   }
 
   /**

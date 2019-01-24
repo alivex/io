@@ -64,6 +64,8 @@ export class PersonAttributes {
   public wearing_lipstick: number;
   public wearing_necklace: number;
   public wearing_necktie: number;
+
+  private data: Uint8Array;
   /* eslint-enable camelcase */
 
   /**
@@ -100,6 +102,16 @@ export class PersonAttributes {
         }
       }
     }
+
+    this.data = new Uint8Array(data);
+  }
+
+  /**
+   * Create a PersonAttributes instance with the same properties
+   * @return {PersonAttributes}
+   */
+  public clone(): PersonAttributes {
+    return new PersonAttributes(this.data);
   }
 
   /**

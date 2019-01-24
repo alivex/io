@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import { RPCService } from './RPCService';
 import { WSConnection } from '../connection/WSConnection';
 import { IncomingMessageService } from '../incoming-message/IncomingMessageService';
@@ -29,8 +29,10 @@ export class TecRPCService implements RPCService {
       data,
     };
     this.connection.sendJsonStream(json);
+
     return this.msgService.jsonStreamMessages().pipe(
       filter(msg => msg['message_id'] === messageId),
+      take(1),
       map(msg => msg.data)
     );
   }

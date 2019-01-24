@@ -10,7 +10,7 @@ class MockTecSdkWsConnection {
 }
 /* eslint-enable require-jsdoc */
 
-test.cb('should get a parsed object when a json message arrives', t => {
+test.cb('should get a json object when a json message arrives', t => {
   const connection = new MockTecSdkWsConnection();
   const service = new TecSDKService(connection as any);
 
@@ -18,7 +18,9 @@ test.cb('should get a parsed object when a json message arrives', t => {
   stub(connection, 'jsonStreamMessages').value(subject.asObservable());
 
   const expected = {
-    name: 'I expect this object',
+    data: {
+      name: 'I expect this object',
+    },
   };
 
   service.jsonStreamMessages().subscribe(msg => {
@@ -26,26 +28,5 @@ test.cb('should get a parsed object when a json message arrives', t => {
     t.end();
   });
 
-  subject.next({
-    data: expected,
-  });
-});
-
-test.cb('should get the raw data if it cannot be parsed', t => {
-  const connection = new MockTecSdkWsConnection();
-  const service = new TecSDKService(connection as any);
-
-  const subject = new Subject();
-  stub(connection, 'jsonStreamMessages').value(subject.asObservable());
-
-  const expected = 42;
-
-  service.jsonStreamMessages().subscribe(msg => {
-    t.deepEqual(msg, expected);
-    t.end();
-  });
-
-  subject.next({
-    data: expected,
-  });
+  subject.next(expected);
 });

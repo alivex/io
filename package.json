@@ -1,6 +1,6 @@
 {
   "name": "@advertima/io",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "IO utilities to connect to a PoI",
   "main": "lib/io.cjs.js",
   "module": "lib/io.esm.js",
@@ -36,8 +36,9 @@
   },
   "homepage": "https://github.com/advertima/io#readme",
   "dependencies": {
-    "ajv": "^6.5.4",
     "isomorphic-ws": "^4.0.1",
+    "jsonschema": "^1.2.4",
+    "lodash": "^4.17.11",
     "msgpack-lite": "^0.1.26",
     "rxjs": "^6.3.3",
     "uuid": "^3.3.2",

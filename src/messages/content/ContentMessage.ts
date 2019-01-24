@@ -1,8 +1,6 @@
-import * as Ajv from 'ajv';
+import { validate } from 'jsonschema';
 import { Message } from '../Message';
 import { ContentSchema } from './ContentSchema';
-
-const Validator = new Ajv();
 
 /**
  * Encapsulates a Content message
@@ -37,10 +35,12 @@ export class ContentMessage extends Message {
    * @param {any} json the message to validate
    */
   protected validate(json: any): void {
-    const valid = Validator.validate(ContentSchema, json['data']);
+    const validatorResult = validate(json['data'], ContentSchema);
 
+    const { valid, errors } = validatorResult;
     if (!valid) {
-      throw new Error(`Invalid ContentMessage: ${Validator.errorsText(Validator.errors)}`);
+      const readableErrors = errors.map(error => error.message).join(', ');
+      throw new Error(`Invalid ContentMessage: ${readableErrors}`);
     }
   }
 }

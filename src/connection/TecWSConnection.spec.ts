@@ -53,7 +53,7 @@ test.serial.cb('should receive a message from the json stream and emit it to the
   c.open();
 
   const subscription = c.jsonStreamMessages.subscribe(e => {
-    t.is(e.data, 'test message from mock json server');
+    t.is(e['data'], 'test message from mock json server');
     subscription.unsubscribe();
 
     c.close();
