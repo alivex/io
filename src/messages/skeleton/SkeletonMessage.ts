@@ -1,5 +1,5 @@
 import { Message } from '../Message';
-import { BinaryType, BinaryMessageEvent } from '../../types';
+import { BinaryMessageEvent } from '../../types';
 import { PersonAttributes } from '../../model/person-attributes/PersonAttributes';
 import { Skeleton } from '../../model/skeleton/Skeleton';
 
@@ -29,11 +29,7 @@ export class SkeletonMessage extends Message {
    * @param {any} obj the message to validate
    */
   protected validate(obj: any): void {
-    const typeValid =
-      obj.hasOwnProperty('type') &&
-      obj['type'] === BinaryType.SKELETON &&
-      obj.hasOwnProperty('data') &&
-      obj['data'] instanceof Uint8Array;
+    const typeValid = obj.hasOwnProperty('data') && obj['data'] instanceof Uint8Array;
 
     if (!typeValid) {
       throw new Error('Invalid SkeletonMessage type');

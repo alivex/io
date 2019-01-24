@@ -26,7 +26,7 @@ export class TecWSConnection implements WSConnection {
   >();
   private binaryStreamMessagesObservable: Observable<BinaryMessageEvent>;
   /**
-   * [constructor description]
+   * Creates an instance of TecWSConnection
    */
   constructor() {
     this.jsonStreamMessagesObservable = this.jsonStreamMessagesSubject.asObservable();

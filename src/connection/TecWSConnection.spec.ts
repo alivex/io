@@ -2,8 +2,7 @@ import test from 'ava';
 import { Server } from 'mock-socket';
 import { TecWSConnection } from './TecWSConnection';
 import { WSConnectionStatus } from './WSConnection';
-
-// TODO, use dependency injection for JsonStream and BinaryStream and reenable the tests()
+import { BinaryDataType } from '../constants/Constants';
 
 test.serial.cb(
   'should connect to the websockets, update the status and close the connection',
@@ -34,8 +33,8 @@ test.serial.cb(
         t.is(c['jsonStreamStatus'], WSConnectionStatus.Closed);
         t.is(c['binaryStreamStatus'], WSConnectionStatus.Closed);
 
-        mockJsonServer.stop(null);
-        mockBinaryServer.stop(null);
+        mockJsonServer.stop();
+        mockBinaryServer.stop();
         t.end();
       }, 100);
     }, 100);
@@ -43,6 +42,8 @@ test.serial.cb(
 );
 
 test.serial.cb('should receive a message from the json stream and emit it to the Subject', t => {
+  const expected = { text: 'test message from mock json server' };
+
   const fakeJsonURL = 'ws://localhost:8001';
   const mockJsonServer = new Server(fakeJsonURL);
 
@@ -53,17 +54,49 @@ test.serial.cb('should receive a message from the json stream and emit it to the
   c.open();
 
   const subscription = c.jsonStreamMessages.subscribe(e => {
-    t.is(e['data'], 'test message from mock json server');
+    t.deepEqual(e, expected);
     subscription.unsubscribe();
 
     c.close();
-    mockJsonServer.stop(null);
-    mockBinaryServer.stop(null);
+    mockJsonServer.stop();
+    mockBinaryServer.stop();
     t.end();
   });
 
   mockJsonServer.on('connection', socket => {
-    socket.send('test message from mock json server');
+    socket.send(JSON.stringify(expected));
+  });
+});
+
+test.serial.cb('should receive a message from the binary stream and emit it to the Subject', t => {
+  const fakeJsonURL = 'ws://localhost:8001';
+  const mockJsonServer = new Server(fakeJsonURL);
+
+  const fakeBinaryURL = 'ws://localhost:8002';
+  const mockBinaryServer = new Server(fakeBinaryURL);
+
+  const binaryDataBuffer = new ArrayBuffer(4);
+  const binaryDataArray = new Uint8Array(binaryDataBuffer);
+  binaryDataArray[0] = BinaryDataType.TYPE_SKELETON;
+  binaryDataArray[1] = 1;
+  binaryDataArray[2] = 2;
+  binaryDataArray[3] = 3;
+
+  const c = new TecWSConnection();
+  c.open();
+
+  const subscription = c.binaryStreamMessages.subscribe(e => {
+    t.deepEqual(e['data'], new Uint8Array([1, 2, 3]));
+    subscription.unsubscribe();
+
+    c.close();
+    mockJsonServer.stop();
+    mockBinaryServer.stop();
+    t.end();
+  });
+
+  mockBinaryServer.on('connection', socket => {
+    socket.send(binaryDataBuffer);
   });
 });
 
@@ -87,8 +120,8 @@ test.serial.cb('should send a message to the binary stream', t => {
       );
 
       c.close();
-      mockBinaryServer.stop(null);
-      mockJsonServer.stop(null);
+      mockBinaryServer.stop();
+      mockJsonServer.stop();
       t.end();
     });
   });
@@ -122,8 +155,8 @@ test.serial.cb('should send a message to the json stream', t => {
       );
 
       c.close();
-      mockBinaryServer.stop(null);
-      mockJsonServer.stop(null);
+      mockBinaryServer.stop();
+      mockJsonServer.stop();
       t.end();
     });
   });
@@ -136,3 +169,71 @@ test.serial.cb('should send a message to the json stream', t => {
     });
   }, 100);
 });
+
+test.serial.cb(
+  `should close the binary connection even if
+the json connection is closed already`,
+  t => {
+    const fakeJsonURL = 'ws://localhost:8001';
+    const mockJsonServer = new Server(fakeJsonURL);
+
+    const fakeBinaryURL = 'ws://localhost:8002';
+    const mockBinaryServer = new Server(fakeBinaryURL);
+
+    const c = new TecWSConnection();
+
+    mockJsonServer.on('connection', jsonSocket => {
+      // close json socket connection
+      jsonSocket.close();
+
+      setTimeout(() => {
+        // close the TecWSConnection
+        c.close();
+
+        setTimeout(() => {
+          t.is(c['jsonStreamStatus'], WSConnectionStatus.Closed);
+          t.is(c['binaryStreamStatus'], WSConnectionStatus.Closed);
+          mockBinaryServer.stop();
+          mockJsonServer.stop();
+          t.end();
+        }, 100);
+      }, 100);
+    });
+
+    c.open();
+  }
+);
+
+test.serial.cb(
+  `should close the json connection even if
+the binary connection is closed already`,
+  t => {
+    const fakeJsonURL = 'ws://localhost:8001';
+    const mockJsonServer = new Server(fakeJsonURL);
+
+    const fakeBinaryURL = 'ws://localhost:8002';
+    const mockBinaryServer = new Server(fakeBinaryURL);
+
+    const c = new TecWSConnection();
+
+    mockBinaryServer.on('connection', binarySocket => {
+      // close binary socket connection
+      binarySocket.close();
+
+      setTimeout(() => {
+        // close the TecWSConnection
+        c.close();
+
+        setTimeout(() => {
+          t.is(c['jsonStreamStatus'], WSConnectionStatus.Closed);
+          t.is(c['binaryStreamStatus'], WSConnectionStatus.Closed);
+          mockBinaryServer.stop();
+          mockJsonServer.stop();
+          t.end();
+        }, 100);
+      }, 100);
+    });
+
+    c.open();
+  }
+);
