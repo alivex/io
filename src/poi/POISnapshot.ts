@@ -131,13 +131,12 @@ export class POISnapshot {
     this.contentEvent = undefined;
 
     if (message instanceof SkeletonMessage) {
-      let start = 2;
-      for (let i = 0; i < message.personsCount; ++i) {
+      const { personLength, personsCount } = message;
+      for (let i = 2; i < personsCount * personLength; i += personLength) {
         this.updateSkeleton(
-          message.data.subarray(start, start + message.personLength),
+          message.data.subarray(i, i + message.personLength),
           message.localTimestamp
         );
-        start += message.personLength;
       }
     } else if (message instanceof PersonDetectionMessage) {
       this.updatePersons(message);

@@ -1,6 +1,5 @@
 import { Utils } from '../../utils/Utils';
 import { BinaryDataType } from '../../constants/Constants';
-import { decode } from 'msgpack-lite';
 import './Socket';
 
 const wsState = {
@@ -195,7 +194,7 @@ export class BinaryStream extends Stream {
    * @param {number} port=8002
    * @param {string[]} hosts
    */
-  constructor(port: number = 8002, hosts: string[]) {
+  constructor(port: number = 8002, hosts?: string[]) {
     super(port, hosts);
   }
 
@@ -241,7 +240,7 @@ export class JsonStream extends Stream {
    * @param {number} port=8001
    * @param {string[]} hosts
    */
-  constructor(port: number = 8001, hosts: string[]) {
+  constructor(port: number = 8001, hosts?: string[]) {
     super(port, hosts);
   }
 
@@ -264,12 +263,10 @@ export class JsonStream extends Stream {
    */
   public onmessage(e: MessageEvent): void {
     let json = e;
-    if (typeof e.data == 'string') {
-      try {
-        json = JSON.parse(e.data);
-      } catch (e) {}
-    } else {
-      json = decode(new Uint8Array(e.data));
+    try {
+      json = JSON.parse(e.data);
+    } catch (e) {
+      console.warn(e);
     }
     for (const cb of this._callbacks) {
       cb(json);

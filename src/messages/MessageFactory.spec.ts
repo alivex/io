@@ -200,12 +200,12 @@ test.before(() => {
 
 test('should parse a person_update message', t => {
   const msg = MessageFactory.parse(personDetectionMessage);
-  t.is(msg instanceof PersonDetectionMessage, true);
+  t.true(msg instanceof PersonDetectionMessage);
 });
 
 test('should parse a persons_alive message', t => {
   const msg = MessageFactory.parse(personsAliveMessage);
-  t.is(msg instanceof PersonsAliveMessage, true);
+  t.true(msg instanceof PersonsAliveMessage);
   t.deepEqual((msg as PersonsAliveMessage).getPersonIds(), [
     'b8d660b3-7931-4fb2-a5ab-ccac2ed994dd',
   ]);
@@ -213,7 +213,7 @@ test('should parse a persons_alive message', t => {
 
 test('should parse an unknown message (empty message)', t => {
   const msg = MessageFactory.parse({});
-  t.is(msg instanceof UnknownMessage, true);
+  t.true(msg instanceof UnknownMessage);
 });
 
 test('should parse an unknown message (invalid json)', t => {
@@ -223,7 +223,7 @@ test('should parse an unknown message (invalid json)', t => {
     }
   `;
   const msg = MessageFactory.parse(invalidJSON);
-  t.is(msg instanceof UnknownMessage, true);
+  t.true(msg instanceof UnknownMessage);
 });
 
 test('should parse an unknown message (incomplete message)', t => {
@@ -232,7 +232,7 @@ test('should parse an unknown message (incomplete message)', t => {
     data: {},
   };
   const msg = MessageFactory.parse(personsAliveMessageInvalid);
-  t.is(msg instanceof UnknownMessage, true);
+  t.true(msg instanceof UnknownMessage);
 });
 
 test('should parse an invalid person_update message', t => {
@@ -240,19 +240,34 @@ test('should parse an invalid person_update message', t => {
     subject: 'person_update',
     data: {},
   });
-  t.is(msg instanceof UnknownMessage, true);
+  t.true(msg instanceof UnknownMessage);
 });
 
 test('should parse a content message', t => {
   const msg = MessageFactory.parse(contentMessage);
-  t.is(msg instanceof ContentMessage, true);
+  t.true(msg instanceof ContentMessage);
+});
+
+test('should parse an invalid content message', t => {
+  const invalidContentMessage = { ...contentMessage };
+  invalidContentMessage.data.content_id = undefined;
+  const msg = MessageFactory.parse(invalidContentMessage);
+  t.true(msg instanceof UnknownMessage);
 });
 
 test('should parse a binary skeleton message', t => {
   const msg = MessageFactory.parse(skeletonMessage);
-  t.is(msg instanceof SkeletonMessage, true);
+  t.true(msg instanceof SkeletonMessage);
   t.is((msg as SkeletonMessage).personsCount, 3);
   t.is((msg as SkeletonMessage).personLength, (629 - 2) / 3);
+});
+
+test('should parse an unknown message (invalid skeleton message format)', t => {
+  const invalidSkeletonMessage = {
+    type: BinaryType.SKELETON,
+  };
+  const msg = MessageFactory.parse(invalidSkeletonMessage);
+  t.true(msg instanceof UnknownMessage);
 });
 
 test('should parse an unknown message (invalid skeleton message)', t => {
@@ -261,7 +276,7 @@ test('should parse an unknown message (invalid skeleton message)', t => {
     data: new Uint8Array(skeletonData.slice(0, skeletonData.length - 3)),
   };
   const msg = MessageFactory.parse(invalidSkeletonMessage);
-  t.is(msg instanceof UnknownMessage, true);
+  t.true(msg instanceof UnknownMessage);
 });
 
 test.after(() => {

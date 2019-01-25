@@ -32,7 +32,7 @@ test('should log an error when the ttid of the person is not a number', t => {
   const consoleSpy = spy(console, 'warn');
   const json = PersonDetectionMessageGenerator.generate({ ttid });
   snapshot.update(json);
-  t.is(consoleSpy.calledWith('TTID must be set'), true);
+  t.true(consoleSpy.calledWith('TTID must be set'));
 
   consoleSpy.restore();
 });
