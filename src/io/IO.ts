@@ -72,6 +72,7 @@ export class IO {
           local_timestamp: event.localTimestamp,
           content_play_id: event.contentPlayId,
           person_put_ids: event.persons,
+          data: event.data,
         },
       })
     );

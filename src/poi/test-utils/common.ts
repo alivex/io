@@ -34,5 +34,6 @@ export interface ContentOptions {
   poi: number;
   localTimestamp?: number;
   name?: string;
+  data?: Object;
   personPutIds?: string[];
 }

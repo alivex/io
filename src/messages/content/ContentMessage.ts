@@ -13,6 +13,7 @@ export class ContentMessage extends Message {
   public contentId: string;
   public contentPlayId: string;
   public personPutIds: Array<string>;
+  public data: Object;
 
   /**
    * Parses a ContentMessage
@@ -27,6 +28,7 @@ export class ContentMessage extends Message {
     this.contentId = json['data']['content_id'];
     this.contentPlayId = json['data']['content_play_id'];
     this.personPutIds = json['data']['person_put_ids'];
+    this.data = json['data']['data'];
   }
 
   /**

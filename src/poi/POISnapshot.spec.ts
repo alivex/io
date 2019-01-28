@@ -204,12 +204,14 @@ test('should have the content event', t => {
       poi: 38,
       name: 'another_custom_event',
       contentPlayId: 'x',
+      data: { hello: 'world' },
     })
   );
 
   t.is(snapshot.getContent().contentId, '1234');
   t.is(snapshot.getContent().poi, 38);
   t.is(snapshot.getContentEvent(), 'another_custom_event');
+  t.deepEqual(snapshot.getContentEventData(), { hello: 'world' });
 });
 
 test('content event should be cleared', t => {
