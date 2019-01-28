@@ -22,6 +22,7 @@ export class POISnapshot {
   private personsByTtid: Map<number, PersonDetection> = new Map();
   private content: Content;
   private contentEvent: string;
+  private contentEventData: Object;
   private lastUpdateTimestamp: number;
 
   private personsCache: Map<
@@ -58,6 +59,7 @@ export class POISnapshot {
       const jsonSnapshot = decode(data);
       snapshot.lastUpdateTimestamp = jsonSnapshot.lastUpdateTimestamp;
       snapshot.contentEvent = jsonSnapshot.contentEvent;
+      snapshot.contentEventData = jsonSnapshot.contentEventData;
 
       // Re create the Content
       if (jsonSnapshot.content) {
@@ -102,6 +104,17 @@ export class POISnapshot {
   }
 
   /**
+   * Retrieves the data attached to the latest content event triggered, if any.
+   *
+   * @return {string} the data of the latest content event that has
+   * been triggered, or `undefined` if no event was triggered with the
+   * most recent update.
+   */
+  public getContentEventData(): Object {
+    return this.contentEventData;
+  }
+
+  /**
    * Returns the timestamp of the last update
    * @return {number}
    */
@@ -129,6 +142,7 @@ export class POISnapshot {
   public update(message: Message) {
     // Handle non-message specific updates
     this.contentEvent = undefined;
+    this.contentEventData = undefined;
 
     if (message instanceof SkeletonMessage) {
       const { personLength, personsCount } = message;
@@ -165,6 +179,7 @@ export class POISnapshot {
     // snapshot.personsCache = new Map(this.personsCache);
     snapshot.content = this.content ? this.content.clone() : undefined;
     snapshot.contentEvent = this.contentEvent;
+    snapshot.contentEventData = this.contentEventData;
     snapshot.lastUpdateTimestamp = this.lastUpdateTimestamp;
     return snapshot;
   }
@@ -182,6 +197,7 @@ export class POISnapshot {
       lastUpdateTimestamp: this.lastUpdateTimestamp,
       persons,
       contentEvent: this.contentEvent,
+      contentEventData: this.contentEventData,
     };
     return result;
   }
@@ -342,6 +358,7 @@ export class POISnapshot {
   private updateContent(message: ContentMessage): void {
     this.content = Content.fromMessage(message);
     this.contentEvent = this.content.event;
+    this.contentEventData = this.content.data;
     this.lastUpdateTimestamp = this.content.localTimestamp;
   }
 }

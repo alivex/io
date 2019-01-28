@@ -36,6 +36,9 @@ export const ContentSchema = {
         type: 'string',
       },
     },
+    data: {
+      type: 'object',
+    },
   },
   required: [
     'record_type',

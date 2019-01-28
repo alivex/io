@@ -10,6 +10,7 @@ export class Content {
   public contentId: string;
   public contentPlayId: string;
   public personPutIds: Array<string>;
+  public data: Object;
 
   /**
    * Creates a Content object from a Content message
@@ -25,6 +26,7 @@ export class Content {
     content.contentId = message.contentId;
     content.contentPlayId = message.contentPlayId;
     content.personPutIds = message.personPutIds;
+    content.data = message.data;
 
     return content;
   }
@@ -42,6 +44,7 @@ export class Content {
     content.contentId = this.contentId;
     content.contentPlayId = this.contentPlayId;
     content.personPutIds = this.personPutIds;
+    content.data = this.data;
     return content;
   }
 }
