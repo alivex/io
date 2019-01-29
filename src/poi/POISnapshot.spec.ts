@@ -298,6 +298,18 @@ test('should encode and decode the snapshot properly', t => {
       personPutIds: [],
       poi: 1,
     },
+    {
+      localTimestamp: 1537362330000,
+      contentId: '1',
+      contentPlayId: '33e17c5c-214f',
+      name: 'ikea_playout_start',
+      data: {
+        name: 'game_start',
+        hello: 'world',
+      },
+      personPutIds: [],
+      poi: 1,
+    },
   ]);
   const result = POISnapshot.decode(encode(expected.toJSON()));
 
@@ -336,6 +348,18 @@ test('should decode and clone a snapshot', t => {
       age: 21,
       gender: 'male',
       cameraId: 'Camera: ZED',
+      poi: 1,
+    },
+    {
+      localTimestamp: 1537362330000,
+      contentId: '1',
+      contentPlayId: '33e17c5c-214f',
+      name: 'ikea_playout_start',
+      data: {
+        name: 'game_start',
+        hello: 'world',
+      },
+      personPutIds: [],
       poi: 1,
     },
   ]);
