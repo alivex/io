@@ -19,7 +19,7 @@ export class ContentMessageGenerator {
         record_type: RPCRecordType.ContentEvent,
         local_timestamp: options.localTimestamp || Date.now(),
         name: options.name || '',
-        data: options.data || {},
+        data: options.data,
         content_id: options.contentId,
         content_play_id: options.contentPlayId,
         person_put_ids: options.personPutIds || [],
