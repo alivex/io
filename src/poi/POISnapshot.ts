@@ -49,6 +49,16 @@ export class POISnapshot {
   }
 
   /**
+   * Clears the persons from the memory
+   * (also the internal cached maps)
+   */
+  public clearPersons(): void {
+    this.persons.clear();
+    this.personsByTtid.clear();
+    this.personsCache.clear();
+  }
+
+  /**
    * Creates a POISnapshot from encoded data
    * @param {Uint8Array} data encoded binary data
    * @return {POISnapshot} decoded POI snapshot

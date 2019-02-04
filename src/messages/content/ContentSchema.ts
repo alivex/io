@@ -30,23 +30,9 @@ export const ContentSchema = {
     content_play_id: {
       type: 'string',
     },
-    person_put_ids: {
-      type: 'array',
-      items: {
-        type: 'string',
-      },
-    },
     data: {
       type: 'object',
     },
   },
-  required: [
-    'record_type',
-    'poi',
-    'local_timestamp',
-    'name',
-    'content_id',
-    'content_play_id',
-    'person_put_ids',
-  ],
+  required: ['record_type', 'poi', 'local_timestamp', 'name', 'content_id', 'content_play_id'],
 };

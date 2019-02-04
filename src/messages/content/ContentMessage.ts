@@ -12,7 +12,6 @@ export class ContentMessage extends Message {
   public name: string;
   public contentId: string;
   public contentPlayId: string;
-  public personPutIds: Array<string>;
   public data: Object;
 
   /**
@@ -27,7 +26,6 @@ export class ContentMessage extends Message {
     this.name = json['data']['name'];
     this.contentId = json['data']['content_id'];
     this.contentPlayId = json['data']['content_play_id'];
-    this.personPutIds = json['data']['person_put_ids'];
     this.data = json['data']['data'];
   }
 
