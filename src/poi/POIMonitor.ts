@@ -116,7 +116,7 @@ export class POIMonitor {
       this.isActive = false;
       this.logger.warn('PoI stopped emitting.');
       this.mockMessagesInterval = setInterval(() => {
-        this.lastPOISnapshot.setPersons(new Map());
+        this.lastPOISnapshot.clearPersons();
         this.lastPOISnapshot.update(new PersonsAliveMessage({ data: { person_ids: [] } }));
         const clonedPOISnapshot = this.lastPOISnapshot.clone();
         this.snapshots.next(clonedPOISnapshot);
