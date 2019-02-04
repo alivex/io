@@ -19,7 +19,6 @@ export class PlayoutEvent {
     public contentId: string,
     public contentPlayId: string,
     public poi: number,
-    public persons: string[],
     public localTimestamp: number,
     public data: Object = {}
   ) {}
@@ -36,7 +35,7 @@ export class StartEvent extends PlayoutEvent {
    * @param {number} localTimestamp
    */
   constructor(contentId: string, contentPlayId: string, poi: number, localTimestamp: number) {
-    super(StartEventKey, contentId, contentPlayId, poi, [], localTimestamp);
+    super(StartEventKey, contentId, contentPlayId, poi, localTimestamp);
   }
 }
 
@@ -51,7 +50,7 @@ export class EndEvent extends PlayoutEvent {
    * @param {number} localTimestamp
    */
   constructor(contentId: string, contentPlayId: string, poi: number, localTimestamp: number) {
-    super(EndEventKey, contentId, contentPlayId, poi, [], localTimestamp);
+    super(EndEventKey, contentId, contentPlayId, poi, localTimestamp);
   }
 }
 
@@ -81,6 +80,6 @@ export class CustomEvent extends PlayoutEvent {
  Use StartEvent or EndEvent instead`
       );
     }
-    super(name, contentId, contentPlayId, poi, [], localTimestamp, data);
+    super(name, contentId, contentPlayId, poi, localTimestamp, data);
   }
 }

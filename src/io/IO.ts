@@ -54,14 +54,6 @@ export class IO {
    * @param {PlayoutEvent} event
    */
   public reportPlayoutEvent(event: PlayoutEvent): void {
-    const personList = Array.from(
-      this.poiMonitor
-        .getPOISnapshot()
-        .getPersons()
-        .values()
-    );
-    event.persons = personList.map(p => p.personPutId);
-
     this.poiMonitor.emitMessage(
       MessageFactory.parse({
         data: {
@@ -71,7 +63,6 @@ export class IO {
           poi: event.poi,
           local_timestamp: event.localTimestamp,
           content_play_id: event.contentPlayId,
-          person_put_ids: event.persons,
           data: event.data,
         },
       })
