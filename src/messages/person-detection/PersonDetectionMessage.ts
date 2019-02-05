@@ -55,8 +55,7 @@ export class PersonDetectionMessage extends Message {
    * @return {PersonDetectionMessage}
    */
   public clone(): PersonDetectionMessage {
-    const message = new PersonDetectionMessage(cloneDeep(this.json));
-    return message;
+    return new PersonDetectionMessage(cloneDeep(this.json));
   }
 
   /**

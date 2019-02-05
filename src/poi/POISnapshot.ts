@@ -344,7 +344,8 @@ export class POISnapshot {
   private removeGonePersons(timestamp: number) {
     for (const pid of this.lastPersonUpdate.keys()) {
       const lastUpdate = this.lastPersonUpdate.get(pid);
-      if (timestamp - lastUpdate > MAX_RECENT_TIME) {
+      if (timestamp - lastUpdate > MAX_RECENT_TIME && this.persons.get(pid)) {
+        this.personsByTtid.delete(this.persons.get(pid).ttid);
         this.persons.delete(pid);
         this.lastPersonUpdate.delete(pid);
       }
