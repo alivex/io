@@ -1,4 +1,5 @@
 import test from 'ava';
+import { combineLatest } from 'rxjs';
 import { Server } from 'mock-socket';
 import { TecWSConnection } from './TecWSConnection';
 import { WSConnectionStatus } from './WSConnection';
@@ -237,3 +238,27 @@ the binary connection is closed already`,
     c.open();
   }
 );
+
+test.serial.cb('should emits a message when the json and binary connection are opened', t => {
+  const fakeJsonURL = 'ws://localhost:8001';
+  const mockJsonServer = new Server(fakeJsonURL);
+
+  const fakeBinaryURL = 'ws://localhost:8002';
+  const mockBinaryServer = new Server(fakeBinaryURL);
+
+  const c = new TecWSConnection();
+
+  const subscription = combineLatest(
+    c.binaryStreamConnectionOpened,
+    c.jsonStreamConnectionOpened
+  ).subscribe(() => {
+    t.pass();
+    t.end();
+    subscription.unsubscribe();
+    c.close();
+    mockBinaryServer.stop();
+    mockJsonServer.stop();
+  });
+
+  c.open();
+});

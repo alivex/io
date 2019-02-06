@@ -46,6 +46,10 @@ export class IO {
     this.incomingMessageService = new TecSDKService(this.connection);
     this.rpcService = new TecRPCService(this.connection, this.incomingMessageService);
     this.poiMonitor = new POIMonitor(this.incomingMessageService);
+
+    connection.binaryStreamConnectionOpened.subscribe(() => {
+      this.updateResolutions();
+    });
   }
 
   /**
@@ -75,7 +79,6 @@ export class IO {
    */
   public connect(options: IOOptions): void {
     this.connection.open(options);
-    this.updateResolutions();
     if (!options.noSnapshot) {
       this.poiMonitor.start();
     }
