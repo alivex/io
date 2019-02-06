@@ -4,3 +4,4 @@ node_js:
 script:
   - npm run checkstyle
   - npm test
+  - npm run test:report
