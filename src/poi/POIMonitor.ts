@@ -1,10 +1,8 @@
 import { Subject } from 'rxjs';
 import { Observer, Observable } from 'rxjs';
-import { Subscription, merge } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Subscription, merge, interval, of } from 'rxjs';
+import { map, tap, timeout, catchError, skipUntil, takeUntil, repeat } from 'rxjs/operators';
 import { Message } from '../messages/Message';
-import { SkeletonMessage } from '../messages/skeleton/SkeletonMessage';
-import { PersonDetectionMessage } from '../messages/person-detection/PersonDetectionMessage';
 import { UnknownMessage } from '../messages/unknown/UnknownMessage';
 import { MessageFactory } from '../messages/MessageFactory';
 import { PersonsAliveMessage } from '../messages/persons-alive/PersonsAliveMessage';
@@ -21,8 +19,6 @@ export const INACTIVE_STREAM_MESSAGE_INTERVAL = 200;
  */
 export class POIMonitor {
   private isActive: boolean = true;
-  private isActiveTimeout;
-  private mockMessagesInterval;
   private lastPOISnapshot: POISnapshot = new POISnapshot();
   private snapshots: Subject<POISnapshot> = new Subject();
   private logger = console;
@@ -42,16 +38,13 @@ export class POIMonitor {
 
   /**
    * Starts subscribing the json messages and emit POI snapshots
+   * If the TEC stream stops emitting, use the fallback stream until the TEC stream is back
    */
   public start(): void {
     if (!this.streamSubscription || this.streamSubscription.closed) {
-      this.updateHealthTimeout();
-      this.streamSubscription = merge(
-        this.msgService.jsonStreamMessages(),
-        this.msgService.binaryStreamMessages(BinaryType.SKELETON)
-      )
-        .pipe(map(json => MessageFactory.parse(json)))
-        .subscribe(new MessageObserver(this));
+      this.streamSubscription = this.getMessageStreamWithFallback().subscribe(
+        new MessageObserver(this)
+      );
     }
   }
 
@@ -76,20 +69,6 @@ export class POIMonitor {
     if (!(message instanceof UnknownMessage)) {
       this.snapshots.next(clonedPOISnapshot);
     }
-    if (
-      message instanceof PersonsAliveMessage ||
-      message instanceof SkeletonMessage ||
-      message instanceof PersonDetectionMessage
-    ) {
-      if (this.isActive) {
-        this.updateHealthTimeout();
-      } else {
-        this.logger.warn('PoI is back.');
-        this.isActive = true;
-        clearTimeout(this.isActiveTimeout);
-        clearInterval(this.mockMessagesInterval);
-      }
-    }
   }
 
   /**
@@ -99,29 +78,7 @@ export class POIMonitor {
     if (this.streamSubscription) {
       this.streamSubscription.unsubscribe();
     }
-    clearTimeout(this.isActiveTimeout);
-    clearInterval(this.mockMessagesInterval);
     this.snapshots.complete();
-  }
-
-  /**
-   * Clears the previous health timeout and create a new one.
-   * If no detections are emitted before 2 seconds, it will emit a fake empty
-   * detection.
-   */
-  private updateHealthTimeout(): void {
-    clearTimeout(this.isActiveTimeout);
-    this.isActiveTimeout = setTimeout(() => {
-      clearInterval(this.mockMessagesInterval);
-      this.isActive = false;
-      this.logger.warn('PoI stopped emitting.');
-      this.mockMessagesInterval = setInterval(() => {
-        this.lastPOISnapshot.clearPersons();
-        this.lastPOISnapshot.update(new PersonsAliveMessage({ data: { person_ids: [] } }));
-        const clonedPOISnapshot = this.lastPOISnapshot.clone();
-        this.snapshots.next(clonedPOISnapshot);
-      }, INACTIVE_STREAM_MESSAGE_INTERVAL);
-    }, INACTIVE_STREAM_THRESHOLD);
   }
 
   /**
@@ -130,6 +87,62 @@ export class POIMonitor {
    */
   public getPOISnapshotObservable(): Observable<POISnapshot> {
     return this.poiSnapshotObservable;
+  }
+
+  /**
+   * Returns an Observable that emits the TEC messages
+   * or fallback empty PersonsAliveMessage messages if the TEC stream is inactive
+   * for at least INACTIVE_STREAM_MESSAGE_INTERVAL ms.
+   * When the TEC stream is back, it emits again from it
+   * @return {Observable<Message>}
+   */
+  private getMessageStreamWithFallback(): Observable<Message> {
+    // Pipe TEC messages into Message instances
+    const tecStreamObservable = this.getTecStreamObservable().pipe(
+      map(data => MessageFactory.parse(data)),
+      tap(() => {
+        if (!this.isActive) {
+          this.logger.warn('PoI is back.');
+          this.isActive = true;
+        }
+      })
+    );
+
+    // Observable that emits an empty PersonsAliveMessage message
+    // every INACTIVE_STREAM_MESSAGE_INTERVAL ms
+    const inactiveStreamObservable = interval(INACTIVE_STREAM_MESSAGE_INTERVAL).pipe(
+      map(() => new PersonsAliveMessage({ data: { person_ids: [] } }))
+    );
+
+    // Observable that emits and complete if TEC stream times out
+    const tecStreamHasStopped = tecStreamObservable.pipe(
+      timeout(INACTIVE_STREAM_THRESHOLD),
+      catchError(() => {
+        this.isActive = false;
+        this.logger.warn('PoI stopped emitting.');
+        return of(1);
+      })
+    );
+
+    return merge(
+      tecStreamObservable,
+      inactiveStreamObservable.pipe(
+        skipUntil(tecStreamHasStopped),
+        takeUntil(tecStreamObservable),
+        repeat()
+      )
+    );
+  }
+
+  /**
+   * Merges json and binary data Observables in one Observable
+   * @return {Observable<any>}
+   */
+  private getTecStreamObservable(): Observable<any> {
+    return merge(
+      this.msgService.jsonStreamMessages(),
+      this.msgService.binaryStreamMessages(BinaryType.SKELETON)
+    );
   }
 }
 

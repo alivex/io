@@ -43,7 +43,6 @@ test.cb(
     const n = 5;
     setTimeout(() => {
       t.is(emittedSnapshots.length, n);
-      t.false(poiMonitor['isActive']);
       emittedSnapshots.forEach(snapshot => {
         t.is(snapshot.getPersons().size, 0);
         t.is(snapshot.getContent(), undefined);
@@ -67,10 +66,8 @@ test.cb(
       t.is(emittedSnapshots.length, n + 2);
       t.is(lastSnapshot.getPersons().size, 1);
       t.is(lastSnapshot.getPersons().get(personId).ttid, ttid);
-      t.true(poiMonitor['isActive']);
       t.end();
-    }, INACTIVE_STREAM_THRESHOLD + (n + 1) * INACTIVE_STREAM_MESSAGE_INTERVAL);
-    // n + 1 because the first emission starts after 200ms (setInterval)
+    }, INACTIVE_STREAM_THRESHOLD + n * INACTIVE_STREAM_MESSAGE_INTERVAL);
   }
 );
 
@@ -149,57 +146,6 @@ test.cb(
     }, INACTIVE_STREAM_THRESHOLD);
   }
 );
-
-test.cb('should complete when the incoming message service complete', t => {
-  const jsonSubject = new Subject();
-  const binarySubject = new Subject<BinaryMessageEvent>();
-
-  /* eslint-disable require-jsdoc */
-  class MockMessageService implements IncomingMessageService {
-    jsonStreamMessages(): Observable<any> {
-      return jsonSubject.asObservable();
-    }
-
-    binaryStreamMessages(type?: BinaryType): Observable<BinaryMessageEvent> {
-      return binarySubject.asObservable();
-    }
-  }
-  /* eslint-enable require-jsdoc */
-
-  const poiMonitor = new POIMonitor(new MockMessageService());
-
-  const emittedSnapshots: POISnapshot[] = [];
-  poiMonitor.getPOISnapshotObservable().subscribe(snapshot => {
-    emittedSnapshots.push(snapshot);
-  });
-
-  // Emit a person detection every 100ms
-  const personId = 'rcyb48vg-4eha';
-  const ttid = 89;
-  const detectionsInterval = setInterval(() => {
-    jsonSubject.next({
-      data: generateSinglePersonUpdateData({ ttid, personId }),
-      subject: RPCResponseSubject.PersonUpdate,
-    });
-    binarySubject.next({
-      data: new Uint8Array([0, 1, ...generateSinglePersonBinaryData({ ttid })]),
-      type: BinaryType.SKELETON,
-    });
-  }, 100);
-
-  poiMonitor.start();
-
-  setTimeout(() => {
-    jsonSubject.complete();
-    binarySubject.complete();
-  }, 1000);
-
-  poiMonitor.getPOISnapshotObservable().subscribe(null, null, () => {
-    t.pass('Incoming message service has completed');
-    clearInterval(detectionsInterval);
-    t.end();
-  });
-});
 
 test.cb('should synchronously get the last poi snapshot', t => {
   const jsonSubject = new Subject();
