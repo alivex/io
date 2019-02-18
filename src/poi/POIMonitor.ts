@@ -1,9 +1,21 @@
 import { Subject } from 'rxjs';
-import { Observer, Observable } from 'rxjs';
-import { Subscription, merge, interval, of } from 'rxjs';
-import { map, tap, timeout, catchError, skipUntil, takeUntil, repeat } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { merge, interval, of } from 'rxjs';
+import {
+  map,
+  tap,
+  timeout,
+  catchError,
+  skipUntil,
+  takeUntil,
+  repeat,
+  filter,
+  scan,
+  share,
+} from 'rxjs/operators';
 import { Message } from '../messages/Message';
 import { UnknownMessage } from '../messages/unknown/UnknownMessage';
+import { ContentMessage } from '../messages/content/ContentMessage';
 import { MessageFactory } from '../messages/MessageFactory';
 import { PersonsAliveMessage } from '../messages/persons-alive/PersonsAliveMessage';
 import { IncomingMessageService } from '../incoming-message/IncomingMessageService';
@@ -20,10 +32,10 @@ export const INACTIVE_STREAM_MESSAGE_INTERVAL = 200;
 export class POIMonitor {
   private isActive: boolean = true;
   private lastPOISnapshot: POISnapshot = new POISnapshot();
-  private snapshots: Subject<POISnapshot> = new Subject();
   private logger = console;
-  private streamSubscription: Subscription;
-  private poiSnapshotObservable: Observable<POISnapshot>;
+  private enableSnapshot = false;
+
+  private contentMessageEmitter: Subject<ContentMessage> = new Subject<ContentMessage>();
 
   /**
    * Creates a new instance of this class.
@@ -32,20 +44,20 @@ export class POIMonitor {
    * by the POI.
    * @param {IncomingMessageService} msgService
    */
-  constructor(private msgService: IncomingMessageService) {
-    this.poiSnapshotObservable = this.snapshots.asObservable();
+  constructor(private msgService: IncomingMessageService) {}
+
+  /**
+   * Enable TEC messages to flow to the POISnapshot
+   */
+  public start(): void {
+    this.enableSnapshot = true;
   }
 
   /**
-   * Starts subscribing the json messages and emit POI snapshots
-   * If the TEC stream stops emitting, use the fallback stream until the TEC stream is back
+   * Prevent TEC messages to flow to the POISnapshot
    */
-  public start(): void {
-    if (!this.streamSubscription || this.streamSubscription.closed) {
-      this.streamSubscription = this.getMessageStreamWithFallback().subscribe(
-        new MessageObserver(this)
-      );
-    }
+  public stop(): void {
+    this.enableSnapshot = false;
   }
 
   /**
@@ -57,28 +69,11 @@ export class POIMonitor {
   }
 
   /**
-   * Updates the POI Snapshot and informs the subscribers
-   * about the changes.
-   * If the message is a PersonsAliveMessage, update the monitoring timeout
-   *
-   * @param {Message} message the message sent by the POI.
+   * Gets a ContentMessage and push it to the internal content msg emitter
+   * @param {ContentMessage} message
    */
-  public emitMessage(message: Message): void {
-    this.lastPOISnapshot.update(message);
-    const clonedPOISnapshot = this.lastPOISnapshot.clone();
-    if (!(message instanceof UnknownMessage)) {
-      this.snapshots.next(clonedPOISnapshot);
-    }
-  }
-
-  /**
-   * Marks the stream as completed.
-   */
-  public complete(): void {
-    if (this.streamSubscription) {
-      this.streamSubscription.unsubscribe();
-    }
-    this.snapshots.complete();
+  public pushContentMessage(message: ContentMessage): void {
+    this.contentMessageEmitter.next(message);
   }
 
   /**
@@ -86,7 +81,11 @@ export class POIMonitor {
    * @return {Observable<POISnapshot>}
    */
   public getPOISnapshotObservable(): Observable<POISnapshot> {
-    return this.poiSnapshotObservable;
+    return this.getMessageStreamWithFallback().pipe(
+      this.mapMessageToPOISnapshot(),
+      filter(() => this.enableSnapshot === true),
+      share()
+    );
   }
 
   /**
@@ -125,6 +124,7 @@ export class POIMonitor {
     );
 
     return merge(
+      this.contentMessageEmitter.asObservable(),
       tecStreamObservable,
       inactiveStreamObservable.pipe(
         skipUntil(tecStreamHasStopped),
@@ -144,44 +144,27 @@ export class POIMonitor {
       this.msgService.binaryStreamMessages(BinaryType.SKELETON)
     );
   }
-}
-
-/**
- * Listens for incoming messages.
- */
-class MessageObserver implements Observer<Message> {
-  /**
-   * Creates a new instance.
-   *
-   * @param {POIMonitor} poiMonitor the POIMonitor instance
-   * that will be used to handle the changes.
-   */
-  constructor(private poiMonitor: POIMonitor) {}
 
   /**
-   * Executed when a new message is received.
-   * Will trigger the POISnapshot update.
-   *
-   * @param {Message} m the received message.
+   * RxJS operator that takes a Observable<Message> and transforms
+   * it into an Observable<POISnapshot>:
+   * - discards the UnknownMessages
+   * - update the previous snapshot with the new message
+   * - clone and pushe the updated snapshot
+   * - update the local reference to the last snapshot
+   * @return {Function}
    */
-  public next(m: Message): void {
-    this.poiMonitor.emitMessage(m);
-  }
-
-  /**
-   * Error in the observable.
-   *
-   * @param {any} e the error.
-   */
-  public error(e: any): void {
-    console.error(e);
-  }
-
-  /**
-   * The stream is completed.
-   */
-  public complete(): void {
-    this.poiMonitor.complete();
-    console.log('completed');
+  private mapMessageToPOISnapshot(): (source: Observable<Message>) => Observable<POISnapshot> {
+    return (source: Observable<Message>) => {
+      return source.pipe(
+        filter(message => !(message instanceof UnknownMessage)),
+        scan((snapshot: POISnapshot, msg: Message) => {
+          snapshot.update(msg);
+          return snapshot;
+        }, this.lastPOISnapshot),
+        map(snapshot => snapshot.clone()),
+        tap(snapshot => (this.lastPOISnapshot = snapshot))
+      );
+    };
   }
 }

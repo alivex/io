@@ -3,6 +3,7 @@ import { WSConnection } from '../connection/WSConnection';
 import { TecWSConnection } from '../connection/TecWSConnection';
 import { IncomingMessageService } from '../incoming-message/IncomingMessageService';
 import { TecSDKService } from '../incoming-message/TecSDKService';
+import { ContentMessage } from '../messages/content/ContentMessage';
 import { TecRPCService } from '../rpc/TecRPCService';
 import { RPCService } from '../rpc/RPCService';
 import { POIMonitor } from '../poi/POIMonitor';
@@ -58,19 +59,17 @@ export class IO {
    * @param {PlayoutEvent} event
    */
   public reportPlayoutEvent(event: PlayoutEvent): void {
-    this.poiMonitor.emitMessage(
-      MessageFactory.parse({
-        data: {
-          name: event.name,
-          record_type: RPCRecordType.ContentEvent,
-          content_id: String(event.contentId),
-          poi: event.poi,
-          local_timestamp: event.localTimestamp,
-          content_play_id: event.contentPlayId,
-          data: event.data,
-        },
-      })
-    );
+    this.poiMonitor.pushContentMessage(MessageFactory.parse({
+      data: {
+        name: event.name,
+        record_type: RPCRecordType.ContentEvent,
+        content_id: String(event.contentId),
+        poi: event.poi,
+        local_timestamp: event.localTimestamp,
+        content_play_id: event.contentPlayId,
+        data: event.data,
+      },
+    }) as ContentMessage);
   }
 
   /**
@@ -88,7 +87,6 @@ export class IO {
    * Stops the POI Monitor and close the Tec connection
    */
   public disconnect(): void {
-    this.poiMonitor.complete();
     this.connection.close();
   }
 

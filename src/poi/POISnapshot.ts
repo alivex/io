@@ -186,7 +186,6 @@ export class POISnapshot {
       snapshot.personsByTtid.set(person.ttid, clonedPerson);
     });
     snapshot.lastPersonUpdate = new Map(this.lastPersonUpdate);
-    // snapshot.personsCache = new Map(this.personsCache);
     snapshot.content = this.content ? this.content.clone() : undefined;
     snapshot.contentEvent = this.contentEvent;
     snapshot.contentEventData = this.contentEventData;
