@@ -11,7 +11,7 @@ export interface RecognitionMetadata {
  * Person Detection model
  */
 export class PersonDetection {
-  private skeleton: Skeleton;
+  private _skeleton: Skeleton;
   private personAttributes: PersonAttributes;
   private faceEmbeddings: Array<number> = [];
   private json: PersonDetectionMessage;
@@ -24,13 +24,13 @@ export class PersonDetection {
    * @return {number}
    */
   get localTimestamp(): number {
-    if (!this.json.localTimestamp && !this.skeleton.localTimestamp) {
+    if (!this.json.localTimestamp && !this._skeleton.localTimestamp) {
       return undefined;
     }
 
     const localTimestamp = Math.max(
       this.json.localTimestamp || 0,
-      this.skeleton.localTimestamp || 0
+      this._skeleton.localTimestamp || 0
     );
 
     if (localTimestamp) {
@@ -113,27 +113,35 @@ export class PersonDetection {
   }
 
   /**
-   * Returing 3d x-coordinate of the persons's body in meters
+   * Returns 3d x-coordinate of the persons's body in meters
    * @return  {number}
    */
   get u(): number {
-    return this.skeleton.neckU;
+    return this._skeleton.neckU;
   }
 
   /**
-   * Returing 3d y-coordinate of the persons's body in meters
+   * Returns 3d y-coordinate of the persons's body in meters
    * @return  {number}
    */
   get v(): number {
-    return this.skeleton.neckV;
+    return this._skeleton.neckV;
   }
 
   /**
-   * Returing 3d z-coordinate of the persons's body
+   * Returns 3d z-coordinate of the persons's body
    * @return  {number}
    */
   get z(): number {
-    return this.skeleton.neckZ;
+    return this._skeleton.neckZ;
+  }
+
+  /**
+   * Returns the skeleton object
+   * @return {Skeleton}
+   */
+  get skeleton(): Skeleton {
+    return this._skeleton;
   }
 
   /**
@@ -287,7 +295,7 @@ export class PersonDetection {
    * @param {BinaryCachedData} binary data
    */
   public updateFromBinary(binary: BinaryCachedData): void {
-    this.skeleton = binary.skeleton;
+    this._skeleton = binary.skeleton;
     this.personAttributes = binary.personAttributes;
   }
 
@@ -301,7 +309,7 @@ export class PersonDetection {
     const person = new PersonDetection();
 
     person.json = json;
-    person.skeleton = cache.skeleton;
+    person._skeleton = cache.skeleton;
     person.personAttributes = cache.personAttributes;
     person.faceEmbeddings = json.faceEmbeddings || [];
 
@@ -318,7 +326,7 @@ export class PersonDetection {
    */
   public clone(): PersonDetection {
     return PersonDetection.fromMessage(this.json.clone(), {
-      skeleton: this.skeleton.clone(),
+      skeleton: this._skeleton.clone(),
       personAttributes: this.personAttributes.clone(),
     });
   }
@@ -353,7 +361,7 @@ export class PersonDetection {
       allFaceAttributes: this.allFaceAttributes,
       json: this.json,
       personAttributes: this.personAttributes,
-      dataProvider: this.skeleton.getDataProvider().getData(),
+      dataProvider: this._skeleton.getDataProvider().getData(),
     };
   }
 }
