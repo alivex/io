@@ -77,7 +77,7 @@ export class IO {
    * Opens a connection and start monitoring the messages
    * @param {IOOptions} options
    */
-  public connect(options: IOOptions): void {
+  public connect(options: IOOptions = {}): void {
     this.connection.open(options);
     if (!options.noSnapshot) {
       this.poiMonitor.start();
@@ -107,8 +107,7 @@ export class IO {
    * @return {Observable<BinaryMessageEvent>}
    */
   public imageStreamMessages(width?: number, height?: number): Observable<BinaryMessageEvent> {
-    this.imageOptions = isNaN(width) || isNaN(height) ? this.imageOptions : { width, height };
-    this.updateResolutions();
+    this.updateResolutions(isNaN(width) || isNaN(height) ? {} : { image: { width, height } });
     return this.incomingMessageService.binaryStreamMessages(BinaryType.IMAGE);
   }
 
@@ -119,8 +118,7 @@ export class IO {
    * @return {Observable<BinaryMessageEvent>}
    */
   public skeletonStreamMessages(width?: number, height?: number): Observable<BinaryMessageEvent> {
-    this.canvasOptions = isNaN(width) || isNaN(height) ? this.canvasOptions : { width, height };
-    this.updateResolutions();
+    this.updateResolutions(isNaN(width) || isNaN(height) ? {} : { canvas: { width, height } });
     return this.incomingMessageService.binaryStreamMessages(BinaryType.SKELETON);
   }
 
@@ -131,9 +129,7 @@ export class IO {
    * @return {Observable<BinaryMessageEvent>}
    */
   public thumbnailStreamMessages(width?: number, height?: number): Observable<BinaryMessageEvent> {
-    this.thumbnailOptions =
-      isNaN(width) || isNaN(height) ? this.thumbnailOptions : { width, height };
-    this.updateResolutions();
+    this.updateResolutions(isNaN(width) || isNaN(height) ? {} : { thumbnail: { width, height } });
     return this.incomingMessageService.binaryStreamMessages(BinaryType.THUMBNAIL);
   }
 
@@ -187,10 +183,19 @@ export class IO {
   public updateResolutions(
     options: { canvas?: BinaryOptions; image?: BinaryOptions; thumbnail?: BinaryOptions } = {}
   ): void {
+    if (options.canvas) {
+      this.canvasOptions = options.canvas;
+    }
+    if (options.image) {
+      this.imageOptions = options.image;
+    }
+    if (options.thumbnail) {
+      this.thumbnailOptions = options.thumbnail;
+    }
     this.connection.sendBinaryStream({
-      canvas: options.canvas || this.canvasOptions,
-      image: options.image || this.imageOptions,
-      thumbnail: options.thumbnail || this.thumbnailOptions,
+      canvas: this.canvasOptions,
+      image: this.imageOptions,
+      thumbnail: this.thumbnailOptions,
     });
   }
 }
