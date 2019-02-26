@@ -102,6 +102,10 @@ export class TecWSConnection implements WSConnection {
    * @param {any} data to send
    */
   public sendJsonStream(data: any): void {
+    if (this.jsonStreamStatus === WSConnectionStatus.Closed) {
+      console.warn('The JSON stream connection is not opened.');
+      return;
+    }
     this.jsonStream.sendJson(data);
   }
 
@@ -110,6 +114,10 @@ export class TecWSConnection implements WSConnection {
    * @param {any} data to send
    */
   public sendBinaryStream(data: any): void {
+    if (this.binaryStreamStatus === WSConnectionStatus.Closed) {
+      console.warn('The binary stream connection is not opened.');
+      return;
+    }
     this.binaryStream.sendJson(data);
   }
 
