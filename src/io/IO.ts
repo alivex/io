@@ -35,8 +35,8 @@ export class IO {
   private poiMonitor: POIMonitor;
 
   private canvasOptions: BinaryOptions = { width: 1920, height: 1080 };
-  private imageOptions: BinaryOptions = { width: 100, height: 100 };
-  private thumbnailOptions: BinaryOptions = { width: 100, height: 100 };
+  private imageOptions: BinaryOptions = { width: 0, height: 0 };
+  private thumbnailOptions: BinaryOptions = { width: 0, height: 0 };
 
   /**
    * Creates an instance of IO
