@@ -1,6 +1,7 @@
 import test from 'ava';
 import { combineLatest } from 'rxjs';
 import { Server } from 'mock-socket';
+import { spy } from 'sinon';
 import { TecWSConnection } from './TecWSConnection';
 import { WSConnectionStatus } from './WSConnection';
 import { BinaryDataType } from '../constants/Constants';
@@ -168,6 +169,76 @@ test.serial.cb('should send a message to the json stream', t => {
     c.sendJsonStream({
       value: 'hello',
     });
+  }, 100);
+});
+
+test.serial.cb('should warn when trying to sent a message when the json stream is closed', t => {
+  const fakeJsonURL = 'ws://localhost:8001';
+  const mockJsonServer = new Server(fakeJsonURL);
+
+  const fakeBinaryURL = 'ws://localhost:8002';
+  const mockBinaryServer = new Server(fakeBinaryURL);
+
+  const consoleSpy = spy(console, 'warn');
+
+  const c = new TecWSConnection();
+
+  mockJsonServer.on('connection', socket => {
+    socket['on']('message', () => {
+      t.fail('should not have received any message');
+    });
+  });
+
+  // c.open(); Make sure the json stream is closed
+
+  c.sendJsonStream({
+    value: 'hello',
+  });
+
+  // wait a bit for the message to be received by the server
+  // in case the connection has been opened...
+  setTimeout(() => {
+    t.true(consoleSpy.calledWith('The JSON stream connection is not opened.'));
+    consoleSpy.restore();
+    c.close();
+    mockBinaryServer.stop();
+    mockJsonServer.stop();
+    t.end();
+  }, 100);
+});
+
+test.serial.cb('should warn when trying to sent a message when the binary stream is closed', t => {
+  const fakeJsonURL = 'ws://localhost:8001';
+  const mockJsonServer = new Server(fakeJsonURL);
+
+  const fakeBinaryURL = 'ws://localhost:8002';
+  const mockBinaryServer = new Server(fakeBinaryURL);
+
+  const consoleSpy = spy(console, 'warn');
+
+  const c = new TecWSConnection();
+
+  mockBinaryServer.on('connection', socket => {
+    socket['on']('message', () => {
+      t.fail('should not have received any message');
+    });
+  });
+
+  // c.open(); Make sure the binary stream is closed
+
+  c.sendBinaryStream({
+    value: 'hello',
+  });
+
+  // wait a bit for the message to be received by the server
+  // in case the connection has been opened...
+  setTimeout(() => {
+    t.true(consoleSpy.calledWith('The binary stream connection is not opened.'));
+    consoleSpy.restore();
+    c.close();
+    mockBinaryServer.stop();
+    mockJsonServer.stop();
+    t.end();
   }, 100);
 });
 
