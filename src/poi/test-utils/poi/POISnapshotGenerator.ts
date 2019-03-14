@@ -60,19 +60,21 @@ export class POISnapshotGenerator {
 
     personMessages.forEach((personMessage, index) => {
       const p = snapshot.getPersons().get(personMessage.personId);
-      // Hack to set the z value, otherwise the calculation is too complicated
-      Object.defineProperty(p, 'z', {
-        value: personOptions[index].z || 0,
-        configurable: true,
-      });
-      Object.defineProperty(p, 'u', {
-        value: personOptions[index].u || 0,
-        configurable: true,
-      });
-      Object.defineProperty(p, 'v', {
-        value: personOptions[index].v || 0,
-        configurable: true,
-      });
+      if (p) {
+        // Hack to set the z value, otherwise the calculation is too complicated
+        Object.defineProperty(p, 'z', {
+          value: personOptions[index].z || 0,
+          configurable: true,
+        });
+        Object.defineProperty(p, 'u', {
+          value: personOptions[index].u || 0,
+          configurable: true,
+        });
+        Object.defineProperty(p, 'v', {
+          value: personOptions[index].v || 0,
+          configurable: true,
+        });
+      }
     });
 
     return snapshot;
