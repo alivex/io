@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { WSConnection } from '../connection/WSConnection';
+import { WSConnection, WSConnectionStatus } from '../connection/WSConnection';
 import { TecWSConnection } from '../connection/TecWSConnection';
 import { IncomingMessageService } from '../incoming-message/IncomingMessageService';
 import { TecSDKService } from '../incoming-message/TecSDKService';
@@ -50,6 +50,14 @@ export class IO {
     connection.binaryStreamConnectionOpened.subscribe(() => {
       this.updateResolutions();
     });
+  }
+
+  /**
+   * Returns the backend connection status
+   * @return {WSConnectionStatus} connection status
+   */
+  public getConnectionStatus(): WSConnectionStatus {
+    return this.connection.getStatus();
   }
 
   /**
