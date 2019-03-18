@@ -26,3 +26,5 @@ export enum BinaryDataType {
   TYPE_HEATMAP = 4,
   TYPE_DEPTHMAP = 5,
 }
+
+export { WSConnectionStatus } from '../connection/WSConnection';

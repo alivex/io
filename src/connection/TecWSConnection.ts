@@ -70,6 +70,23 @@ export class TecWSConnection implements WSConnection {
   }
 
   /**
+   * If the binary and JSON WS are both opened, status is OPEN
+   * otherwise status is Closed
+   * TODO: once the streams are merged into one, return this.streamStatus
+   * @return {WSConnectionStatus} status of the Tec WS connection
+   */
+  public getStatus(): WSConnectionStatus {
+    if (
+      this.binaryStreamStatus === WSConnectionStatus.Open &&
+      this.jsonStreamStatus === WSConnectionStatus.Open
+    ) {
+      return WSConnectionStatus.Open;
+    }
+
+    return WSConnectionStatus.Closed;
+  }
+
+  /**
    * Opens the connection to the Json and Binary streams
    * @param {TecSdkWSConnectionOptions} options
    */

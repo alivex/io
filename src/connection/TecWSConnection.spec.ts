@@ -333,3 +333,71 @@ test.serial.cb('should emits a message when the json and binary connection are o
 
   c.open();
 });
+
+test.serial.cb('should return the status OPEN if both the json and binary WS are open', t => {
+  const fakeJsonURL = 'ws://localhost:8001';
+  const mockJsonServer = new Server(fakeJsonURL);
+
+  const fakeBinaryURL = 'ws://localhost:8002';
+  const mockBinaryServer = new Server(fakeBinaryURL);
+
+  const c = new TecWSConnection();
+
+  c.open();
+
+  // wait for both connections to open
+  setTimeout(() => {
+    t.is(c.getStatus(), WSConnectionStatus.Open);
+
+    c.close();
+    mockBinaryServer.stop();
+    mockJsonServer.stop();
+    t.end();
+  }, 100);
+});
+
+test.serial.cb('should return the status OPEN if the binary connection is closed', t => {
+  const fakeJsonURL = 'ws://localhost:8001';
+  const mockJsonServer = new Server(fakeJsonURL);
+
+  const c = new TecWSConnection();
+
+  c.open();
+
+  // wait for the JSON connection to open
+  setTimeout(() => {
+    t.is(c.getStatus(), WSConnectionStatus.Closed);
+
+    c.close();
+    mockJsonServer.stop();
+    t.end();
+  }, 100);
+});
+
+test.serial.cb('should return the status OPEN if the json connection is closed', t => {
+  const fakeBinaryURL = 'ws://localhost:8002';
+  const mockBinaryServer = new Server(fakeBinaryURL);
+
+  const c = new TecWSConnection();
+
+  c.open();
+
+  // wait for the binary connection to open
+  setTimeout(() => {
+    t.is(c.getStatus(), WSConnectionStatus.Closed);
+
+    c.close();
+    mockBinaryServer.stop();
+    t.end();
+  }, 100);
+});
+
+test.serial('should return the status OPEN if both connections are closed', t => {
+  const c = new TecWSConnection();
+
+  c.open();
+
+  t.is(c.getStatus(), WSConnectionStatus.Closed);
+
+  c.close();
+});
