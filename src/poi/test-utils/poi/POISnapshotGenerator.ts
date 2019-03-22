@@ -5,6 +5,8 @@ import { ContentMessageGenerator } from '../messages/ContentMessageGenerator';
 import { SkeletonMessageGenerator } from '../messages/SkeletonMessageGenerator';
 import { PersonOptions, ContentOptions } from '../common';
 
+const MAX_RECENT_TIME = 2000;
+
 /**
  * Utils to generate a POISnapshot model
  */
@@ -13,11 +15,13 @@ export class POISnapshotGenerator {
    * Creates a POISnapshot
    * @param {PersonOptions[]} options list of detected persons
    * @param {POISnapshot} from
+   * @param {number} timestamp
    * @return {POISnapshot}
    */
   static generate(
     options: (PersonOptions | ContentOptions)[] = [],
-    from: POISnapshot = new POISnapshot()
+    from?: POISnapshot,
+    timestamp?: number
   ): POISnapshot {
     if (!Array.isArray(options)) {
       throw new Error(
@@ -25,7 +29,7 @@ export class POISnapshotGenerator {
       );
     }
 
-    const snapshot = from;
+    const snapshot = from || new POISnapshot();
 
     const personOptions: PersonOptions[] = options.filter(option =>
       option.hasOwnProperty('ttid')
@@ -46,11 +50,19 @@ export class POISnapshotGenerator {
       snapshot.update(personMessage);
     });
 
+    // Generate a persons_alive message that exclude persons older than MAX_RECENT_TIME ms
+    const personsAlive = [];
+    snapshot.getPersons().forEach(person => {
+      if (timestamp === undefined || timestamp - person.localTimestamp < MAX_RECENT_TIME) {
+        personsAlive.push(person.personId);
+      }
+    });
+
     snapshot.update(
       MessageFactory.parse({
         subject: 'persons_alive',
         data: {
-          person_ids: personMessages.map(msg => msg.personId),
+          person_ids: personsAlive,
           local_timestamp: getMostRecentTimestamp(options),
         },
       })

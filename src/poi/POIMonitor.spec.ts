@@ -7,7 +7,7 @@ import {
   INACTIVE_STREAM_THRESHOLD,
   INACTIVE_STREAM_MESSAGE_INTERVAL,
 } from './POIMonitor';
-import { POISnapshot, MAX_RECENT_TIME } from './POISnapshot';
+import { POISnapshot } from './POISnapshot';
 import { generateSinglePersonUpdateData, generateSinglePersonBinaryData } from './test-utils';
 import { RPCResponseSubject } from '../constants/Constants';
 
@@ -137,15 +137,11 @@ test.cb(
       });
 
       // After, the Stream detections are stopped, expect new empty snapshots emissions
-      setTimeout(() => {
-        t.not(emittedSnapshots.length, 0);
-        for (let i = 0; i < newEmittedSnapshots.length; i++) {
-          t.is(newEmittedSnapshots[i].getPersons().size, 0);
-        }
-        t.end();
-        // the timeout needs to be > MAX_RECENT_TIME, to make sure that the lost persons are cleaned
-        // (the lost persons threshold is 2 seconds)
-      }, MAX_RECENT_TIME + 500);
+      t.not(emittedSnapshots.length, 0);
+      for (let i = 0; i < newEmittedSnapshots.length; i++) {
+        t.is(newEmittedSnapshots[i].getPersons().size, 0);
+      }
+      t.end();
     }, INACTIVE_STREAM_THRESHOLD);
   }
 );
