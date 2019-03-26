@@ -119,7 +119,7 @@ Scenario:
   - 20 secs later receive an update from person 1 and person 2
   - Receive a persons_alive message containing only [2]
 
-Expected: should still have person 1 and person 2 in the snapshot
+Expected: should remove person 1 from the snapshot
 `, t => {
   const snapshot = new POISnapshot();
   const ttid1 = 23;
@@ -173,9 +173,9 @@ Expected: should still have person 1 and person 2 in the snapshot
   const personsAlive = PersonsAliveMessageGenerator.generate([personId2], timestamp);
   snapshot.update(personsAlive);
 
-  t.is(snapshot.getPersons().size, 2);
+  t.is(snapshot.getPersons().size, 1);
   t.not(snapshot.getPersons().get(personId2), undefined);
-  t.not(snapshot.getPersons().get(personId1), undefined);
+  t.is(snapshot.getPersons().get(personId1), undefined);
 });
 
 test('should have the content', t => {
@@ -321,10 +321,9 @@ test('should encode and decode the snapshot properly', t => {
     expectedPersons.get(person.personId)['personAttributes'] = person['personAttributes'];
   });
 
-  // These 2 internal properties are lost during the encoding
-  // We only add them here for testing purpose,
-  // so that the "deepEqual" comparison does not fail because of them
-  expected['lastPersonUpdate'] = result['lastPersonUpdate'];
+  // This internal property is lost during the encoding
+  // We only add it here for testing purpose,
+  // so that the "deepEqual" comparison does not fail because of it
   expected['personsByTtid'] = result['personsByTtid'];
 
   t.deepEqual(expected, result);
@@ -371,7 +370,6 @@ test('should decode and clone a snapshot', t => {
     expectedPersons.get(person.personId)['personAttributes'] = person['personAttributes'];
   });
 
-  expected['lastPersonUpdate'] = result['lastPersonUpdate'];
   expected['personsByTtid'] = result['personsByTtid'];
 
   t.deepEqual(expected, result);

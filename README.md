@@ -1,6 +1,7 @@
 # io
 
 [![Build Status](https://travis-ci.org/advertima/io.svg?branch=development)](https://travis-ci.org/advertima/io)
+[![npm version](https://badge.fury.io/js/%40advertima%2Fio.svg)](https://badge.fury.io/js/%40advertima%2Fio)
 [![codecov](https://codecov.io/gh/advertima/io/branch/development/graph/badge.svg)](https://codecov.io/gh/advertima/io)
 
 IO Javascript utilities to connect to a POI

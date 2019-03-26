@@ -9,21 +9,15 @@ import { Content } from '../model/content/Content';
 import { PersonAttributes } from '../model/person-attributes/PersonAttributes';
 import { Skeleton, SkeletonBinaryDataProvider, BinaryCachedData } from '../model/skeleton/Skeleton';
 
-// Maximum amount of time (in ms) between now and the last person event
-// to consider the person as recent
-export const MAX_RECENT_TIME = 2000;
-
 /**
  * Represents what is happening at a POI at a given point in time.
  */
 export class POISnapshot {
-  private lastPersonUpdate: Map<string, number> = new Map();
   private persons: Map<string, PersonDetection> = new Map();
   private personsByTtid: Map<number, PersonDetection> = new Map();
   private content: Content;
   private contentEvent: string;
   private contentEventData: Object;
-  private lastUpdateTimestamp: number;
 
   private personsCache: Map<
     number,
@@ -67,7 +61,6 @@ export class POISnapshot {
     const snapshot = new POISnapshot();
     try {
       const jsonSnapshot = decode(data);
-      snapshot.lastUpdateTimestamp = jsonSnapshot.lastUpdateTimestamp;
       snapshot.contentEvent = jsonSnapshot.contentEvent;
       snapshot.contentEventData = jsonSnapshot.contentEventData;
 
@@ -125,14 +118,6 @@ export class POISnapshot {
   }
 
   /**
-   * Returns the timestamp of the last update
-   * @return {number}
-   */
-  public getLastUpdateTimestamp(): number {
-    return this.lastUpdateTimestamp;
-  }
-
-  /**
    * Override the dictionnary of persons
    * @param {Map<string, Person>} persons
    */
@@ -185,12 +170,9 @@ export class POISnapshot {
       snapshot.persons.set(personId, clonedPerson);
       snapshot.personsByTtid.set(person.ttid, clonedPerson);
     });
-    snapshot.lastPersonUpdate = new Map(this.lastPersonUpdate);
-    // snapshot.personsCache = new Map(this.personsCache);
     snapshot.content = this.content ? this.content.clone() : undefined;
     snapshot.contentEvent = this.contentEvent;
     snapshot.contentEventData = this.contentEventData;
-    snapshot.lastUpdateTimestamp = this.lastUpdateTimestamp;
     return snapshot;
   }
 
@@ -204,7 +186,6 @@ export class POISnapshot {
     this.persons.forEach((person, id) => (persons[id] = person.toJSON()));
     const result = {
       content: this.content,
-      lastUpdateTimestamp: this.lastUpdateTimestamp,
       persons,
       contentEvent: this.contentEvent,
       contentEventData: this.contentEventData,
@@ -243,10 +224,6 @@ export class POISnapshot {
         this.personsByTtid.set(ttid, person);
       }
 
-      this.lastPersonUpdate.set(person.personId, person.localTimestamp);
-      this.removeGonePersons(obj.json.localTimestamp);
-      this.lastUpdateTimestamp = obj.json.localTimestamp;
-
       this.personsCache.delete(ttid);
     }
   }
@@ -276,8 +253,6 @@ export class POISnapshot {
         binary.personAttributes.male !== undefined
       ) {
         person.updateFromBinary(binary);
-        this.lastPersonUpdate.set(person.personId, person.localTimestamp);
-        this.lastUpdateTimestamp = person.localTimestamp;
       }
     } catch (e) {
       console.warn(e.message);
@@ -304,8 +279,6 @@ export class POISnapshot {
     } else {
       try {
         person.updateFromJson(message);
-        this.lastPersonUpdate.set(person.personId, person.localTimestamp);
-        this.lastUpdateTimestamp = person.localTimestamp;
       } catch (e) {
         console.warn(e.message);
       }
@@ -323,39 +296,11 @@ export class POISnapshot {
 
     // Update the persons' last update time
     for (const p of this.persons.values()) {
-      if (alivePersonIds.includes(p.personId)) {
-        this.lastPersonUpdate.set(p.personId, message.localTimestamp);
-      }
-    }
-
-    this.removeGonePersons(message.localTimestamp);
-    this.lastUpdateTimestamp = message.localTimestamp;
-  }
-
-  /**
-   * Removes the persons considered as 'Gone'.
-   *
-   * @param {number} timestamp the timestamp to use to compare the
-   * 'age' of the person in the system. If no updates are received for
-   * a given age threshold, the person is considered gone.
-   *
-   * NOT to be confused with the person's AGE attribute.
-   */
-  private removeGonePersons(timestamp: number) {
-    for (const pid of this.lastPersonUpdate.keys()) {
-      const lastUpdate = this.lastPersonUpdate.get(pid);
-      if (timestamp - lastUpdate > MAX_RECENT_TIME && this.persons.get(pid)) {
+      const pid = p.personId;
+      if (!alivePersonIds.includes(pid)) {
         this.personsByTtid.delete(this.persons.get(pid).ttid);
         this.persons.delete(pid);
-        this.lastPersonUpdate.delete(pid);
-      }
-    }
-    for (const [ttid, cache] of this.personsCache.entries()) {
-      const lastUpdate = cache.json
-        ? cache.json.localTimestamp
-        : cache.binary.skeleton.localTimestamp;
-      if (timestamp - lastUpdate > MAX_RECENT_TIME) {
-        this.personsCache.delete(ttid);
+        this.personsCache.delete(p.ttid);
       }
     }
   }
@@ -370,6 +315,5 @@ export class POISnapshot {
     this.content = Content.fromMessage(message);
     this.contentEvent = this.content.event;
     this.contentEventData = this.content.data;
-    this.lastUpdateTimestamp = this.content.localTimestamp;
   }
 }
