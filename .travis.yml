@@ -1,7 +1,16 @@
 language: node_js
 node_js:
-  - 'lts/carbon'
+- lts/carbon
 script:
-  - npm run checkstyle
-  - npm test
-  - npm run test:report
+- npm run checkstyle
+- npm test
+- npm run test:report
+deploy:
+  provider: npm
+  email: micael.mbagira@icloud.com
+  api_key:
+    secure: ZpbQ3rY1h3F+meeD1765A6zIT3FopzSQG97pZlqrqIBm7TdXsOyLO2T8S7PV6OgSRAZBpjiSl7V2pwZbHbIGiBPcUGz80MV5RJzOl5R26qYOuSTMp4uiUmtVnks7o+5g9iNeQRZ9yH3q5SLRVZ/Vzjlgp3J1hKiEP5W0qhqtFfh5H0vmdt25Rid+ybRNtrOw3L9gcRnxe3rd703l84gJ27+fAgigZT5zFCLqEDoPEt8LyjoWeVIbe6aWnkHOKXaPUBkRb3QEjz6D3j3XoR5tiAmF0KzloZMpez6Ux+6yqIYUIUsp1gbRN0GbZlh4BfkQ6I4IQ935BHK74jp66oPq6qekKv3Rdyx8pCKasybdHErIItaXF8Vt+E+ZhrLhD5KU2S70uD4dM1AuiLM05JvpcL0y4weumI1BzqEDcJM0GV3DXb1RjrSro0cECobCVi4NU4MxqZo1iit2G0Us544ENtcSk5Lu7HxfTJkx3uc8VkngsZFlGCAFxKYCl3KCUkaiRZ4UYWuUI2kmabJi50MMb5ntIpBWrRAk0GZ4aqgEFU/3EUh8Rh1iVSVaya2mYu/XijYYe/NwFLQJEuyxcVYRQyc910eV1kV31d2juxKBvSk4OEqnfPoB3Eiy+FsaZ6rgkDSDZdpbhEdKs19ZPz1RNkh41aCYXh1rS2Q7U6gAmFU=
+  on:
+    tags: true
+    repo: advertima/io
+    branch: development
