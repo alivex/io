@@ -11,6 +11,7 @@ import { PlayoutEvent } from '../model/playout-event/PlayoutEvent';
 import { BinaryMessageEvent, BinaryType } from '../types';
 import { RPCRecordType } from '../constants/Constants';
 import { MessageFactory } from '../messages/MessageFactory';
+import { IOLogger, Logger } from '../logger';
 
 export interface IOOptions {
   jsonPort?: number; // port for the json stream connection
@@ -50,6 +51,14 @@ export class IO {
     connection.binaryStreamConnectionOpened.subscribe(() => {
       this.updateResolutions();
     });
+  }
+
+  /**
+   * Set a specific instance of the logger class
+   * @param {IOLogger} logger instance
+   */
+  public setLoggerInstance(logger: IOLogger = console): void {
+    Logger.setLoggerInstance(logger);
   }
 
   /**
