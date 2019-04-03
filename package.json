@@ -10,13 +10,12 @@
     "lib"
   ],
   "scripts": {
-    "clean": "rimraf lib dist .rpt2_cache",
+    "clean": "rm -rf lib dist .rpt2_cache",
     "build": "npm run clean && rollup -c --environment NODE_ENV:production",
     "start": "npm run clean && rollup -c -w",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' nyc --reporter=text --reporter=lcov ava --verbose",
     "test:watch": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' nyc --reporter=text --reporter=lcov ava --verbose --watch",
     "test:report": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "prepare": "npm run build",
     "checkstyle": "eslint src --ext ts",
     "checkstyle:fix": "eslint src --ext ts --fix",
     "prettier": "prettier --config ./.prettierrc.yml --write 'src/**/*.ts'",
@@ -25,6 +24,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/advertima/io.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "io"

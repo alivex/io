@@ -5,6 +5,7 @@ script:
 - npm run checkstyle
 - npm test
 - npm run test:report
+- npm run build
 deploy:
   provider: npm
   email: micael.mbagira@icloud.com
