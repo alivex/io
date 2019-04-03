@@ -1,3 +1,5 @@
+import { Logger } from '../../logger';
+
 /**
  * Decodes the headpose angle
  * @param {Uint8Array} data
@@ -95,7 +97,7 @@ export class PersonAttributes {
         if (percentage == 127) {
           this[name] = undefined;
         } else if (percentage == undefined || percentage < 0 || percentage > 100) {
-          console.error(`FaceAttribute ${name} has invalid percentage ${percentage}`);
+          Logger.error(`FaceAttribute ${name} has invalid percentage ${percentage}`);
           this[name] = undefined;
         } else {
           this[name] = percentage / 100.0;

@@ -11,6 +11,7 @@ import { PersonsAliveMessage } from '../messages/persons-alive/PersonsAliveMessa
 import { IncomingMessageService } from '../incoming-message/IncomingMessageService';
 import { POISnapshot } from './POISnapshot';
 import { BinaryType } from '../types';
+import { Logger } from '../logger';
 
 export const INACTIVE_STREAM_THRESHOLD = 2000;
 export const INACTIVE_STREAM_MESSAGE_INTERVAL = 200;
@@ -161,7 +162,7 @@ class MessageObserver implements Observer<Message> {
    * @param {any} e the error.
    */
   public error(e: any): void {
-    console.error(e);
+    Logger.error(e);
   }
 
   /**
@@ -169,6 +170,5 @@ class MessageObserver implements Observer<Message> {
    */
   public complete(): void {
     this.poiMonitor.complete();
-    console.log('completed');
   }
 }

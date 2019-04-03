@@ -2,6 +2,7 @@ import { JsonStream, BinaryStream } from './stream/Stream';
 import { Observable, Subject } from 'rxjs';
 import { WSConnection, WSConnectionStatus } from './WSConnection';
 import { BinaryType, BinaryMessageEvent } from '../types';
+import { Logger } from '../logger';
 
 export interface TecSdkWSConnectionOptions {
   jsonPort?: number; // port for the json stream connection
@@ -120,7 +121,7 @@ export class TecWSConnection implements WSConnection {
    */
   public sendJsonStream(data: any): void {
     if (this.jsonStreamStatus === WSConnectionStatus.Closed) {
-      console.warn('The JSON stream connection is not opened.');
+      Logger.warn('The JSON stream connection is not opened.');
       return;
     }
     this.jsonStream.sendJson(data);
@@ -132,7 +133,7 @@ export class TecWSConnection implements WSConnection {
    */
   public sendBinaryStream(data: any): void {
     if (this.binaryStreamStatus === WSConnectionStatus.Closed) {
-      console.warn('The binary stream connection is not opened.');
+      Logger.warn('The binary stream connection is not opened.');
       return;
     }
     this.binaryStream.sendJson(data);

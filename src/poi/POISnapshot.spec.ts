@@ -1,5 +1,5 @@
 import test from 'ava';
-import { spy } from 'sinon';
+import { stub } from 'sinon';
 import { encode } from 'msgpack-lite';
 import { PersonDetection } from '../model/person-detection/PersonDetection';
 import { POISnapshot } from './POISnapshot';
@@ -10,6 +10,7 @@ import {
   PersonsAliveMessageGenerator,
   ContentMessageGenerator,
 } from './test-utils';
+import { Logger } from '../logger';
 
 test('should not add the person to the snapshot when the input only contains json data', t => {
   const snapshot = new POISnapshot();
@@ -29,12 +30,30 @@ test('should not add the person to the snapshot when the input only contains bin
 test('should log an error when the ttid of the person is not a number', t => {
   const snapshot = new POISnapshot();
   const ttid = 'not a number' as any;
-  const consoleSpy = spy(console, 'warn');
+  const consoleStub = stub(Logger, 'warn');
   const json = PersonDetectionMessageGenerator.generate({ ttid });
   snapshot.update(json);
-  t.true(consoleSpy.calledWith('TTID must be set'));
+  t.true(consoleStub.calledWith('TTID must be set'));
+  consoleStub.restore();
 
-  consoleSpy.restore();
+  const message = SkeletonMessageGenerator.generate([{ ttid: 1 }]);
+  message.data = new Uint8Array([1, 2, 3]);
+  snapshot.update(message);
+  t.true(consoleStub.called);
+
+  consoleStub.restore();
+});
+
+test('should log a warning when the data are invalid', t => {
+  const snapshot = new POISnapshot();
+  const consoleStub = stub(Logger, 'warn');
+
+  const message = SkeletonMessageGenerator.generate([{ ttid: 1 }]);
+  message.data = new Uint8Array([1, 2, 3]);
+  snapshot.update(message);
+  t.true(consoleStub.called);
+
+  consoleStub.restore();
 });
 
 test('should add the person to the snapshot when both json and binary data are received', t => {
@@ -52,6 +71,21 @@ test('should add the person to the snapshot when both json and binary data are r
   snapshot.update(binary);
   t.is(snapshot.getPersons().size, 1);
   t.is(snapshot.getPersons().get(personId).age, age);
+
+  // should warn if an update is emitted with the same ttid but different personId
+  const consoleStub = stub(Logger, 'warn');
+  const json2 = PersonDetectionMessageGenerator.generate({
+    ttid,
+    age,
+    personId: personId + 1,
+  });
+  snapshot.update(json2);
+  t.true(
+    consoleStub.calledWith(
+      `Precondition failed, changing person_id. ${personId} !== ${json2.personId}`
+    )
+  );
+  consoleStub.restore();
 });
 
 test(`
@@ -373,4 +407,16 @@ test('should decode and clone a snapshot', t => {
   expected['personsByTtid'] = result['personsByTtid'];
 
   t.deepEqual(expected, result);
+});
+
+test('should warn if the snapshot decoding failed', t => {
+  const consoleStub = stub(Logger, 'warn');
+  const expected = new POISnapshot();
+  expected['contentEvent'] = undefined;
+  expected['contentEventData'] = undefined;
+  const result = POISnapshot.decode(new Uint8Array([1, 2, 3]));
+
+  t.deepEqual(expected, result);
+  t.true(consoleStub.called);
+  consoleStub.restore();
 });

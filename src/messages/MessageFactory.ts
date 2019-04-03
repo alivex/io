@@ -6,6 +6,7 @@ import { UnknownMessage } from './unknown/UnknownMessage';
 import { SkeletonMessage } from './skeleton/SkeletonMessage';
 import { RPCResponseSubject, RPCRecordType } from '../constants/Constants';
 import { BinaryType, BinaryMessageEvent } from '../types';
+import { Logger } from '../logger';
 
 /**
  * Factory class for parsing incomming messages
@@ -33,7 +34,7 @@ export class MessageFactory {
       }
       return msg;
     } catch (e) {
-      console.warn(e);
+      Logger.warn(e);
       return new UnknownMessage({});
     }
   }

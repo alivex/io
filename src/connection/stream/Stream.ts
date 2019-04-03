@@ -1,6 +1,7 @@
 import { Utils } from '../../utils/Utils';
 import { BinaryDataType } from '../../constants/Constants';
 import './Socket';
+import { Logger } from '../../logger';
 
 const wsState = {
   CONNECTING: 0,
@@ -109,7 +110,7 @@ abstract class Stream {
    * @param {any} e event
    */
   private _onopen(e: any): void {
-    console.info(`Connected to stream on "${this.uri}"`);
+    Logger.log(`Connected to stream on "${this.uri}"`);
     if (this.onopen) {
       this.onopen(e);
     }
@@ -125,7 +126,7 @@ abstract class Stream {
    * @param {any} e event
    */
   private _onerror(e: any): void {
-    console.warn(e.message);
+    Logger.warn(e.message);
   }
 
   /**
@@ -137,7 +138,7 @@ abstract class Stream {
     if (this.onmessage !== undefined) {
       this.onmessage(e);
     } else {
-      console.warn(`No message handler registered for ${this.uri}`);
+      Logger.warn(`No message handler registered for ${this.uri}`);
     }
   }
 
@@ -151,7 +152,7 @@ abstract class Stream {
     if (this.retryCount < MAX_RETRY_ATTEMPTS) {
       delay = ++this.retryCount * 3000;
     }
-    console.info(`${this.uri} stream connection is closed. Retrying to connect in ${delay}ms`);
+    Logger.log(`${this.uri} stream connection is closed. Retrying to connect in ${delay}ms`);
     if (this.onclose) {
       this.onclose(e);
     }
@@ -165,7 +166,7 @@ abstract class Stream {
    */
   private _sendBuffered(msg: string): void {
     if (this.ws.readyState !== wsState.OPEN) {
-      console.warn(
+      Logger.warn(
         `${
           this.uri
         } connection closed! Message wasn't sent yet. It will be sent as soon as possible.`
@@ -224,7 +225,7 @@ export class BinaryStream extends Stream {
     if (cb !== undefined) {
       cb(data.subarray(1));
     } else {
-      console.warn(`Unexpeced binary data type ${type}`);
+      Logger.warn(`Unexpeced binary data type ${type}`);
     }
   }
 }
@@ -266,7 +267,7 @@ export class JsonStream extends Stream {
     try {
       json = JSON.parse(e.data);
     } catch (e) {
-      console.warn(e);
+      Logger.warn(e);
     }
     for (const cb of this._callbacks) {
       cb(json);

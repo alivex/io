@@ -8,6 +8,7 @@ import { PersonDetection } from '../model/person-detection/PersonDetection';
 import { Content } from '../model/content/Content';
 import { PersonAttributes } from '../model/person-attributes/PersonAttributes';
 import { Skeleton, SkeletonBinaryDataProvider, BinaryCachedData } from '../model/skeleton/Skeleton';
+import { Logger } from '../logger';
 
 /**
  * Represents what is happening at a POI at a given point in time.
@@ -90,7 +91,7 @@ export class POISnapshot {
       }) as Array<[string, PersonDetection]>;
       snapshot.persons = new Map(entries);
     } catch (e) {
-      console.warn(e);
+      Logger.warn(e);
     }
     return snapshot;
   }
@@ -234,9 +235,9 @@ export class POISnapshot {
    * @param {number} localTimestamp of the message
    */
   private updateSkeleton(data: Uint8Array, localTimestamp: number): void {
-    const personAttributes = new PersonAttributes(data.subarray(Skeleton.bytesLength()));
-    const ttid = personAttributes.ttid;
     try {
+      const personAttributes = new PersonAttributes(data.subarray(Skeleton.bytesLength()));
+      const ttid = personAttributes.ttid;
       const binary: BinaryCachedData = {
         skeleton: new Skeleton(
           new SkeletonBinaryDataProvider(data.subarray(0, Skeleton.bytesLength())),
@@ -255,7 +256,7 @@ export class POISnapshot {
         person.updateFromBinary(binary);
       }
     } catch (e) {
-      console.warn(e.message);
+      Logger.warn(e.message);
     }
   }
 
@@ -268,7 +269,7 @@ export class POISnapshot {
   private updatePersons(message: PersonDetectionMessage): void {
     const ttid = message.ttid;
     if (typeof ttid !== 'number') {
-      console.warn('TTID must be set');
+      Logger.warn('TTID must be set');
       return;
     }
     // a person for the given ttid exists already, so just update it and
@@ -280,7 +281,7 @@ export class POISnapshot {
       try {
         person.updateFromJson(message);
       } catch (e) {
-        console.warn(e.message);
+        Logger.warn(e.message);
       }
     }
   }
