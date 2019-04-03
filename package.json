@@ -37,6 +37,7 @@
   },
   "homepage": "https://github.com/advertima/io#readme",
   "dependencies": {
+    "@types/lodash": "^4.14.123",
     "isomorphic-ws": "^4.0.1",
     "jsonschema": "^1.2.4",
     "lodash": "^4.17.11",
