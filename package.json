@@ -7,8 +7,7 @@
   "browser": "lib/io.umd.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib",
-    "src"
+    "lib"
   ],
   "scripts": {
     "clean": "rimraf lib dist .rpt2_cache",
