@@ -7,6 +7,7 @@ script:
 - npm run test:report
 - npm run build
 deploy:
+  skip_cleanup: true
   provider: npm
   email: micael.mbagira@icloud.com
   api_key:
