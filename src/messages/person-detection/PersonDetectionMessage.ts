@@ -1,5 +1,5 @@
 import { validate } from 'jsonschema';
-import { cloneDeep } from 'lodash';
+const cloneDeep = require('lodash/cloneDeep');
 import { Message } from '../Message';
 import { PersonDetectionSchema } from './PersonDetectionSchema';
 

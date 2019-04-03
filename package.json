@@ -1,14 +1,13 @@
 {
   "name": "@advertima/io",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "IO utilities to connect to a PoI",
   "main": "lib/io.cjs.js",
   "module": "lib/io.esm.js",
   "browser": "lib/io.umd.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib",
-    "src"
+    "lib"
   ],
   "scripts": {
     "clean": "rimraf lib dist .rpt2_cache",
@@ -37,6 +36,7 @@
   },
   "homepage": "https://github.com/advertima/io#readme",
   "dependencies": {
+    "@types/lodash": "^4.14.123",
     "isomorphic-ws": "^4.0.1",
     "jsonschema": "^1.2.4",
     "lodash": "^4.17.11",

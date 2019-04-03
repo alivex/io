@@ -6,7 +6,8 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "target": "es6",
-    "types": ["node", "ws", "uuid", "sinon"]
+    "types": ["node", "ws", "uuid", "sinon"],
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "dist",
