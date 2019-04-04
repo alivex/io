@@ -4,6 +4,7 @@ import { stub } from 'sinon';
 import * as browserEnv from 'browser-env';
 import { BinaryStream, JsonStream } from './Stream';
 import { BinaryDataType } from '../../constants/Constants';
+import { Logger } from '../../logger';
 
 test.serial.cb(
   'BinaryStream: should open a websocket connection with the provided host/port',
@@ -217,7 +218,7 @@ test.serial.cb('BinaryStream: should warn if the data type is unknown', t => {
 
   const binaryStream: BinaryStream = new BinaryStream(port);
 
-  const consoleWarnStub = stub(console, 'warn');
+  const consoleWarnStub = stub(Logger, 'warn');
   const invalidType = 9; // invalid data type
 
   mockBinaryServer.on('connection', socket => {
@@ -358,6 +359,29 @@ test.serial.cb(
   }
 );
 
+test.serial.cb(
+  `JsonStream: the added callback should be notified and an error should be logged instead
+ when the json message cannot be parsed`,
+  t => {
+    const port = 5757;
+
+    const mockJsonServer = new Server(`ws://localhost:${port}`);
+    const consoleWarnStub = stub(Logger, 'warn');
+
+    const jsonStream: JsonStream = new JsonStream(port);
+
+    mockJsonServer.on('connection', socket => {
+      socket.send(`{[()`);
+
+      t.true(consoleWarnStub.called);
+      consoleWarnStub.restore();
+      jsonStream.close();
+      mockJsonServer.stop();
+      t.end();
+    });
+  }
+);
+
 test.serial.cb('JsonStream: should close the connection', t => {
   const port = 7979;
 
@@ -379,7 +403,7 @@ test.serial.cb('JsonStream: should close the connection', t => {
 test.serial.cb('should warn if there is no message handler', t => {
   const port = 7979;
 
-  const consoleWarnStub = stub(console, 'warn');
+  const consoleWarnStub = stub(Logger, 'warn');
   const mockJsonServer = new Server(`ws://localhost:${port}`);
 
   const jsonStream: JsonStream = new JsonStream(port);
