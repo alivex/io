@@ -337,31 +337,14 @@ export class PersonDetection {
    */
   public toJSON(): Object {
     return {
-      localTimestamp: this.localTimestamp,
-      name: this.name,
-      gender: this.gender,
-      personId: this.personId,
-      personPutId: this.personPutId,
-      recognition: this.recognition,
-      isLookingAtScreen: this.isLookingAtScreen,
-      cameraId: this.cameraId,
-      u: this.u,
-      v: this.v,
-      z: this.z,
-      isMale: this.isMale,
-      isFemale: this.isFemale,
-      age: this.age,
-      likelihoodMale: this.likelihoodMale,
-      isRecognized: this.isRecognized,
-      ttid: this.ttid,
-      headpose: this.headpose,
-      onlyTtid: this.onlyTtid,
-      onlyEyeglasses: this.onlyEyeglasses,
-      robustFaceAttributes: this.robustFaceAttributes,
-      allFaceAttributes: this.allFaceAttributes,
       json: this.json,
-      personAttributes: this.personAttributes,
-      dataProvider: this._skeleton.getDataProvider().getData(),
+      personAttributesData: this.personAttributes,
+      dataProviderData: Array.from(
+        this._skeleton
+          .getDataProvider()
+          .getData()
+          .values()
+      ),
     };
   }
 }

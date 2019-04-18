@@ -12,6 +12,7 @@
   "scripts": {
     "clean": "rm -rf lib dist .rpt2_cache",
     "build": "npm run clean && rollup -c --environment NODE_ENV:production",
+    "prepare": "npm run build",
     "start": "npm run clean && rollup -c -w",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' nyc --reporter=text --reporter=lcov ava --verbose",
     "test:watch": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' nyc --reporter=text --reporter=lcov ava --verbose --watch",
@@ -42,13 +43,11 @@
     "isomorphic-ws": "^4.0.1",
     "jsonschema": "^1.2.4",
     "lodash": "^4.17.11",
-    "msgpack-lite": "^0.1.26",
     "rxjs": "^6.4.0",
     "uuid": "^3.3.2",
     "ws": "^6.1.0"
   },
   "devDependencies": {
-    "@types/msgpack-lite": "^0.1.6",
     "@types/sinon": "^5.0.5",
     "@types/uuid": "^3.4.4",
     "@types/ws": "^6.0.1",

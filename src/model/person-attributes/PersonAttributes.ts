@@ -109,6 +109,14 @@ export class PersonAttributes {
   }
 
   /**
+   * Creates a static object from the instance properties
+   * @return {Object}
+   */
+  public toJSON(): Object {
+    return Array.from(this.data.values());
+  }
+
+  /**
    * Create a PersonAttributes instance with the same properties
    * @return {PersonAttributes}
    */

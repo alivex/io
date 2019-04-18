@@ -266,8 +266,8 @@ export class JsonStream extends Stream {
     let json = e;
     try {
       json = JSON.parse(e.data);
-    } catch (e) {
-      Logger.warn(e);
+    } catch (err) {
+      Logger.warn(err);
     }
     for (const cb of this._callbacks) {
       cb(json);

@@ -1,6 +1,5 @@
 import test from 'ava';
 import { stub } from 'sinon';
-import { encode } from 'msgpack-lite';
 import { PersonDetection } from '../model/person-detection/PersonDetection';
 import { POISnapshot } from './POISnapshot';
 import { POISnapshotGenerator } from './test-utils';
@@ -345,7 +344,7 @@ test('should encode and decode the snapshot properly', t => {
       poi: 1,
     },
   ]);
-  const result = POISnapshot.decode(encode(expected.toJSON()));
+  const result = POISnapshot.decode(JSON.parse(JSON.stringify(expected)));
 
   const expectedPersons = expected.getPersons();
   result.getPersons().forEach((person: PersonDetection) => {
@@ -396,7 +395,7 @@ test('should decode and clone a snapshot', t => {
       poi: 1,
     },
   ]);
-  let result = POISnapshot.decode(encode(expected.toJSON()));
+  let result = POISnapshot.decode(JSON.parse(JSON.stringify(expected)));
   result = result.clone();
 
   const expectedPersons = expected.getPersons();
@@ -414,7 +413,9 @@ test('should warn if the snapshot decoding failed', t => {
   const expected = new POISnapshot();
   expected['contentEvent'] = undefined;
   expected['contentEventData'] = undefined;
-  const result = POISnapshot.decode(new Uint8Array([1, 2, 3]));
+  const result = POISnapshot.decode({
+    hello: 'world',
+  } as any);
 
   t.deepEqual(expected, result);
   t.true(consoleStub.called);

@@ -1,4 +1,3 @@
-import { decode } from 'msgpack-lite';
 import { Message } from '../messages/Message';
 import { PersonDetectionMessage } from '../messages/person-detection/PersonDetectionMessage';
 import { PersonsAliveMessage } from '../messages/persons-alive/PersonsAliveMessage'; // eslint-disable-line max-len
@@ -9,6 +8,17 @@ import { Content } from '../model/content/Content';
 import { PersonAttributes } from '../model/person-attributes/PersonAttributes';
 import { Skeleton, SkeletonBinaryDataProvider, BinaryCachedData } from '../model/skeleton/Skeleton';
 import { Logger } from '../logger';
+
+export interface JsonEncodedPOISnapshot {
+  content: Object;
+  persons: {
+    json: Object;
+    personAttributesData: number[];
+    dataProviderData: number[];
+  };
+  contentEvent: string;
+  contentEventData: Object;
+}
 
 /**
  * Represents what is happening at a POI at a given point in time.
@@ -55,13 +65,12 @@ export class POISnapshot {
 
   /**
    * Creates a POISnapshot from encoded data
-   * @param {Uint8Array} data encoded binary data
+   * @param {JsonEncodedPOISnapshot} jsonSnapshot
    * @return {POISnapshot} decoded POI snapshot
    */
-  static decode(data: Uint8Array): POISnapshot {
+  static decode(jsonSnapshot: JsonEncodedPOISnapshot): POISnapshot {
     const snapshot = new POISnapshot();
     try {
-      const jsonSnapshot = decode(data);
       snapshot.contentEvent = jsonSnapshot.contentEvent;
       snapshot.contentEventData = jsonSnapshot.contentEventData;
 
@@ -81,10 +90,10 @@ export class POISnapshot {
         const json = new PersonDetectionMessage(p['json'].json);
         const binary = {
           skeleton: new Skeleton(
-            new SkeletonBinaryDataProvider(p['dataProvider']),
+            new SkeletonBinaryDataProvider(new Uint8Array(p['dataProviderData'])),
             json['localTimestamp']
           ),
-          personAttributes: new PersonAttributes(p['personAttributes']['data']),
+          personAttributes: new PersonAttributes(new Uint8Array(p['personAttributesData'])),
         };
         const person = PersonDetection.fromMessage(json, binary);
         return [id, person];
@@ -184,7 +193,7 @@ export class POISnapshot {
    */
   public toJSON(): Object {
     const persons = {};
-    this.persons.forEach((person, id) => (persons[id] = person.toJSON()));
+    this.persons.forEach((person, id) => (persons[id] = person));
     const result = {
       content: this.content,
       persons,
