@@ -113,7 +113,7 @@ export class PersonAttributes {
    * @return {Object}
    */
   public toJSON(): Object {
-    return Array.from(this.data.values());
+    return Array.from(this.data);
   }
 
   /**

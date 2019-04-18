@@ -339,12 +339,7 @@ export class PersonDetection {
     return {
       json: this.json,
       personAttributesData: this.personAttributes,
-      dataProviderData: Array.from(
-        this._skeleton
-          .getDataProvider()
-          .getData()
-          .values()
-      ),
+      dataProviderData: Array.from(this._skeleton.getDataProvider().getData()),
     };
   }
 }
