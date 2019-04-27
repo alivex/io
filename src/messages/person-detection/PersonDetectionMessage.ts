@@ -9,7 +9,7 @@ import { PersonDetectionSchema } from './PersonDetectionSchema';
 export class PersonDetectionMessage extends Message {
   public age: number;
   public gender: string;
-  public ttid: string;
+  public ttid: number;
   public personId: string;
   public personPutId: string;
   public coordinates: Object;

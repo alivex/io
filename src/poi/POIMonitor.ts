@@ -30,6 +30,8 @@ export class POIMonitor {
   private streamSubscription: Subscription;
   private poiSnapshotObservable: Observable<POISnapshot>;
 
+  private personDetectionMessagesBuffer = new Map<number, PersonDetectionMessage>();
+
   /**
    * Creates a new instance of this class.
    *
@@ -72,11 +74,17 @@ export class POIMonitor {
    * @param {Message} message the message sent by the POI.
    */
   public emitMessage(message: Message): void {
-    this.lastPOISnapshot.update(message);
-    const clonedPOISnapshot = this.lastPOISnapshot.clone();
-    if (!(message instanceof UnknownMessage)) {
+    if (message instanceof PersonDetectionMessage) {
+      this.personDetectionMessagesBuffer.set(message.ttid, message);
+    } else if (!(message instanceof UnknownMessage)) {
+      this.lastPOISnapshot.update(message);
+      this.personDetectionMessagesBuffer.forEach(m => this.lastPOISnapshot.update(m));
+      this.personDetectionMessagesBuffer.clear();
+
+      const clonedPOISnapshot = this.lastPOISnapshot.clone();
       this.snapshots.next(clonedPOISnapshot);
     }
+
     if (
       message instanceof PersonsAliveMessage ||
       message instanceof SkeletonMessage ||
