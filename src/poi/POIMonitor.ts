@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { Observer, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Subscription, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Message } from '../messages/Message';
@@ -52,7 +52,7 @@ export class POIMonitor {
         this.msgService.binaryStreamMessages(BinaryType.SKELETON)
       )
         .pipe(map(json => MessageFactory.parse(json)))
-        .subscribe(new MessageObserver(this));
+        .subscribe(m => this.emitMessage(m), e => Logger.error(e), () => this.complete());
     }
   }
 
@@ -131,44 +131,5 @@ export class POIMonitor {
    */
   public getPOISnapshotObservable(): Observable<POISnapshot> {
     return this.poiSnapshotObservable;
-  }
-}
-
-/**
- * Listens for incoming messages.
- */
-class MessageObserver implements Observer<Message> {
-  /**
-   * Creates a new instance.
-   *
-   * @param {POIMonitor} poiMonitor the POIMonitor instance
-   * that will be used to handle the changes.
-   */
-  constructor(private poiMonitor: POIMonitor) {}
-
-  /**
-   * Executed when a new message is received.
-   * Will trigger the POISnapshot update.
-   *
-   * @param {Message} m the received message.
-   */
-  public next(m: Message): void {
-    this.poiMonitor.emitMessage(m);
-  }
-
-  /**
-   * Error in the observable.
-   *
-   * @param {any} e the error.
-   */
-  public error(e: any): void {
-    Logger.error(e);
-  }
-
-  /**
-   * The stream is completed.
-   */
-  public complete(): void {
-    this.poiMonitor.complete();
   }
 }
