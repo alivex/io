@@ -1,5 +1,5 @@
-const StartEventKey = 'start';
-const EndEventKey = 'end';
+export const StartEventKey = 'start';
+export const EndEventKey = 'end';
 
 /**
  * Represents a content event
@@ -74,7 +74,7 @@ export class CustomEvent extends PlayoutEvent {
     localTimestamp: number,
     data: Object
   ) {
-    if (name === 'end' || name === StartEventKey) {
+    if (name === EndEventKey || name === StartEventKey) {
       throw new Error(
         `A custom event cannot have the name '${StartEventKey}' nor '${EndEventKey}'.
  Use StartEvent or EndEvent instead`
