@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { Observer, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Subscription, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Message } from '../messages/Message';
@@ -30,6 +30,8 @@ export class POIMonitor {
   private streamSubscription: Subscription;
   private poiSnapshotObservable: Observable<POISnapshot>;
 
+  private personDetectionMessagesBuffer = new Map<number, PersonDetectionMessage>();
+
   /**
    * Creates a new instance of this class.
    *
@@ -52,7 +54,7 @@ export class POIMonitor {
         this.msgService.binaryStreamMessages(BinaryType.SKELETON)
       )
         .pipe(map(json => MessageFactory.parse(json)))
-        .subscribe(new MessageObserver(this));
+        .subscribe(m => this.emitMessage(m), e => Logger.error(e), () => this.complete());
     }
   }
 
@@ -72,11 +74,17 @@ export class POIMonitor {
    * @param {Message} message the message sent by the POI.
    */
   public emitMessage(message: Message): void {
-    this.lastPOISnapshot.update(message);
-    const clonedPOISnapshot = this.lastPOISnapshot.clone();
-    if (!(message instanceof UnknownMessage)) {
+    if (message instanceof PersonDetectionMessage) {
+      this.personDetectionMessagesBuffer.set(message.ttid, message);
+    } else if (!(message instanceof UnknownMessage)) {
+      this.lastPOISnapshot.update(message);
+      this.personDetectionMessagesBuffer.forEach(m => this.lastPOISnapshot.update(m));
+      this.personDetectionMessagesBuffer.clear();
+
+      const clonedPOISnapshot = this.lastPOISnapshot.clone();
       this.snapshots.next(clonedPOISnapshot);
     }
+
     if (
       message instanceof PersonsAliveMessage ||
       message instanceof SkeletonMessage ||
@@ -131,44 +139,5 @@ export class POIMonitor {
    */
   public getPOISnapshotObservable(): Observable<POISnapshot> {
     return this.poiSnapshotObservable;
-  }
-}
-
-/**
- * Listens for incoming messages.
- */
-class MessageObserver implements Observer<Message> {
-  /**
-   * Creates a new instance.
-   *
-   * @param {POIMonitor} poiMonitor the POIMonitor instance
-   * that will be used to handle the changes.
-   */
-  constructor(private poiMonitor: POIMonitor) {}
-
-  /**
-   * Executed when a new message is received.
-   * Will trigger the POISnapshot update.
-   *
-   * @param {Message} m the received message.
-   */
-  public next(m: Message): void {
-    this.poiMonitor.emitMessage(m);
-  }
-
-  /**
-   * Error in the observable.
-   *
-   * @param {any} e the error.
-   */
-  public error(e: any): void {
-    Logger.error(e);
-  }
-
-  /**
-   * The stream is completed.
-   */
-  public complete(): void {
-    this.poiMonitor.complete();
   }
 }
