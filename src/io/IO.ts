@@ -86,6 +86,7 @@ export class IO {
           relevant_persons: event.relevantPersons,
           trigger_group: event.triggerGroup,
           content_play_id: event.contentPlayId,
+          duration: event.duration,
           data: event.data,
         },
       })

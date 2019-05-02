@@ -12,6 +12,7 @@ export class Content {
   public personPutIds: Array<string>;
   public relevantPersons: Array<string>;
   public triggerGroup: Object;
+  public duration: number;
   public data: Object;
 
   /**
@@ -30,6 +31,7 @@ export class Content {
     content.data = message.data;
     content.triggerGroup = message.triggerGroup;
     content.relevantPersons = message.relevantPersons;
+    content.duration = message.duration;
 
     return content;
   }
@@ -49,6 +51,7 @@ export class Content {
     content.data = this.data;
     content.triggerGroup = this.triggerGroup;
     content.relevantPersons = this.relevantPersons;
+    content.duration = this.duration;
 
     return content;
   }

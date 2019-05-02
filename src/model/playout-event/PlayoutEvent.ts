@@ -15,6 +15,7 @@ export class PlayoutEvent {
    * @param {Object} data
    * @param {Object[]} relevantPersons
    * @param {Object} triggerGroup
+   * @param {number} duration
    */
   constructor(
     public name: string,
@@ -24,7 +25,8 @@ export class PlayoutEvent {
     public localTimestamp: number,
     public data: Object = {},
     public relevantPersons?: { personId: string; ttid: number }[],
-    public triggerGroup?: Object
+    public triggerGroup?: Object,
+    public duration?: number
   ) {}
 }
 
@@ -39,6 +41,7 @@ export class StartEvent extends PlayoutEvent {
    * @param {number} localTimestamp
    * @param {Object[]} relevantPersons
    * @param {Object} triggerGroup
+   * @param {number} duration
    */
   constructor(
     contentId: string,
@@ -46,7 +49,8 @@ export class StartEvent extends PlayoutEvent {
     poi: number,
     localTimestamp: number,
     relevantPersons?: { personId: string; ttid: number }[],
-    triggerGroup?: Object
+    triggerGroup?: Object,
+    duration?: number
   ) {
     super(
       StartEventKey,
@@ -56,7 +60,8 @@ export class StartEvent extends PlayoutEvent {
       localTimestamp,
       null,
       relevantPersons,
-      triggerGroup
+      triggerGroup,
+      duration
     );
   }
 }
@@ -72,6 +77,7 @@ export class EndEvent extends PlayoutEvent {
    * @param {number} localTimestamp
    * @param {Object[]} relevantPersons
    * @param {Object} triggerGroup
+   * @param {number} duration
    */
   constructor(
     contentId: string,
@@ -79,7 +85,8 @@ export class EndEvent extends PlayoutEvent {
     poi: number,
     localTimestamp: number,
     relevantPersons?: { personId: string; ttid: number }[],
-    triggerGroup?: Object
+    triggerGroup?: Object,
+    duration?: number
   ) {
     super(
       EndEventKey,
@@ -89,7 +96,8 @@ export class EndEvent extends PlayoutEvent {
       localTimestamp,
       null,
       relevantPersons,
-      triggerGroup
+      triggerGroup,
+      duration
     );
   }
 }

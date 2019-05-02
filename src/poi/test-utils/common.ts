@@ -38,4 +38,5 @@ export interface ContentOptions {
   triggerGroup?: Object;
   personPutIds?: string[];
   relevantPersons?: { ttid: number; personId: string }[];
+  duration?: number;
 }
