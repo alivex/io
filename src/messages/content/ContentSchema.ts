@@ -31,7 +31,21 @@ export const ContentSchema = {
       type: 'string',
     },
     data: {
-      type: 'object',
+      type: ['null', 'object'],
+    },
+    relevant_persons: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          personId: { type: 'string' },
+          ttid: { type: 'number' },
+        },
+      },
+      description: 'List of ids of relevant persons for this content',
+    },
+    trigger_group: {
+      type: ['null', 'object'],
     },
   },
   required: ['record_type', 'poi', 'local_timestamp', 'name', 'content_id', 'content_play_id'],

@@ -83,6 +83,8 @@ export class IO {
           content_id: String(event.contentId),
           poi: event.poi,
           local_timestamp: event.localTimestamp,
+          relevant_persons: event.relevantPersons,
+          trigger_group: event.triggerGroup,
           content_play_id: event.contentPlayId,
           data: event.data,
         },

@@ -13,6 +13,8 @@ export class PlayoutEvent {
    * @param {string[]} persons list of detected persons
    * @param {number} localTimestamp time of the event
    * @param {Object} data
+   * @param {Object[]} relevantPersons
+   * @param {Object} triggerGroup
    */
   constructor(
     public name: string,
@@ -20,7 +22,9 @@ export class PlayoutEvent {
     public contentPlayId: string,
     public poi: number,
     public localTimestamp: number,
-    public data: Object = {}
+    public data: Object = {},
+    public relevantPersons?: { personId: string; ttid: number }[],
+    public triggerGroup?: Object
   ) {}
 }
 
@@ -33,9 +37,27 @@ export class StartEvent extends PlayoutEvent {
    * @param {string} contentPlayId
    * @param {number} poi
    * @param {number} localTimestamp
+   * @param {Object[]} relevantPersons
+   * @param {Object} triggerGroup
    */
-  constructor(contentId: string, contentPlayId: string, poi: number, localTimestamp: number) {
-    super(StartEventKey, contentId, contentPlayId, poi, localTimestamp);
+  constructor(
+    contentId: string,
+    contentPlayId: string,
+    poi: number,
+    localTimestamp: number,
+    relevantPersons?: { personId: string; ttid: number }[],
+    triggerGroup?: Object
+  ) {
+    super(
+      StartEventKey,
+      contentId,
+      contentPlayId,
+      poi,
+      localTimestamp,
+      null,
+      relevantPersons,
+      triggerGroup
+    );
   }
 }
 
@@ -48,9 +70,27 @@ export class EndEvent extends PlayoutEvent {
    * @param {string} contentPlayId
    * @param {number} poi
    * @param {number} localTimestamp
+   * @param {Object[]} relevantPersons
+   * @param {Object} triggerGroup
    */
-  constructor(contentId: string, contentPlayId: string, poi: number, localTimestamp: number) {
-    super(EndEventKey, contentId, contentPlayId, poi, localTimestamp);
+  constructor(
+    contentId: string,
+    contentPlayId: string,
+    poi: number,
+    localTimestamp: number,
+    relevantPersons?: { personId: string; ttid: number }[],
+    triggerGroup?: Object
+  ) {
+    super(
+      EndEventKey,
+      contentId,
+      contentPlayId,
+      poi,
+      localTimestamp,
+      null,
+      relevantPersons,
+      triggerGroup
+    );
   }
 }
 

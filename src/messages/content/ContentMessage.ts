@@ -13,6 +13,8 @@ export class ContentMessage extends Message {
   public contentId: string;
   public contentPlayId: string;
   public data: Object;
+  public relevantPersons: string[];
+  public triggerGroup: Object;
 
   /**
    * Parses a ContentMessage
@@ -27,6 +29,8 @@ export class ContentMessage extends Message {
     this.contentId = json['data']['content_id'];
     this.contentPlayId = json['data']['content_play_id'];
     this.data = json['data']['data'];
+    this.relevantPersons = json['data']['relevant_persons'];
+    this.triggerGroup = json['data']['trigger_group'];
   }
 
   /**

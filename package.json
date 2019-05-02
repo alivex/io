@@ -12,6 +12,7 @@
   "scripts": {
     "clean": "rm -rf lib dist .rpt2_cache",
     "build": "npm run clean && rollup -c --environment NODE_ENV:production",
+    "prepare": "npm run build",
     "start": "npm run clean && rollup -c -w",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' nyc --reporter=text --reporter=lcov ava --verbose",
     "test:watch": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' nyc --reporter=text --reporter=lcov ava --verbose --watch",
