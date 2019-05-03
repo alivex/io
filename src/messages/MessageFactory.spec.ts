@@ -177,6 +177,8 @@ const contentMessage = {
     poi: 1,
     record_type: 'content_event',
     timezone: 'Europe/Berlin',
+    trigger_group: { operator: 'IS', type: 'UNTARGETED', value: true },
+    relevant_persons: [{ personId: 'abc', ttid: 1 }],
   },
 };
 

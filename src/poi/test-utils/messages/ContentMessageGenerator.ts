@@ -22,6 +22,9 @@ export class ContentMessageGenerator {
         data: options.data,
         content_id: options.contentId,
         content_play_id: options.contentPlayId,
+        relevant_persons: options.relevantPersons || [],
+        trigger_group: options.triggerGroup || null,
+        duration: options.duration || null,
       },
     }) as ContentMessage;
   }

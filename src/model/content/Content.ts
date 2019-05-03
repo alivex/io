@@ -10,6 +10,9 @@ export class Content {
   public contentId: string;
   public contentPlayId: string;
   public personPutIds: Array<string>;
+  public relevantPersons: Array<string>;
+  public triggerGroup: Object;
+  public duration: number;
   public data: Object;
 
   /**
@@ -26,6 +29,9 @@ export class Content {
     content.contentId = message.contentId;
     content.contentPlayId = message.contentPlayId;
     content.data = message.data;
+    content.triggerGroup = message.triggerGroup;
+    content.relevantPersons = message.relevantPersons;
+    content.duration = message.duration;
 
     return content;
   }
@@ -43,6 +49,10 @@ export class Content {
     content.contentId = this.contentId;
     content.contentPlayId = this.contentPlayId;
     content.data = this.data;
+    content.triggerGroup = this.triggerGroup;
+    content.relevantPersons = this.relevantPersons;
+    content.duration = this.duration;
+
     return content;
   }
 }

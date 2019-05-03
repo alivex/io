@@ -35,5 +35,8 @@ export interface ContentOptions {
   localTimestamp?: number;
   name?: string;
   data?: Object;
+  triggerGroup?: Object;
   personPutIds?: string[];
+  relevantPersons?: { ttid: number; personId: string }[];
+  duration?: number;
 }

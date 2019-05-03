@@ -1,5 +1,5 @@
-const StartEventKey = 'start';
-const EndEventKey = 'end';
+export const StartEventKey = 'start';
+export const EndEventKey = 'end';
 
 /**
  * Represents a content event
@@ -13,6 +13,9 @@ export class PlayoutEvent {
    * @param {string[]} persons list of detected persons
    * @param {number} localTimestamp time of the event
    * @param {Object} data
+   * @param {Object[]} relevantPersons
+   * @param {Object} triggerGroup
+   * @param {number} duration
    */
   constructor(
     public name: string,
@@ -20,7 +23,10 @@ export class PlayoutEvent {
     public contentPlayId: string,
     public poi: number,
     public localTimestamp: number,
-    public data: Object = {}
+    public data: Object = {},
+    public relevantPersons?: { personId: string; ttid: number }[],
+    public triggerGroup?: Object,
+    public duration?: number
   ) {}
 }
 
@@ -33,9 +39,30 @@ export class StartEvent extends PlayoutEvent {
    * @param {string} contentPlayId
    * @param {number} poi
    * @param {number} localTimestamp
+   * @param {Object[]} relevantPersons
+   * @param {Object} triggerGroup
+   * @param {number} duration
    */
-  constructor(contentId: string, contentPlayId: string, poi: number, localTimestamp: number) {
-    super(StartEventKey, contentId, contentPlayId, poi, localTimestamp);
+  constructor(
+    contentId: string,
+    contentPlayId: string,
+    poi: number,
+    localTimestamp: number,
+    relevantPersons?: { personId: string; ttid: number }[],
+    triggerGroup?: Object,
+    duration?: number
+  ) {
+    super(
+      StartEventKey,
+      contentId,
+      contentPlayId,
+      poi,
+      localTimestamp,
+      null,
+      relevantPersons,
+      triggerGroup,
+      duration
+    );
   }
 }
 
@@ -48,9 +75,30 @@ export class EndEvent extends PlayoutEvent {
    * @param {string} contentPlayId
    * @param {number} poi
    * @param {number} localTimestamp
+   * @param {Object[]} relevantPersons
+   * @param {Object} triggerGroup
+   * @param {number} duration
    */
-  constructor(contentId: string, contentPlayId: string, poi: number, localTimestamp: number) {
-    super(EndEventKey, contentId, contentPlayId, poi, localTimestamp);
+  constructor(
+    contentId: string,
+    contentPlayId: string,
+    poi: number,
+    localTimestamp: number,
+    relevantPersons?: { personId: string; ttid: number }[],
+    triggerGroup?: Object,
+    duration?: number
+  ) {
+    super(
+      EndEventKey,
+      contentId,
+      contentPlayId,
+      poi,
+      localTimestamp,
+      null,
+      relevantPersons,
+      triggerGroup,
+      duration
+    );
   }
 }
 
@@ -74,7 +122,7 @@ export class CustomEvent extends PlayoutEvent {
     localTimestamp: number,
     data: Object
   ) {
-    if (name === 'end' || name === StartEventKey) {
+    if (name === EndEventKey || name === StartEventKey) {
       throw new Error(
         `A custom event cannot have the name '${StartEventKey}' nor '${EndEventKey}'.
  Use StartEvent or EndEvent instead`
