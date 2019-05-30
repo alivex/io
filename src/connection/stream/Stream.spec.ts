@@ -101,12 +101,12 @@ test.serial.cb('BinaryStream: should forward the message to the image data callb
   };
 
   mockBinaryServer.on('connection', socket => {
-    const binaryDataBuffer = new ArrayBuffer(4);
+    const binaryDataBuffer = new ArrayBuffer(8);
     const binaryDataArray = new Uint8Array(binaryDataBuffer);
     binaryDataArray[0] = BinaryDataType.TYPE_IMAGE;
-    binaryDataArray[1] = 1;
-    binaryDataArray[2] = 2;
-    binaryDataArray[3] = 3;
+    binaryDataArray[5] = 1;
+    binaryDataArray[6] = 2;
+    binaryDataArray[7] = 3;
     socket.send(binaryDataBuffer);
   });
 });
@@ -126,12 +126,12 @@ test.serial.cb('BinaryStream: should forward the message to the skeleton data ca
   };
 
   mockBinaryServer.on('connection', socket => {
-    const binaryDataBuffer = new ArrayBuffer(4);
+    const binaryDataBuffer = new ArrayBuffer(8);
     const binaryDataArray = new Uint8Array(binaryDataBuffer);
     binaryDataArray[0] = BinaryDataType.TYPE_SKELETON;
-    binaryDataArray[1] = 1;
-    binaryDataArray[2] = 2;
-    binaryDataArray[3] = 3;
+    binaryDataArray[5] = 1;
+    binaryDataArray[6] = 2;
+    binaryDataArray[7] = 3;
     socket.send(binaryDataBuffer);
   });
 });

@@ -212,8 +212,8 @@ export class BinaryStream extends Stream {
   public onmessage(e: any): void {
     if (!this.cbs) {
       this.cbs = {
-        [BinaryDataType.TYPE_IMAGE]: this.onimage.bind(this),
-        [BinaryDataType.TYPE_SKELETON]: this.onskeleton.bind(this),
+        [BinaryDataType.TYPE_IMAGE]: data => this.onimage.call(this, data.subarray(4)),
+        [BinaryDataType.TYPE_SKELETON]: data => this.onskeleton.call(this, data.subarray(4)),
         [BinaryDataType.TYPE_THUMBNAIL]: this.onthumbnail.bind(this),
         [BinaryDataType.TYPE_HEATMAP]: this.onheatmap.bind(this),
         [BinaryDataType.TYPE_DEPTHMAP]: this.ondepthmap.bind(this),

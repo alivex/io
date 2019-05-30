@@ -82,12 +82,13 @@ export class PersonAttributes {
       );
     }
     this.age = data[0] == 127 ? undefined : data[0];
-    this.ttid = data[21];
-    this.isRecognized = data[22] == 1 ? true : false;
+    this.ttid = new DataView(new Uint8Array(data.subarray(21, 21 + 4)).buffer).getUint32(0);
+    this.isRecognized = data[25] == 1 ? true : false;
+
     this.headpose = {
-      yaw: decodeHeadposeAngle(data, 23),
-      pitch: decodeHeadposeAngle(data, 25),
-      roll: decodeHeadposeAngle(data, 27),
+      yaw: decodeHeadposeAngle(data, 26),
+      pitch: decodeHeadposeAngle(data, 28),
+      roll: decodeHeadposeAngle(data, 30),
     };
 
     for (const name in indices) {
