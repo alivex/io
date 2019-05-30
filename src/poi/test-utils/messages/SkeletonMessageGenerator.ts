@@ -30,19 +30,37 @@ export class SkeletonMessageGenerator {
 }
 
 /**
+ * Tranforms a Uint32 number to an array of 4 bytes (8 bits)
+ * @param {number} uint32 number to transform
+ * @return {Uint8Array}
+ */
+function toBytes(uint32: number): Uint8Array {
+  return new Uint8Array([
+    (uint32 >> 24) & 0xff,
+    (uint32 >> 16) & 0xff,
+    (uint32 >> 8) & 0xff,
+    uint32 & 0xff,
+  ]);
+}
+
+/**
  * Generates the data set of one single person
  * @param {PersonOptions} options
  * @return {number[]}
  */
 export function generateSinglePersonBinaryData(options: PersonOptions = { ttid: 1 }): number[] {
-  const data = new Array(209);
-  for (let i = 0; i < 211; i++) {
+  const data = new Array(213);
+  let ttidBytes;
+  if (options.ttid) {
+    ttidBytes = toBytes(options.ttid);
+  }
+  for (let i = 0; i < 213; i++) {
     if (i === Skeleton.bytesLength() && options.age) {
       data[i] = options.age;
       continue;
     }
-    if (i === Skeleton.bytesLength() + 21 && options.ttid) {
-      data[i] = options.ttid;
+    if (i >= Skeleton.bytesLength() + 21 && i < Skeleton.bytesLength() + 25 && ttidBytes) {
+      data[i] = ttidBytes[i - (Skeleton.bytesLength() + 21)];
       continue;
     }
     if (i === Skeleton.bytesLength() + indices.male && options.gender) {

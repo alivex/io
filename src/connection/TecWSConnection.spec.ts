@@ -77,12 +77,12 @@ test.serial.cb('should receive a message from the binary stream and emit it to t
   const fakeBinaryURL = 'ws://localhost:8002';
   const mockBinaryServer = new Server(fakeBinaryURL);
 
-  const binaryDataBuffer = new ArrayBuffer(4);
+  const binaryDataBuffer = new ArrayBuffer(8);
   const binaryDataArray = new Uint8Array(binaryDataBuffer);
   binaryDataArray[0] = BinaryDataType.TYPE_SKELETON;
-  binaryDataArray[1] = 1;
-  binaryDataArray[2] = 2;
-  binaryDataArray[3] = 3;
+  binaryDataArray[5] = 1;
+  binaryDataArray[6] = 2;
+  binaryDataArray[7] = 3;
 
   const c = new TecWSConnection();
   c.open();

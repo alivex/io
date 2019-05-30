@@ -230,7 +230,7 @@ export class Skeleton {
    * @return {boolean} true of the skeleton has this limb
    */
   public hasLimb(idx: number): boolean {
-    return this.limbX(idx) != undefined;
+    return this.limbX(idx) != undefined && this.limbY(idx) != undefined;
   }
 
   /**
@@ -284,7 +284,7 @@ export class Skeleton {
    */
   public static bytesLength(): number {
     // 18 joints with x_2d, y_2d, x_3d, y_3d, z_3d encoded with 2 bytes each
-    return 18 * 5 * 2;
+    return 4 + 18 * 5 * 2;
   }
 
   /**
@@ -310,6 +310,7 @@ export class Skeleton {
  */
 export class SkeletonBinaryDataProvider {
   private data: Uint8Array;
+  private canvasSize: { width: number; height: number };
 
   /**
    * Instantiate the data provider. Throws an error if the data are missing or invalid
@@ -323,6 +324,7 @@ export class SkeletonBinaryDataProvider {
       );
     }
     this.data = data;
+    this.canvasSize = { width: this.decodeUint16(0), height: this.decodeUint16(2) };
   }
 
   /**
@@ -335,31 +337,33 @@ export class SkeletonBinaryDataProvider {
 
   /* eslint-disable require-jsdoc */
   public limbY(idx: number): number {
-    const offset = 5 * 2 * idx + 0;
-    return this.limb2dValueFromBinary(offset);
+    const offset = 4 + 5 * 2 * idx + 0;
+    const value = this.decodeUint16(offset);
+    return value === undefined ? undefined : value / this.canvasSize.height;
   }
 
   public limbX(idx: number): number {
-    const offset = 5 * 2 * idx + 2;
-    return this.limb2dValueFromBinary(offset);
+    const offset = 4 + 5 * 2 * idx + 2;
+    const value = this.decodeUint16(offset);
+    return value === undefined ? undefined : value / this.canvasSize.width;
   }
 
   public limbU(idx: number): number {
-    const offset = 5 * 2 * idx + 4;
+    const offset = 4 + 5 * 2 * idx + 4;
     return this.limb3dU(offset);
   }
 
   public limbV(idx: number): number {
-    const offset = 5 * 2 * idx + 6;
+    const offset = 4 + 5 * 2 * idx + 6;
     return this.limb3dV(offset);
   }
 
   public limbZ(idx: number): number {
-    const offset = 5 * 2 * idx + 8;
+    const offset = 4 + 5 * 2 * idx + 8;
     return this.limb3dZ(offset);
   }
 
-  private limb2dValueFromBinary(offset: number): number {
+  private decodeUint16(offset: number): number {
     const value = this.data[offset] * 256 + this.data[offset + 1];
     // value of zero cannot exist, unless the joint is not detected
     if (value == 0) {
@@ -385,7 +389,7 @@ export class SkeletonBinaryDataProvider {
 
   private limb3d(offset: number, min: number, max: number): number {
     const num = this.data[offset] * 256 + this.data[offset + 1];
-    const value = (num * (max - min)) / (256 * 256) + min;
+    const value = (num * (max - min)) / (256 * 256 - 1) + min;
     return value;
   }
   /* eslint-enable require-jsdoc */
