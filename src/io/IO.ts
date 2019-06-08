@@ -8,6 +8,7 @@ import { RPCService } from '../rpc/RPCService';
 import { POIMonitor } from '../poi/POIMonitor';
 import { POISnapshot } from '../poi/POISnapshot';
 import { PlayoutEvent } from '../model/playout-event/PlayoutEvent';
+import { FlushEvent } from '../model/flush-event/FlushEvent';
 import { BinaryMessageEvent, BinaryType } from '../types';
 import { RPCRecordType } from '../constants/Constants';
 import { MessageFactory } from '../messages/MessageFactory';
@@ -185,6 +186,14 @@ export class IO {
    */
   public getPOISnapshotObservable(): Observable<POISnapshot> {
     return this.poiMonitor.getPOISnapshotObservable();
+  }
+
+  /**
+   * Returns an Observable emitting the FlushEvent updates
+   * @return {Observable<FlushEvent>}
+   */
+  public getFlushEventObservable(): Observable<FlushEvent> {
+    return this.poiMonitor.getFlushEventObservable();
   }
 
   /**

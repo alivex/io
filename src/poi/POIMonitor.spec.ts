@@ -2,6 +2,7 @@ import test from 'ava';
 import { Observable, Subject } from 'rxjs';
 import { IncomingMessageService } from '../incoming-message/IncomingMessageService';
 import { BinaryMessageEvent, BinaryType } from '../types';
+import { FlushEvent } from '../model/flush-event/FlushEvent';
 import {
   POIMonitor,
   INACTIVE_STREAM_THRESHOLD,
@@ -10,6 +11,44 @@ import {
 import { POISnapshot } from './POISnapshot';
 import { generateSinglePersonUpdateData, generateSinglePersonBinaryData } from './test-utils';
 import { RPCResponseSubject } from '../constants/Constants';
+
+test('should emit FlushEvent instance when the stream receive a person_flush message', t => {
+  const jsonSubject = new Subject();
+  const binarySubject = new Subject<BinaryMessageEvent>();
+
+  /* eslint-disable require-jsdoc */
+  class MockMessageService implements IncomingMessageService {
+    jsonStreamMessages(): Observable<any> {
+      return jsonSubject.asObservable();
+    }
+
+    binaryStreamMessages(type?: BinaryType): Observable<BinaryMessageEvent> {
+      return binarySubject.asObservable();
+    }
+  }
+  /* eslint-enable require-jsdoc */
+
+  const poiMonitor = new POIMonitor(new MockMessageService());
+
+  const events: FlushEvent[] = [];
+  poiMonitor.getFlushEventObservable().subscribe(flushEvent => {
+    events.push(flushEvent);
+  });
+
+  poiMonitor.start();
+
+  jsonSubject.next({
+    data: {
+      person_id: 'abc',
+      final_unique_person_id: 'xyz',
+    },
+    subject: RPCResponseSubject.PersonFlush,
+  });
+
+  t.is(events.length, 1);
+  t.is(events[0].getPersonId(), 'abc');
+  t.is(events[0].getFinalUniqueId(), 'xyz');
+});
 
 test.cb(
   `should start emitting empty detections every 200 milliseconds if the stream

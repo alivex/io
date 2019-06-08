@@ -17,6 +17,7 @@ export enum RPCCommands {
 export enum RPCResponseSubject {
   PersonUpdate = 'person_update',
   PersonsAlive = 'persons_alive',
+  PersonFlush = 'person_flush',
 }
 
 export enum BinaryDataType {

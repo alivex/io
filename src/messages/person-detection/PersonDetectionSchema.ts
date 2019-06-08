@@ -15,6 +15,10 @@ export const PersonDetectionSchema = {
     },
     person_id: {
       type: 'string',
+      description: 'Unique per person tracking. Multiple messages can be assigned to one person_id',
+    },
+    unique_person_id: {
+      type: 'string',
       description: 'Unique per person. Multiple messages can be assigned to one person_id',
     },
     person_put_id: {

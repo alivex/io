@@ -31,6 +31,11 @@ export function generateSinglePersonUpdateData(options: PersonOptions): Object {
       `_${Math.random()
         .toString(36)
         .substr(2, 9)}`,
+    unique_person_id:
+      options.uniqueId ||
+      `_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`,
     person_put_id:
       options.personPutId ||
       `_${Math.random()

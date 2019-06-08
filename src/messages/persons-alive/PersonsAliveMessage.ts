@@ -24,7 +24,7 @@ export class PersonsAliveMessage extends Message {
    */
   protected validate(json: any): void {
     if (!json || !json.data || !json.data.person_ids) {
-      throw new Error('Invalid PersonsAlive message');
+      throw new Error('Invalid PersonsAlive message ' + JSON.stringify(json));
     }
   }
 

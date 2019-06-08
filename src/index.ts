@@ -10,6 +10,7 @@ export * from './messages/unknown/UnknownMessage';
 export * from './model/person-detection/PersonDetection';
 export * from './model/content/Content';
 export * from './model/playout-event/PlayoutEvent';
+export * from './model/flush-event/FlushEvent';
 export * from './constants/Constants';
 export * from './io/IO';
 export * from './types';

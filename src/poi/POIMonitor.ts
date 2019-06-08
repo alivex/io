@@ -5,8 +5,10 @@ import { map } from 'rxjs/operators';
 import { Message } from '../messages/Message';
 import { SkeletonMessage } from '../messages/skeleton/SkeletonMessage';
 import { PersonDetectionMessage } from '../messages/person-detection/PersonDetectionMessage';
+import { PersonFlushMessage } from '../messages/person-flush/PersonFlushMessage';
 import { UnknownMessage } from '../messages/unknown/UnknownMessage';
 import { MessageFactory } from '../messages/MessageFactory';
+import { FlushEvent } from '../model/flush-event/FlushEvent';
 import { PersonsAliveMessage } from '../messages/persons-alive/PersonsAliveMessage';
 import { IncomingMessageService } from '../incoming-message/IncomingMessageService';
 import { POISnapshot } from './POISnapshot';
@@ -25,10 +27,12 @@ export class POIMonitor {
   private isActiveTimeout;
   private mockMessagesInterval;
   private lastPOISnapshot: POISnapshot = new POISnapshot();
-  private snapshots: Subject<POISnapshot> = new Subject();
+  private poiSnapshotSubject: Subject<POISnapshot> = new Subject();
+  private flushEventSubject: Subject<FlushEvent> = new Subject();
   private logger = console;
   private streamSubscription: Subscription;
   private poiSnapshotObservable: Observable<POISnapshot>;
+  private flushEventObservable: Observable<FlushEvent>;
 
   private personDetectionMessagesBuffer = new Map<number, PersonDetectionMessage>();
 
@@ -40,7 +44,8 @@ export class POIMonitor {
    * @param {IncomingMessageService} msgService
    */
   constructor(private msgService: IncomingMessageService) {
-    this.poiSnapshotObservable = this.snapshots.asObservable();
+    this.poiSnapshotObservable = this.poiSnapshotSubject.asObservable();
+    this.flushEventObservable = this.flushEventSubject.asObservable();
   }
 
   /**
@@ -74,7 +79,9 @@ export class POIMonitor {
    * @param {Message} message the message sent by the POI.
    */
   public emitMessage(message: Message): void {
-    if (message instanceof PersonDetectionMessage) {
+    if (message instanceof PersonFlushMessage) {
+      this.flushEventSubject.next(new FlushEvent(message.personId, message.finalUniquePersonId));
+    } else if (message instanceof PersonDetectionMessage) {
       this.personDetectionMessagesBuffer.set(message.ttid, message);
     } else if (!(message instanceof UnknownMessage)) {
       this.lastPOISnapshot.update(message);
@@ -82,7 +89,7 @@ export class POIMonitor {
       this.personDetectionMessagesBuffer.clear();
 
       const clonedPOISnapshot = this.lastPOISnapshot.clone();
-      this.snapshots.next(clonedPOISnapshot);
+      this.poiSnapshotSubject.next(clonedPOISnapshot);
     }
 
     if (
@@ -110,7 +117,8 @@ export class POIMonitor {
     }
     clearTimeout(this.isActiveTimeout);
     clearInterval(this.mockMessagesInterval);
-    this.snapshots.complete();
+    this.poiSnapshotSubject.complete();
+    this.flushEventSubject.complete();
   }
 
   /**
@@ -128,7 +136,7 @@ export class POIMonitor {
         this.lastPOISnapshot.clearPersons();
         this.lastPOISnapshot.update(new PersonsAliveMessage({ data: { person_ids: [] } }));
         const clonedPOISnapshot = this.lastPOISnapshot.clone();
-        this.snapshots.next(clonedPOISnapshot);
+        this.poiSnapshotSubject.next(clonedPOISnapshot);
       }, INACTIVE_STREAM_MESSAGE_INTERVAL);
     }, INACTIVE_STREAM_THRESHOLD);
   }
@@ -139,5 +147,13 @@ export class POIMonitor {
    */
   public getPOISnapshotObservable(): Observable<POISnapshot> {
     return this.poiSnapshotObservable;
+  }
+
+  /**
+   * Returns an Observable emitting the Flush Events
+   * @return {Observable<FlushEvent>}
+   */
+  public getFlushEventObservable(): Observable<FlushEvent> {
+    return this.flushEventObservable;
   }
 }

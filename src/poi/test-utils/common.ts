@@ -19,6 +19,7 @@ export interface PersonOptions {
   metadata?: Object;
   localTimestamp?: number;
   personId?: string;
+  uniqueId?: string;
   personPutId?: string;
   cameraId?: string;
   lookingAtScreen?: boolean;

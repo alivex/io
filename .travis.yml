@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - lts/carbon
 script:
-- npm run checkstyle
+- npm run lint
 - npm test
 - npm run test:report
 - npm run build

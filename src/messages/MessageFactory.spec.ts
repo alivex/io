@@ -3,6 +3,7 @@ import { stub } from 'sinon';
 import { MessageFactory } from './MessageFactory';
 import { PersonDetectionMessage } from './person-detection/PersonDetectionMessage';
 import { PersonsAliveMessage } from './persons-alive/PersonsAliveMessage';
+import { PersonFlushMessage } from './person-flush/PersonFlushMessage';
 import { ContentMessage } from './content/ContentMessage';
 import { UnknownMessage } from './unknown/UnknownMessage';
 import { SkeletonMessage } from './skeleton/SkeletonMessage';
@@ -150,6 +151,7 @@ const personDetectionMessage = {
     },
     local_timestamp: 1508404346173,
     person_id: 'b8d660b3-7931-4fb2-a5ab-ccac2ed994dd',
+    unique_person_id: '6f1c18ce-5a42-4c56-a6d5-6c3d565ac55d',
     person_put_id: '74ad6537-f268-4736-be15-d7b39ccc161c',
     poi: -1,
     record_type: 'person',
@@ -164,6 +166,14 @@ const personsAliveMessage = {
   subject: 'persons_alive',
   data: {
     person_ids: ['b8d660b3-7931-4fb2-a5ab-ccac2ed994dd'],
+  },
+};
+
+const personFlushMessage = {
+  subject: 'person_flush',
+  data: {
+    person_id: 'b8d660b3-7931-4fb2-a5ab-ccac2ed994dd',
+    final_unique_person_id: 'f4504fd0-4b59-47e0-9428-af344a91cee6',
   },
 };
 
@@ -214,6 +224,11 @@ test('should parse a persons_alive message', t => {
   t.deepEqual((msg as PersonsAliveMessage).getPersonIds(), [
     'b8d660b3-7931-4fb2-a5ab-ccac2ed994dd',
   ]);
+});
+
+test('should parse a person_flush message', t => {
+  const msg = MessageFactory.parse(personFlushMessage);
+  t.true(msg instanceof PersonFlushMessage);
 });
 
 test('should parse an unknown message (empty message)', t => {

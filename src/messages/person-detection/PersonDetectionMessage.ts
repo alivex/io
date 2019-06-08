@@ -11,6 +11,7 @@ export class PersonDetectionMessage extends Message {
   public gender: string;
   public ttid: number;
   public personId: string;
+  public uniquePersonId: string;
   public personPutId: string;
   public coordinates: Object;
   public recognition: Object;
@@ -36,6 +37,7 @@ export class PersonDetectionMessage extends Message {
       this.gender = json.data.rolling_expected_values.gender;
     }
     this.personId = json.data.person_id;
+    this.uniquePersonId = json.data.unique_person_id;
     this.ttid = json.data.ttid;
     this.personPutId = json.data.person_put_id;
     this.coordinates = json.data.coordinates;

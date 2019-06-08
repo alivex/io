@@ -79,6 +79,14 @@ export class PersonDetection {
   }
 
   /**
+   * Unique person ID
+   * @return {string}
+   */
+  get uniquePersonId(): string {
+    return this.json.uniquePersonId;
+  }
+
+  /**
    * Person PUT id
    * @return {string}
    */
@@ -340,6 +348,7 @@ export class PersonDetection {
       localTimestamp: this.localTimestamp,
       name: this.name,
       gender: this.gender,
+      uniquePersonId: this.uniquePersonId,
       personId: this.personId,
       personPutId: this.personPutId,
       recognition: this.recognition,
